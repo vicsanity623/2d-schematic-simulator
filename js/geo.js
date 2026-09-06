@@ -80,9 +80,10 @@ const Geo = (() => {
       r = 350 + Math.random() * (outerLimit - 350);
     }
 
+    // True 360-degree radial scattering
     const theta = Math.random() * 2 * Math.PI;
     const dLat = (r * Math.cos(theta)) / 111320;
-    const dLon = (r * Math.cos(theta)) / (111320 * Math.cos(lat * Math.PI / 180));
+    const dLon = (r * Math.sin(theta)) / (111320 * Math.cos(lat * Math.PI / 180));
     return { lat: lat + dLat, lon: lon + dLon };
   }
 
