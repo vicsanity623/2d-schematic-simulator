@@ -236,31 +236,56 @@ html,body{
   pointer-events:auto;
 }
 
-#bottombar{
-  position:absolute; bottom:0; left:0; right:0; z-index:5;
-  display:flex; align-items:center; justify-content:center; gap:16px;
-  padding: 14px 20px max(18px, env(safe-area-inset-bottom));
-  background:linear-gradient(0deg, rgba(10,15,24,0.92) 0%, rgba(10,15,24,0.5) 70%, transparent 100%);
+#bottombar {
+  position: absolute; 
+  bottom: 0; 
+  left: 0; 
+  right: 0; 
+  z-index: 20;
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 6px;
+  padding: 10px 8px max(14px, env(safe-area-inset-bottom));
+  background: linear-gradient(0deg, rgba(10,15,24,0.96) 0%, rgba(10,15,24,0.6) 70%, transparent 100%);
+  box-sizing: border-box;
 }
-.round-btn{
-  width:52px; height:52px; border-radius:50%;
-  background:var(--panel-2);
-  border:1px solid var(--line);
-  color:var(--parchment);
-  font-size:20px;
-  cursor:pointer;
+
+.round-btn {
+  width: 40px; 
+  height: 40px; 
+  min-width: 40px;
+  max-width: 40px;
+  flex: 0 0 40px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  color: var(--gold-hi);
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
 }
-.btn-earn{
-  width:auto; flex:0 0 auto;
-  padding:16px 42px;
-  border-radius:999px;
-  background:linear-gradient(180deg, var(--gold-hi), var(--gold));
-  color:#241a06;
-  font-family:var(--font-display);
-  font-weight:700;
-  font-size:17px;
-  letter-spacing:0.5px;
-  box-shadow:0 8px 24px rgba(212,175,97,0.35);
+
+.btn-earn {
+  flex: 1 1 auto;
+  min-width: 70px;
+  max-width: 105px;
+  width: auto;
+  padding: 11px 6px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--gold-hi), var(--gold));
+  color: #241a06;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(212,175,97,0.35);
 }
 
 /* ---------- Toast ---------- */
@@ -1953,17 +1978,21 @@ html,body{
 
 /* ---------- BUY LAND MODE CONTROLS ---------- */
 .btn-buy-land {
+  flex: 1.15 1 auto !important;
+  min-width: 85px !important;
+  max-width: 120px !important;
   width: auto !important;
-  flex: 0 0 auto;
-  padding: 16px 28px !important;
+  padding: 11px 6px !important;
   border-radius: 999px !important;
   background: linear-gradient(180deg, #4fd6c4, #289b8d) !important;
   color: #0d1420 !important;
   font-family: var(--font-display) !important;
   font-weight: 800 !important;
-  font-size: 16px !important;
-  letter-spacing: 0.5px;
-  box-shadow: 0 8px 24px rgba(79, 214, 196, 0.4) !important;
+  font-size: 13.5px !important;
+  letter-spacing: 0.3px;
+  white-space: nowrap !important;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(79, 214, 196, 0.4) !important;
 }
 .btn-buy-land:active { transform: scale(0.94); }
 
