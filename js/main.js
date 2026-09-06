@@ -7,6 +7,8 @@
   let currentPos = null;
   let toastTimer = null;
   let pulseAnimId = null;
+  let isOrbiting = false;
+  let isUserInteracting = false;
 
   const el = (id) => document.getElementById(id);
 
@@ -298,10 +300,20 @@
     currentPos = { lat: coords.latitude, lon: coords.longitude };
     if (!map) return;
     
-    // Move 3D Character & Geographic Radius Layer
+    // 1. Move 3D Character & Geographic Radius Layer
     Character3D.setPlayerPosition(currentPos.lon, currentPos.lat);
     updatePlayerRadiusLayer();
     Diamonds.setPlayerPosition(currentPos.lat, currentPos.lon);
+
+    // 2. Smooth GPS Camera Follow: Keeps player locked in center while walking!
+    if (!isUserInteracting && !isOrbiting) {
+      map.easeTo({
+        center: [currentPos.lon, currentPos.lat],
+        duration: 1200,   // Fluid 1.2-second glide
+        easing: (t) => t, // Linear easing prevents sudden camera jumps
+        essential: true
+      });
+    }
   }
   
   // ---------------- 3D Map / Game Launch with Auto-Fallback ----------------
@@ -313,62 +325,54 @@
 
     const mapStyle = "https://tiles.openfreemap.org/styles/dark";
 
-    // 1. Initialize 3D Camera with Unlimited Vector Basemap
+    // 1. Initialize 3D Camera with 2-Finger Vertical Tilt & 1-Finger Orbit
     map = new mapboxgl.Map({
       container: "map",
       style: mapStyle,
       center: [currentPos.lon, currentPos.lat],
       zoom: 18.5,
-      minZoom: 15.2,   // 1 mile max zoom-out
-      maxZoom: 19.6,   // Street-level max zoom-in
-      pitch: 60,
+      minZoom: 15.2,     // 1 mile max zoom-out
+      maxZoom: 19.6,     // Street-level max zoom-in
+      pitch: 60,         // Default 60° angle
+      minPitch: 0,       // Allows flat 0° top-down view
+      maxPitch: 70,      // Allows cinematic 70° low angle
       bearing: 0,
       antialias: true,
-      dragPan: false,  // Map stays locked to player (cannot scroll away)
+      dragPan: false,    // Map stays locked to player (cannot scroll away)
       dragRotate: true,
       touchZoomRotate: true,
+      touchPitch: true,  // Enables native 2-finger vertical swipe to tilt camera angle!
     });
 
-    // --- Automatic Rate-Limit / Quota Exhaustion Fallback Handler ---
-    let hasSwitchedToFallback = CONFIG.USE_OPENFREEMAP_DIRECTLY || false;
-
-    function triggerMapFallback() {
-      if (hasSwitchedToFallback) return;
-      hasSwitchedToFallback = true;
-      console.warn("[MapEngine] Rate limit or quota exceeded! Hot-swapping to OpenFreeMap...");
-      showToast("⚠️ Mapbox limit reached — switched to free backup map!");
-
-      const backupStyle = CONFIG.FALLBACK_STYLE_URL || "https://tiles.openfreemap.org/styles/dark";
-      map.setStyle(backupStyle);
-
-      // Re-attach all game layers and 3D character once the backup style finishes mounting
-      map.once("style.load", () => {
-        setupGameLayers();
-      });
-    }
-
-    // Smooth 1-finger camera orbit around player
-    let isOrbiting = false;
+    // Multi-touch Controller: 1-finger orbit & 2-finger pitch/zoom
     let lastTouchX = 0;
     const canvas = map.getCanvas();
 
     canvas.addEventListener("touchstart", (e) => {
+      isUserInteracting = true;
       if (e.touches.length === 1) {
         isOrbiting = true;
         lastTouchX = e.touches[0].clientX;
+      } else {
+        // 2 fingers on screen: Hand control directly to MapLibre for vertical pitch & pinch-zoom
+        isOrbiting = false;
       }
     }, { passive: true });
 
     canvas.addEventListener("touchmove", (e) => {
-      // Only orbit if 1 finger is down (leaves 2-finger pinch-zoom totally smooth)
+      // 1-finger horizontal swipe rotates camera around player
       if (isOrbiting && e.touches.length === 1) {
         const deltaX = e.touches[0].clientX - lastTouchX;
         lastTouchX = e.touches[0].clientX;
-        map.setBearing(map.getBearing() + deltaX * 0.4);
+        map.setBearing(map.getBearing() + deltaX * 0.45);
       }
     }, { passive: true });
 
-    canvas.addEventListener("touchend", () => { isOrbiting = false; });
+    canvas.addEventListener("touchend", () => {
+      isOrbiting = false;
+      // Grace period before GPS auto-follow resumes
+      setTimeout(() => { isUserInteracting = false; }, 350);
+    });
 
     // Re-lock center strictly when gestures finish (never interrupts animations mid-flight)
     map.on("zoomend", () => {
