@@ -63,14 +63,25 @@ const Geo = (() => {
     return EARTH_RADIUS_METERS * c;
   }
 
-  // Balanced random point (ensures healthy mix of close and far spawns)
-  function randomPointInRadius(lat, lon, radiusM) {
-    const isClose = Math.random() < 0.50;
-    const maxR = isClose ? radiusM * 0.45 : radiusM;
-    const r = maxR * Math.random();
+  // 3-Tier Proximity Engine: Guarantees close, medium, and 1km far spawns
+  function randomPointInRadius(lat, lon, maxRadiusM = 1000) {
+    const roll = Math.random();
+    let r;
+
+    if (roll < 0.40) {
+      // Tier 1: Immediate Reach (20m to 85m) — Always reachable near player!
+      r = 20 + Math.random() * 65;
+    } else if (roll < 0.75) {
+      // Tier 2: Neighborhood Walk (85m to 350m) — Down the block!
+      r = 85 + Math.random() * 265;
+    } else {
+      // Tier 3: Horizon Expedition (350m up to maxRadiusM, e.g. 1000m!)
+      const outerLimit = Math.max(350, maxRadiusM);
+      r = 350 + Math.random() * (outerLimit - 350);
+    }
 
     const theta = Math.random() * 2 * Math.PI;
-    const dLat = (r * Math.sin(theta)) / 111320;
+    const dLat = (r * Math.cos(theta)) / 111320;
     const dLon = (r * Math.cos(theta)) / (111320 * Math.cos(lat * Math.PI / 180));
     return { lat: lat + dLat, lon: lon + dLon };
   }

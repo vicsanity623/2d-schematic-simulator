@@ -31,11 +31,11 @@ const CONFIG = {
   GRID_RENDER_MAX_TILES: 1200,    // safety cap per redraw
 
   // --- Diamonds ---
-  DIAMOND_SPAWN_RADIUS_METERS: 280,   // ~220 yards (Spreads them across neighborhood)
+  DIAMOND_SPAWN_RADIUS_METERS: 1000,   // ~220 yards (Spreads them across neighborhood)
   DIAMOND_COLLECT_RADIUS_METERS: 75,  // ~55 yards (Reachable reach)
-  DIAMOND_MAX_ACTIVE: 13,
+  DIAMOND_MAX_ACTIVE: 18,
   DIAMOND_SPAWN_CHECK_MS: 35000,      // Checks for 1 new diamond every 30 seconds
-  DIAMOND_LIFETIME_MS: 540 * 1000,     // 540 seconds or 5 min
+  DIAMOND_LIFETIME_MS: 25 * 60 * 1000,     // 25 min
 
   // --- Diamond Extractor ---
   EXTRACTOR_MIN_TILES: 5,               // Requires 5+ connected plots
