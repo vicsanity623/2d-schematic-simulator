@@ -238,7 +238,7 @@ html,body{
 
 #bottombar {
   position: absolute; 
-  bottom: 0; 
+  bottom: calc(52px + max(4px, env(safe-area-inset-bottom))); 
   left: 0; 
   right: 0; 
   z-index: 20;
@@ -246,8 +246,8 @@ html,body{
   align-items: center; 
   justify-content: center; 
   gap: 6px;
-  padding: 10px 8px max(14px, env(safe-area-inset-bottom));
-  background: linear-gradient(0deg, rgba(10,15,24,0.96) 0%, rgba(10,15,24,0.6) 70%, transparent 100%);
+  padding: 6px 8px;
+  background: transparent;
   box-sizing: border-box;
 }
 
@@ -288,20 +288,27 @@ html,body{
   box-shadow: 0 8px 20px rgba(212,175,97,0.35);
 }
 
-/* ---------- Toast ---------- */
-.toast{
-  position:absolute; left:50%; bottom:100px; z-index:20;
-  transform:translateX(-50%);
-  background:rgba(20,28,42,0.96);
-  border:1px solid var(--line);
-  color:var(--parchment);
-  padding:10px 18px;
-  border-radius:999px;
-  font-size:14px; font-weight:600;
-  box-shadow:0 6px 20px rgba(0,0,0,0.4);
-  transition:opacity .25s ease, transform .25s ease;
+/* ---------- Toast (Floats Cleanly Above Buttons) ---------- */
+.toast {
+  position: absolute; 
+  left: 50%; 
+  /* Floats cleanly above the BUY LAND and EARN buttons */
+  bottom: calc(135px + env(safe-area-inset-bottom)); 
+  z-index: 35;
+  transform: translateX(-50%);
+  background: rgba(13, 20, 32, 0.95);
+  border: 1.5px solid var(--gold);
+  color: var(--parchment);
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 13.5px; 
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.85), 0 0 14px rgba(212, 175, 97, 0.35);
+  transition: opacity .25s ease, transform .25s ease;
+  white-space: nowrap;
+  pointer-events: none;
 }
-.toast.hidden{ opacity:0; pointer-events:none; }
+.toast.hidden { opacity: 0; pointer-events: none; }
 
 /* ---------- Modals ---------- */
 .modal{
@@ -477,9 +484,10 @@ html,body{
 /* ---------- Floating +2 EB Boost Button ---------- */
 .boost-btn {
   position: absolute;
-  right: 18px;
-  bottom: 95px;
-  z-index: 15;
+  right: 16px;
+  /* Floats cleanly above the bottom bar & chat button */
+  bottom: calc(125px + env(safe-area-inset-bottom));
+  z-index: 22;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1998,14 +2006,14 @@ html,body{
 
 .buy-mode-banner {
   position: absolute;
-  /* Floats centered directly above the bottom bar */
-  bottom: calc(max(18px, env(safe-area-inset-bottom)) + 80px);
+  /* Floats centered cleanly above the raised controller bar */
+  bottom: calc(max(18px, env(safe-area-inset-bottom)) + 130px);
   left: 50%;
   transform: translateX(-50%);
   width: auto;
   max-width: 90%;
-  z-index: 25;
-  background: rgba(13, 20, 32, 0.92);
+  z-index: 30;
+  background: rgba(13, 20, 32, 0.94);
   border: 1.5px solid var(--gold);
   border-radius: 999px;
   padding: 8px 14px 8px 18px;
@@ -2984,4 +2992,25 @@ html,body{
 
 .chat-send-btn:active {
   transform: scale(0.9);
+}
+
+/* ---------- Game Treasury Bottom Ad Banner ---------- */
+.treasury-ad-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  background: rgba(10, 15, 24, 0.98);
+  border-top: 1px solid rgba(212, 175, 97, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 18;
+  overflow: hidden;
+  box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.8);
+}
+
+.treasury-ad-container ins.adsbygoogle {
+  background: transparent !important;
 }
