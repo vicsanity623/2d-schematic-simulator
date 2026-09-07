@@ -47,8 +47,24 @@ const Leaderboard = (() => {
       if (rawCity.includes("Phoenix, AR")) rawCity = "Phoenix, AZ 🇺🇸";
       if (rawCity.includes("Nanaimo, British Columbia")) rawCity = "Nanaimo, BC 🇨🇦";
 
-      let stateName = p.state || (rawCity.includes("OH") ? "Ohio 🇺🇸" : rawCity.includes("AZ") ? "Arizona 🇺🇸" : "Arizona 🇺🇸");
-      let country = p.country || (rawCity.includes("🇨🇦") ? "Canada 🇨🇦" : "United States 🇺🇸");
+      // Properly derive State and Country without defaulting foreign/other regions into Arizona
+      let stateName = p.state;
+      if (!stateName) {
+        if (rawCity.includes("OH") || rawCity.includes("Ohio")) stateName = "Ohio 🇺🇸";
+        else if (rawCity.includes("AZ") || rawCity.includes("Phoenix")) stateName = "Arizona 🇺🇸";
+        else if (rawCity.includes("IL")) stateName = "Illinois 🇺🇸";
+        else if (rawCity.includes("PR")) stateName = "Puerto Rico 🇺🇸";
+        else if (rawCity.includes("🇨🇦") || rawCity.includes("BC") || rawCity.includes("Nanaimo")) stateName = "British Columbia 🇨🇦";
+        else if (rawCity.includes("🇫🇷") || rawCity.includes("FR")) stateName = "Nouvelle-Aquitaine 🇫🇷";
+        else stateName = rawCity; // Keeps region distinct instead of stamping Arizona
+      }
+
+      let country = p.country;
+      if (!country) {
+        if (rawCity.includes("🇨🇦") || rawCity.includes("BC") || rawCity.includes("Nanaimo")) country = "Canada 🇨🇦";
+        else if (rawCity.includes("🇫🇷") || rawCity.includes("FR")) country = "France 🇫🇷";
+        else country = "United States 🇺🇸";
+      }
 
       playerStats[oid].cities[rawCity] = (playerStats[oid].cities[rawCity] || 0) + 1;
       playerStats[oid].states[stateName] = (playerStats[oid].states[stateName] || 0) + 1;
