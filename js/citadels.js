@@ -227,6 +227,10 @@ const Citadels = (() => {
     document.getElementById("citadel-modal-rarity").style.color = rConfig.color;
     document.getElementById("citadel-modal-name").textContent = `${cit.creatorName}'s Hold`;
     document.getElementById("citadel-modal-coords").textContent = `Coords: [${cit.lat.toFixed(4)}, ${cit.lon.toFixed(4)}]`;
+    
+    // Update dynamic rate description based on rarity
+    const rateText = `Mining Rate: 1 Diamond / ${rConfig.diamondHours} Hrs (${Math.round((rConfig.ebChance || 0.2) * 100)}% chance for +${rConfig.ebAmount || 1} EB / hr)`;
+    document.getElementById("citadel-rate-desc").textContent = rateText;
 
     const spoils = calculateSpoils(cit);
     const def = cit.defender;
