@@ -113,19 +113,41 @@ const Leaderboard = (() => {
     const governorsMap = pickTopRuler(stateCounts);
     const presidentsMap = pickTopRuler(countryCounts);
 
-    // Assign highest titles to each player
+    // Assign proper multi-tier titles to each player
+    const sortedGlobal = Object.values(playerStats).sort((a, b) => (b.plotsCount || 0) - (a.plotsCount || 0));
+    const globalLordId = sortedGlobal.length > 0 ? sortedGlobal[0].id : null;
+
     for (const oid in playerStats) {
       const p = playerStats[oid];
       p.titles = [];
-      
-      for (const city in mayorsMap) {
-        if (mayorsMap[city].ownerId === oid) p.titles.push(`Mayor of ${city}`);
+      p.badges = [];
+
+      // #1 Global Player is Lord of the Elden Realm
+      if (oid === globalLordId && p.plotsCount > 0) {
+        p.badges.push({ title: "Lord of the Elden Realm", icon: "⚔️", scope: "global" });
+      }
+
+      for (const co in presidentsMap) {
+        if (presidentsMap[co].ownerId === oid) {
+          p.badges.push({ title: `President of ${co}`, icon: "🦅", scope: "country", territory: co });
+          p.titles.push(`President of ${co}`);
+        }
       }
       for (const st in governorsMap) {
-        if (governorsMap[st].ownerId === oid) p.titles.push(`Governor of ${st}`);
+        if (governorsMap[st].ownerId === oid) {
+          p.badges.push({ title: `Governor of ${st}`, icon: "🏛️", scope: "state", territory: st });
+          p.titles.push(`Governor of ${st}`);
+        }
       }
-      for (const co in presidentsMap) {
-        if (presidentsMap[co].ownerId === oid) p.titles.push(`President of ${co}`);
+      for (const city in mayorsMap) {
+        if (mayorsMap[city].ownerId === oid) {
+          p.badges.push({ title: `Mayor of ${city}`, icon: "👑", scope: "city", territory: city });
+          p.titles.push(`Mayor of ${city}`);
+        }
+      }
+
+      if (p.badges.length === 0) {
+        p.badges.push({ title: "Citizen of the Realm", icon: "🛡️", scope: "realm" });
       }
     }
 
@@ -216,7 +238,13 @@ const Leaderboard = (() => {
       else if (currentScope === "state") displayCount = p.states[local.state] || 0;
       else if (currentScope === "country") displayCount = p.countries[local.country] || 0;
 
-      const primaryTitle = p.titles && p.titles.length > 0 ? p.titles[0] : "Citizen of the Realm";
+      // Find the badge matching the current active tab scope
+      let activeBadge = p.badges ? p.badges.find(b => b.scope === currentScope) : null;
+      if (!activeBadge && p.badges && p.badges.length > 0) {
+        activeBadge = p.badges[0]; // Fallback to highest badge
+      }
+      const badgeIcon = activeBadge ? activeBadge.icon : "🛡️";
+      const badgeText = activeBadge ? activeBadge.title : "Citizen of the Realm";
       const metricVal = currentTab === "plots" ? `${displayCount} <span class="lb-unit">Plots</span>` : `$${(Number(p.cash) || 0).toFixed(6)}`;
 
       const row = document.createElement("div");
