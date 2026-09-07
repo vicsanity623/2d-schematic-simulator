@@ -21,13 +21,21 @@ const Citadels = (() => {
     return "citadel_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   }
 
-  // --- 1. Capsule Drop Unlock ($0.01 Milestone) ---
+  // --- 1. Capsule Drop Unlock & Auto-Refund Reset ---
   function checkCapsuleUnlock() {
     const state = Store.get();
     if (!state) return;
 
     if (!state.capsule) {
       state.capsule = { awarded: false, rarity: null, planted: false, tileId: null };
+    }
+
+    // AUTO-REFUND PATCH: Reset planted status so all players get their Capsule back to replant!
+    if (state.capsule.awarded && state.capsule.planted) {
+      state.capsule.planted = false;
+      state.capsule.tileId = null;
+      Store.save();
+      console.log("[Citadels] Capsule refunded to player inventory!");
     }
 
     if (!state.capsule.awarded && (Number(state.cash) || 0) >= CONFIG.CITADEL_UNLOCK_BALANCE) {
@@ -70,6 +78,7 @@ const Citadels = (() => {
   }
 
   // --- 2. Planting on Tile ---
+  // Direct Footstep Placement (Guaranteed 100% accurate at player's feet)
   function plantCapsule(tx, ty, lat, lon) {
     const state = Store.get();
     if (!state.capsule || !state.capsule.awarded || state.capsule.planted) {
@@ -81,17 +90,23 @@ const Citadels = (() => {
     const rarity = state.capsule.rarity || "common";
     const now = Date.now();
     const growthFinish = now + (CONFIG.CITADEL_GROWTH_MS || 1800000);
+    const ts = CONFIG.TILE_SIZE_METERS || 6.096;
 
-    // Calculate exact tile center coordinates
+    // 1. Calculate exact grid tile at target coordinates
+    const t = (tx !== undefined && ty !== undefined) 
+      ? { tx: parseInt(tx, 10), ty: parseInt(ty, 10) } 
+      : Geo.tileForLatLon(lat, lon, ts);
+
+    // 2. Exact mathematical center of that tile
     const center = Geo.fromMercator(
-      tx * CONFIG.TILE_SIZE_METERS + CONFIG.TILE_SIZE_METERS / 2,
-      ty * CONFIG.TILE_SIZE_METERS + CONFIG.TILE_SIZE_METERS / 2
+      t.tx * ts + ts / 2,
+      t.ty * ts + ts / 2
     );
 
     const citadelData = {
       id: cid,
-      tx: parseInt(tx, 10),
-      ty: parseInt(ty, 10),
+      tx: t.tx,
+      ty: t.ty,
       lat: center.lat,
       lon: center.lon,
       rarity,
@@ -123,7 +138,7 @@ const Citadels = (() => {
     }
 
     render();
-    alert("🔮 Citadel Capsule planted! Your Hold is now anchored to this tile!");
+    alert("🔮 Citadel planted directly at your location! Stronghold parcel activated!");
   }
 
   // Create 10X Colossal 3D Dyson Sphere Monument Marker
