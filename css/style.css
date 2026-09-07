@@ -3066,17 +3066,21 @@ div[aria-label="Advertisement"] {
   font-weight: 600;
 }
 
-/* ================= 3D DYSON SPHERE CITADELS & SIEGE ARENA ================= */
+/* ================= 10X COLOSSAL 3D DYSON SPHERE CITADELS ================= */
 
-/* Map 3D Monument Root (4X Tall Landmark) */
+/* 10X Tall Monument Billboard Container (Towering Skyscraper Height) */
 .citadel-3d-monument {
   position: relative;
-  width: 60px;
-  height: 80px;
+  width: 100px;
+  height: 190px; /* 10X Towering Height above all characters and plots */
   pointer-events: auto !important;
   cursor: pointer;
   transform-origin: bottom center;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.95));
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.98));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .dyson-monument-root {
@@ -3086,7 +3090,7 @@ div[aria-label="Advertisement"] {
   display: flex;
   align-items: center;
   justify-content: center;
-  perspective: 700px;
+  perspective: 900px;
   transform-style: preserve-3d;
 }
 
@@ -3094,41 +3098,41 @@ div[aria-label="Advertisement"] {
 .dyson-ground-shadow {
   position: absolute;
   bottom: 2px;
-  width: 38px;
-  height: 12px;
+  width: 48px;
+  height: 14px;
   border-radius: 50%;
-  background: radial-gradient(ellipse, rgba(0,0,0,0.8) 0%, transparent 75%);
-  box-shadow: 0 0 16px var(--core-color, #4fd6c4);
+  background: radial-gradient(ellipse, rgba(0,0,0,0.85) 0%, transparent 75%);
+  box-shadow: 0 0 20px var(--core-color, #4fd6c4);
 }
 
-/* Nested Kinetic Rotating Dyson Rings */
+/* Massive 10X Kinetic Rotating Dyson Rings */
 .dyson-ring {
   position: absolute;
   border-radius: 50%;
-  border: 2px solid var(--core-color, #4fd6c4);
-  box-shadow: 0 0 12px var(--core-color, #4fd6c4);
+  border: 2.5px solid var(--core-color, #4fd6c4);
+  box-shadow: 0 0 18px var(--core-color, #4fd6c4);
   pointer-events: none;
 }
 
 .dyson-ring.ring-1 {
-  width: 48px;
-  height: 48px;
-  top: 14px;
+  width: 82px;
+  height: 82px;
+  top: 30px;
   animation: dysonSpin1 4s linear infinite;
 }
 
 .dyson-ring.ring-2 {
-  width: 40px;
-  height: 40px;
-  top: 18px;
+  width: 68px;
+  height: 68px;
+  top: 37px;
   border-color: #f0d38a;
   animation: dysonSpin2 5s linear infinite reverse;
 }
 
 .dyson-ring.ring-3 {
-  width: 32px;
-  height: 32px;
-  top: 22px;
+  width: 52px;
+  height: 52px;
+  top: 45px;
   animation: dysonSpin3 3.5s linear infinite;
 }
 
@@ -3139,53 +3143,72 @@ div[aria-label="Advertisement"] {
 /* Holographic Center Core Avatar */
 .dyson-core-avatar {
   position: absolute;
-  top: 22px;
-  width: 28px;
-  height: 28px;
+  top: 45px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: #0d1420;
-  border: 2px solid var(--core-color, #4fd6c4);
+  border: 2.5px solid var(--core-color, #4fd6c4);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 22px;
   z-index: 5;
-  box-shadow: 0 0 14px var(--core-color, #4fd6c4);
+  box-shadow: 0 0 24px var(--core-color, #4fd6c4), 0 0 10px #fff;
   animation: coreFloat 2.5s infinite alternate ease-in-out;
   overflow: hidden;
 }
 
 .dyson-spire-tip {
   position: absolute;
-  top: -6px;
-  font-size: 12px;
+  top: -12px;
+  font-size: 18px;
   color: var(--core-color, #4fd6c4);
-  text-shadow: 0 0 8px #fff;
+  text-shadow: 0 0 12px #fff, 0 0 20px var(--core-color, #4fd6c4);
   animation: sparkleTwinkle 2s infinite;
 }
 
 @keyframes coreFloat { 0% { transform: translateY(0px); } 100% { transform: translateY(-4px); } }
 
-/* Growth Pin Countdown Needle */
+/* 10X Tall Construction Growth Pin */
 .citadel-growth-pin {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
+  height: 100%;
 }
+
 .growth-timer-pill {
-  background: rgba(13, 20, 32, 0.95);
-  border: 1px solid var(--r-color, #4fd6c4);
+  background: rgba(13, 20, 32, 0.96);
+  border: 1.5px solid var(--r-color, #4fd6c4);
   color: var(--gold-hi);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
-  padding: 2px 8px;
+  padding: 4px 12px;
   border-radius: 999px;
   white-space: nowrap;
+  box-shadow: 0 0 18px var(--r-color, #4fd6c4), 0 4px 12px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  animation: boostPulse 2s infinite ease-in-out;
+}
+
+.growth-seed-core {
+  font-size: 44px;
+  filter: drop-shadow(0 0 18px var(--r-color, #4fd6c4));
+  animation: coreFloat 2s infinite alternate ease-in-out;
+  margin-bottom: -4px;
+}
+
+.growth-pin-stem {
+  width: 4px;
+  height: 70px; /* Tall crystalline pylon */
+  background: linear-gradient(to bottom, var(--r-color, #4fd6c4), rgba(212, 175, 97, 0.2));
+  border-radius: 2px;
   box-shadow: 0 0 10px var(--r-color, #4fd6c4);
 }
-.growth-seed-core { font-size: 24px; animation: boostPulse 2s infinite; }
-.growth-pin-stem { width: 2px; height: 16px; background: linear-gradient(to bottom, var(--r-color, #4fd6c4), transparent); }
 
 /* ---------- Citadel Holographic Chamber Modal ---------- */
 .citadel-chamber-card { max-width: 420px; }
