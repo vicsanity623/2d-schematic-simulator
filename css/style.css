@@ -3075,10 +3075,14 @@ div[aria-label="Advertisement"] {
   height: 180px !important;
   pointer-events: auto !important;
   cursor: pointer !important;
-  z-index: 100 !important; /* Always renders on top of all terrain, roads, and buildings */
-  transform-style: flat !important; /* Prevents WebKit 3D camera from pushing elements underground */
+  z-index: 100 !important;
+  transform-style: flat !important;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 /* ---------- 1. Under-Construction Growth Pin (All Positive Heights) ---------- */
