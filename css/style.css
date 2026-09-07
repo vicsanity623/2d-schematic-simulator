@@ -605,15 +605,16 @@ html,body{
 /* ---------- Permanent Multiplier Floating Button ---------- */
 .multiplier-btn {
   position: absolute;
-  left: 18px;
-  bottom: 95px;
-  z-index: 15;
+  left: 14px;
+  /* Floats cleanly above the Compass button, below the side stack */
+  bottom: calc(122px + env(safe-area-inset-bottom));
+  z-index: 22;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 58px;
-  height: 58px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   background: linear-gradient(135deg, rgba(22, 32, 47, 0.95), rgba(13, 20, 32, 0.98));
   border: 2px solid var(--gold);
@@ -2252,16 +2253,17 @@ html,body{
 
 /* ================= LEADERBOARD HUD & MODAL ================= */
 
-/* ================= UNIFIED SIDE HUD STACK (LEADERBOARD + CALENDAR) ================= */
+/* ================= UNIFIED SIDE HUD STACK (MINE + RANKS + CALENDAR + QUESTS) ================= */
 .side-hud-stack {
   position: absolute;
-  left: 18px;
-  bottom: 160px; /* Positions both neatly above the bottom bar */
-  z-index: 15;
+  left: 14px;
+  /* Lifted cleanly above the 30X Multiplier button */
+  bottom: calc(188px + env(safe-area-inset-bottom));
+  z-index: 22;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 8px; /* Tighter gap keeps the stack compact */
   pointer-events: none;
 }
 
