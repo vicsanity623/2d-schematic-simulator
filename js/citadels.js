@@ -146,20 +146,21 @@ const Citadels = (() => {
         </div>
       `;
     } else {
+      } else {
       const defAvatar = citadel.defender?.avatar || "🛡️";
       const avatarHTML = defAvatar.startsWith("img:")
         ? `<img src="${defAvatar.slice(4)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
         : `<span>${defAvatar}</span>`;
 
-      // Stacks upward: Ground Shadow -> Rotating Rings & Avatar -> Spire Tip on top
+      // Correct Stacking (Bottom to Top): Ground Shadow -> Rings -> Core Avatar -> Spire Tip
       wrap.innerHTML = `
         <div class="dyson-monument-root" style="--core-color: ${rConfig.color}">
-          <div class="dyson-spire-tip">✦</div>
-          <div class="dyson-core-avatar">${avatarHTML}</div>
+          <div class="dyson-ground-shadow"></div>
           <div class="dyson-ring ring-1"></div>
           <div class="dyson-ring ring-2"></div>
           <div class="dyson-ring ring-3"></div>
-          <div class="dyson-ground-shadow"></div>
+          <div class="dyson-core-avatar">${avatarHTML}</div>
+          <div class="dyson-spire-tip">✦</div>
         </div>
       `;
     }
