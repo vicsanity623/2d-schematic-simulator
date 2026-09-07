@@ -53,7 +53,7 @@ const Leaderboard = (() => {
         if (rawCity.includes("OH") || rawCity.includes("Ohio")) stateName = "Ohio 🇺🇸";
         else if (rawCity.includes("AZ") || rawCity.includes("Phoenix")) stateName = "Arizona 🇺🇸";
         else if (rawCity.includes("IL")) stateName = "Illinois 🇺🇸";
-        else if (rawCity.includes("PR")) stateName = "Puerto Rico 🇺🇸";
+        else if (rawCity.includes("PR") || rawCity.includes("San Juan")) { stateName = "Puerto Rico 🇵🇷"; country = "United States 🇵🇷"; }
         else if (rawCity.includes("🇨🇦") || rawCity.includes("BC") || rawCity.includes("Nanaimo")) stateName = "British Columbia 🇨🇦";
         else if (rawCity.includes("🇫🇷") || rawCity.includes("FR")) stateName = "Nouvelle-Aquitaine 🇫🇷";
         else stateName = rawCity; // Keeps region distinct instead of stamping Arizona
