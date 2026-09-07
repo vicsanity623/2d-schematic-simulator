@@ -23,6 +23,7 @@ const ASSETS_TO_CACHE = [
     './js/feed.js',
     './js/config.js',
     './js/character.js',
+    './js/citadels.js',
     './js/chat.js'
 ];
 
