@@ -89,7 +89,7 @@
     <div class="hero-balance-card" id="hero-balance-card">
       <div class="hero-top-line">
         <div class="hero-brand-title">
-          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.6.4.15</span>
+          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.6.4.17</span>
         </div>
         <div id="boost-timer-badge" class="boost-timer-badge hidden">⚡ 30X BOOST <span id="boost-countdown">00:00:00</span></div>
       </div>
@@ -593,13 +593,18 @@
       <p class="modal-sub">Top Landlords, Earners & Reigning Mayors</p>
     </div>
 
-    <!-- 5 Segmented Tabs -->
+    <!-- Atlas-Earth Style Territory Scope Bar (Global, Country, State, City) -->
+    <div class="lb-scope-row" id="lb-scope-row">
+      <button class="lb-scope-btn active" data-scope="global" title="Global Rankings">🌐 Global</button>
+      <button class="lb-scope-btn" data-scope="country" title="Country Rankings">🇺🇸 Country</button>
+      <button class="lb-scope-btn" data-scope="state" title="State Rankings">🏛️ State</button>
+      <button class="lb-scope-btn" data-scope="city" title="City Rankings">🏘️ City</button>
+    </div>
+
+    <!-- Metric Tabs (Plots vs Rent) -->
     <div class="lb-tabs-row">
-      <button class="lb-tab-btn active" data-tab="plots">🗺️ Plots</button>
-      <button class="lb-tab-btn" data-tab="rent">💰 Rent</button>
-      <button class="lb-tab-btn" data-tab="mayors">👑 Mayors</button>
-      <button class="lb-tab-btn" data-tab="governors">🏛️ Governors</button>
-      <button class="lb-tab-btn" data-tab="presidents">🦅 Presidents</button>
+      <button class="lb-tab-btn active" data-tab="plots">🗺️ Plots Owned</button>
+      <button class="lb-tab-btn" data-tab="rent">💰 Passive Rent</button>
     </div>
 
     <!-- Scrollable Leaderboard List -->
