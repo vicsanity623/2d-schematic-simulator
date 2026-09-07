@@ -91,15 +91,23 @@ const Leaderboard = (() => {
       };
     }
 
+    // Helper to pick top ruler with Passive Rent tie-breaker
     function pickTopRuler(countsObj) {
       const results = {};
       for (const place in countsObj) {
         let maxPlots = 0;
         let topOid = null;
+        let topCash = -1;
+
         for (const oid in countsObj[place]) {
-          if (countsObj[place][oid] > maxPlots) {
-            maxPlots = countsObj[place][oid];
+          const pCount = countsObj[place][oid];
+          const pCash = Number(playerStats[oid]?.cash) || 0;
+
+          // Tie-Breaker: If plots are equal, highest passive rent wins!
+          if (pCount > maxPlots || (pCount === maxPlots && pCash > topCash)) {
+            maxPlots = pCount;
             topOid = oid;
+            topCash = pCash;
           }
         }
         if (topOid) {
@@ -113,8 +121,12 @@ const Leaderboard = (() => {
     const governorsMap = pickTopRuler(stateCounts);
     const presidentsMap = pickTopRuler(countryCounts);
 
-    // Assign proper multi-tier titles to each player
-    const sortedGlobal = Object.values(playerStats).sort((a, b) => (b.plotsCount || 0) - (a.plotsCount || 0));
+    // Sort Global with Highest Passive Rent Tie-Breaker
+    const sortedGlobal = Object.values(playerStats).sort((a, b) => {
+      const plotDiff = (b.plotsCount || 0) - (a.plotsCount || 0);
+      if (plotDiff !== 0) return plotDiff;
+      return (Number(b.cash) || 0) - (Number(a.cash) || 0); // Tie breaker: Highest Rent!
+    });
     const globalLordId = sortedGlobal.length > 0 ? sortedGlobal[0].id : null;
 
     for (const oid in playerStats) {
@@ -204,23 +216,40 @@ const Leaderboard = (() => {
     const myId = state.player?.id;
     const local = getPlayerLocalTerritory(data);
 
-    // Filter players based on selected territory scope
+    // Filter players based on selected territory scope with Passive Rent tie-breakers
     let filteredPlayers = [...data.players];
+
     if (currentScope === "city") {
       filteredPlayers = filteredPlayers.filter(p => p.cities && p.cities[local.city] > 0);
-      filteredPlayers.sort((a, b) => (b.cities[local.city] || 0) - (a.cities[local.city] || 0));
+      filteredPlayers.sort((a, b) => {
+        const diff = (b.cities[local.city] || 0) - (a.cities[local.city] || 0);
+        if (diff !== 0) return diff;
+        return (Number(b.cash) || 0) - (Number(a.cash) || 0); // Tie-breaker
+      });
     } else if (currentScope === "state") {
       filteredPlayers = filteredPlayers.filter(p => p.states && p.states[local.state] > 0);
-      filteredPlayers.sort((a, b) => (b.states[local.state] || 0) - (a.states[local.state] || 0));
+      filteredPlayers.sort((a, b) => {
+        const diff = (b.states[local.state] || 0) - (a.states[local.state] || 0);
+        if (diff !== 0) return diff;
+        return (Number(b.cash) || 0) - (Number(a.cash) || 0); // Tie-breaker
+      });
     } else if (currentScope === "country") {
       filteredPlayers = filteredPlayers.filter(p => p.countries && p.countries[local.country] > 0);
-      filteredPlayers.sort((a, b) => (b.countries[local.country] || 0) - (a.countries[local.country] || 0));
+      filteredPlayers.sort((a, b) => {
+        const diff = (b.countries[local.country] || 0) - (a.countries[local.country] || 0);
+        if (diff !== 0) return diff;
+        return (Number(b.cash) || 0) - (Number(a.cash) || 0); // Tie-breaker
+      });
     } else {
-      // Global
+      // Global Scope
       if (currentTab === "plots") {
-        filteredPlayers.sort((a, b) => (b.plotsCount || 0) - (a.plotsCount || 0));
+        filteredPlayers.sort((a, b) => {
+          const diff = (b.plotsCount || 0) - (a.plotsCount || 0);
+          if (diff !== 0) return diff;
+          return (Number(b.cash) || 0) - (Number(a.cash) || 0); // Tie-breaker
+        });
       } else {
-        filteredPlayers.sort((a, b) => (b.cash || 0) - (a.cash || 0));
+        filteredPlayers.sort((a, b) => (Number(b.cash) || 0) - (Number(a.cash) || 0));
       }
     }
 
