@@ -3014,3 +3014,13 @@ html,body{
 .treasury-ad-container ins.adsbygoogle {
   background: transparent !important;
 }
+
+/* ---------- Push Fullscreen / Vignette Ads Below Phone Status Bar & Notch ---------- */
+body > div[style*="2147483647"],
+.adsbygoogle-noablate,
+div[id*="google-ads-annotation"],
+div.google-anno-skip,
+div[aria-label="Advertisement"] {
+  padding-top: max(28px, env(safe-area-inset-top)) !important;
+  box-sizing: border-box !important;
+}
