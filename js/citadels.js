@@ -123,7 +123,7 @@ const Citadels = (() => {
     alert("🔮 Citadel Capsule planted! Watch it grow into a 3D Dyson Sphere monument!");
   }
 
-  // Create 4X Tall 3D Dyson Sphere HTML Marker
+  // Create 10X Colossal 3D Dyson Sphere Monument Marker
   function createDysonSphereMarker(citadel) {
     const wrap = document.createElement("div");
     wrap.className = "citadel-3d-monument";
@@ -132,16 +132,16 @@ const Citadels = (() => {
     const rConfig = CONFIG.CITADEL_RARITIES[citadel.rarity] || CONFIG.CITADEL_RARITIES.common;
 
     if (isUnderConstruction) {
-      // Construction Pin with Real-Time Countdown
       const remainingSec = Math.max(0, Math.floor((citadel.growthFinish - now) / 1000));
       const mins = Math.floor(remainingSec / 60);
       const secs = remainingSec % 60;
 
       wrap.innerHTML = `
         <div class="citadel-growth-pin" style="--r-color: ${rConfig.color}">
-          <div class="growth-timer-pill">⏳ ${mins}:${String(secs).padStart(2, "0")}</div>
+          <div class="growth-timer-pill" data-finish="${citadel.growthFinish}" data-cid="${citadel.id}">⏳ ${mins}:${String(secs).padStart(2, "0")}</div>
           <div class="growth-seed-core">🔮</div>
           <div class="growth-pin-stem"></div>
+          <div class="growth-ground-pulse"></div>
         </div>
       `;
     } else {
@@ -480,6 +480,32 @@ const Citadels = (() => {
     });
 
     document.getElementById("siege-strike-btn")?.addEventListener("click", handleSiegeStrike);
+
+    // Live 1-Second Real-Time Countdown & Auto-Evolution Ticker
+    setInterval(() => {
+      const pills = document.querySelectorAll(".growth-timer-pill[data-finish]");
+      const now = Date.now();
+      let needsReRender = false;
+
+      pills.forEach((pill) => {
+        const finish = parseInt(pill.dataset.finish, 10);
+        const rem = Math.max(0, Math.floor((finish - now) / 1000));
+
+        if (rem <= 0) {
+          pill.textContent = "✨ GROWN!";
+          needsReRender = true;
+        } else {
+          const m = Math.floor(rem / 60);
+          const s = rem % 60;
+          pill.textContent = `⏳ ${m}:${String(s).padStart(2, "0")}`;
+        }
+      });
+
+      // Automatically transforms into the 3D Dyson Sphere when countdown hits 00:00!
+      if (needsReRender) {
+        render();
+      }
+    }, 1000);
 
     listen();
     checkCapsuleUnlock();
