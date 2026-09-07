@@ -202,14 +202,36 @@
       mayorStatusEl.textContent = "Checking realm...";
       if (typeof Leaderboard !== "undefined" && Leaderboard.fetchRankings) {
         Leaderboard.fetchRankings().then((data) => {
-          const myMayors = (data.mayors || []).filter(m => m.ownerId === targetOwnerId);
-          const myGovs = (data.governors || []).filter(g => g.ownerId === targetOwnerId);
-          const myPres = (data.presidents || []).filter(p => p.ownerId === targetOwnerId);
-
+          const targetPlayerStat = (data.players || []).find(p => p.id === targetOwnerId);
           const titlesList = [];
-          myMayors.forEach(m => titlesList.push(`👑 Mayor of ${m.territory}`));
-          myGovs.forEach(g => titlesList.push(`🏛️ Governor of ${g.territory}`));
-          myPres.forEach(p => titlesList.push(`🦅 President of ${p.territory}`));
+
+          if (targetPlayerStat && targetPlayerStat.badges) {
+            targetPlayerStat.badges.forEach(b => {
+              titlesList.push(`${b.icon} ${b.title}`);
+            });
+          }
+
+          if (titlesList.length > 0) {
+            mayorStatusEl.innerHTML = titlesList.join("<br>");
+            mayorStatusEl.className = "mayor-crown-pill active-mayor";
+
+            const myMayors = targetPlayerStat?.badges?.filter(b => b.scope === "city") || [];
+            const myGovs = targetPlayerStat?.badges?.filter(b => b.scope === "state") || [];
+            const myPres = targetPlayerStat?.badges?.filter(b => b.scope === "country") || [];
+            
+            const stackRate = Math.min(6, (myMayors.length ? 2 : 0) + (myGovs.length ? 2 : 0) + (myPres.length ? 2 : 0));
+            if (royaltyBadge) {
+              royaltyBadge.textContent = `${stackRate}% Royalty`;
+              royaltyBadge.style.display = "inline-block";
+            }
+          } else {
+            mayorStatusEl.innerHTML = `🛡️ Citizen of the Realm`;
+            mayorStatusEl.className = "mayor-crown-pill";
+            if (royaltyBadge) {
+              royaltyBadge.textContent = "0% (Citizen)";
+              royaltyBadge.style.opacity = "0.6";
+            }
+          }
 
           if (titlesList.length > 0) {
             mayorStatusEl.innerHTML = titlesList.join("<br>");
