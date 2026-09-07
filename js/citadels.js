@@ -123,7 +123,7 @@ const Citadels = (() => {
     alert("🔮 Citadel Capsule planted! Watch it grow into a 3D Dyson Sphere monument!");
   }
 
-  // Create 10X Colossal 3D Dyson Sphere Monument Marker (Upright Stacking)
+  // Create 10X Colossal 3D Dyson Sphere Monument Marker (Strict Ground-Up Anchoring)
   function createDysonSphereMarker(citadel) {
     const wrap = document.createElement("div");
     wrap.className = "citadel-3d-monument";
@@ -136,13 +136,13 @@ const Citadels = (() => {
       const mins = Math.floor(remainingSec / 60);
       const secs = remainingSec % 60;
 
-      // Stacks upward from ground: Ground Pulse -> Stem -> Seed Core -> Timer Pill on top
+      // Built strictly upwards from ground level
       wrap.innerHTML = `
         <div class="citadel-growth-pin" style="--r-color: ${rConfig.color}">
-          <div class="growth-timer-pill" data-finish="${citadel.growthFinish}" data-cid="${citadel.id}">⏳ ${mins}:${String(secs).padStart(2, "0")}</div>
-          <div class="growth-seed-core">🔮</div>
-          <div class="growth-pin-stem"></div>
           <div class="growth-ground-pulse"></div>
+          <div class="growth-pin-stem"></div>
+          <div class="growth-seed-core">🔮</div>
+          <div class="growth-timer-pill" data-finish="${citadel.growthFinish}" data-cid="${citadel.id}">⏳ ${mins}:${String(secs).padStart(2, "0")}</div>
         </div>
       `;
     } else {
@@ -151,7 +151,7 @@ const Citadels = (() => {
         ? `<img src="${defAvatar.slice(4)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
         : `<span>${defAvatar}</span>`;
 
-      // Correct Stacking (Bottom to Top): Ground Shadow -> Rings -> Core Avatar -> Spire Tip
+      // Built strictly upwards from ground level
       wrap.innerHTML = `
         <div class="dyson-monument-root" style="--core-color: ${rConfig.color}">
           <div class="dyson-ground-shadow"></div>
@@ -164,7 +164,11 @@ const Citadels = (() => {
       `;
     }
 
-    wrap.addEventListener("click", () => openCitadelModal(citadel.id));
+    wrap.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openCitadelModal(citadel.id);
+    });
+
     return wrap;
   }
   
