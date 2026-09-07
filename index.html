@@ -89,7 +89,7 @@
     <div class="hero-balance-card" id="hero-balance-card">
       <div class="hero-top-line">
         <div class="hero-brand-title">
-          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.6.5.10</span>
+          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.6.5.12</span>
         </div>
         <div id="boost-timer-badge" class="boost-timer-badge hidden">⚡ 30X BOOST <span id="boost-countdown">00:00:00</span></div>
       </div>
@@ -693,6 +693,45 @@
     <!-- Action Buttons (Dynamically switches based on status) -->
     <div class="modal-actions" id="citadel-actions-wrap">
       <!-- Injected dynamically in citadels.js -->
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CITADEL UPGRADE FORGE MODAL ===================== -->
+<div id="citadel-upgrade-modal" class="modal hidden">
+  <div class="modal-card citadel-upgrade-card">
+    <button class="close-btn" data-close="citadel-upgrade-modal">✕</button>
+    <div class="forge-icon">⚡</div>
+    <h2>Citadel Upgrade Forge</h2>
+    <p class="modal-sub">Evolve your stronghold to the next power tier!</p>
+
+    <!-- Evolution Tier Comparison Card -->
+    <div class="forge-comparison-box">
+      <div class="forge-tier-col">
+        <span class="forge-col-sub">Current Tier</span>
+        <strong id="forge-current-tier" class="forge-tier-badge">Common Hold</strong>
+        <span id="forge-current-perk" class="forge-perk-text">1 ◆ / 3 hrs</span>
+      </div>
+      <div class="forge-arrow">➔</div>
+      <div class="forge-tier-col">
+        <span class="forge-col-sub">Next Tier</span>
+        <strong id="forge-next-tier" class="forge-tier-badge">Rare Hold</strong>
+        <span id="forge-next-perk" class="forge-perk-text">1 ◆ / 2 hrs & +1 EB/hr</span>
+      </div>
+    </div>
+
+    <div class="forge-timer-notice">
+      <span>⏳ 10-Minute Evolution countdown will begin upon forging!</span>
+    </div>
+
+    <!-- Dual Payment Choice -->
+    <div class="forge-payment-actions">
+      <button id="forge-pay-eb-btn" class="btn btn-primary forge-btn-eb">
+        Forge with <span id="forge-cost-eb">75</span> EB
+      </button>
+      <button id="forge-pay-diamonds-btn" class="btn btn-primary forge-btn-diamonds">
+        Forge with <span id="forge-cost-diamonds">15</span> <span class="hud-gem-icon"></span>
+      </button>
     </div>
   </div>
 </div>
