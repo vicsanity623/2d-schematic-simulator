@@ -238,7 +238,7 @@ html,body{
 
 #bottombar {
   position: absolute; 
-  bottom: 0; 
+  bottom: calc(52px + max(4px, env(safe-area-inset-bottom))); 
   left: 0; 
   right: 0; 
   z-index: 20;
@@ -246,8 +246,8 @@ html,body{
   align-items: center; 
   justify-content: center; 
   gap: 6px;
-  padding: 10px 8px max(14px, env(safe-area-inset-bottom));
-  background: linear-gradient(0deg, rgba(10,15,24,0.96) 0%, rgba(10,15,24,0.6) 70%, transparent 100%);
+  padding: 6px 8px;
+  background: transparent;
   box-sizing: border-box;
 }
 
@@ -2984,4 +2984,25 @@ html,body{
 
 .chat-send-btn:active {
   transform: scale(0.9);
+}
+
+/* ---------- Game Treasury Bottom Ad Banner ---------- */
+.treasury-ad-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  background: rgba(10, 15, 24, 0.98);
+  border-top: 1px solid rgba(212, 175, 97, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 18;
+  overflow: hidden;
+  box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.8);
+}
+
+.treasury-ad-container ins.adsbygoogle {
+  background: transparent !important;
 }
