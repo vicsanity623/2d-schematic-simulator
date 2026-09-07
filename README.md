@@ -8,38 +8,38 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ## ✨ Implemented Core Features & Mechanics
 
-* [x] **🎮 3D WebGL Engine & 60° Isometric Camera:** Mapbox GL JS 3D vector engine with 60° isometric camera tilt, free 360° touch orbit gestures, and true 3D extruded city buildings.
+* [x] **🎮 3D WebGL Engine & 60° Isometric Camera:** Powered by **MapLibre GL JS & OpenFreeMap** for unlimited, 100% free vector map loads with 60° isometric camera tilt, free 360° touch orbit gestures, and true 3D extruded city buildings with zero token rate-limits.
+* [x] **🌐 Phase 6: Interactive 3D Community Globe:** Dedicated right-edge HUD button triggering a cinematic 2.5s space launch to a full 3D interactive spinning Earth globe, allowing free planetary exploration to inspect international player territories.
+* [x] **💬 Real-Time Global Community Chat:** Slide-up mobile MMO chat drawer in the bottom bar with a 25-message live log, profanity filter, 4-second anti-spam cooldown, XSS sanitization, and unread notification badge.
+* [x] **👑 3-Tier Political Leadership & Stackable Dividends:** Real-time leadership hierarchy based on parcel counts:
+  * **👑 Mayors:** City / Town rulers earn **+2 EB (2%)** on local land purchases.
+  * **🏛️ Governors:** State / Province rulers earn **+2 EB (2%)** on regional land purchases.
+  * **🦅 Presidents:** Country rulers earn **+2 EB (2%)** on national land purchases.
+  * **⚔️ Stackable Royalties:** Holding all 3 titles simultaneously unlocks a **+6 EB (6%) Triple Crown Royalty** deposited directly to Google Cloud saves!
+* [x] **🏆 Territory-Scoped Leaderboards:** 4-tier filtering tabs (🌐 Global, 🇺🇸 Country, 🏛️ State, 🏘️ City) displaying active royal titles (`⚔️ Lord of the Elden Realm`, `🦅 President`, `🏛️ Governor`, `👑 Mayor`) with 0ms in-memory cached switching.
+* [x] **🧍 3D Animated Mixamo Characters (Three.js WebGL):** Integrated Three.js custom layer rendering upright, hero-scaled 3D character models (`.glb`) at real-time GPS coordinates with automatic `Idle` $\leftrightarrow$ `Walk` speed-based animation blending.
+* [x] **⏳ Cinematic Slow-Motion 3D Loading Stage:** Auto-framed Three.js stage showcasing CesiumMan stepping forward in 40% slow motion with cyan/gold rim lighting behind the spinning diamond logo, with automatic WebGL context cleanup.
 * [x] **🧭 True North Navigation & Compass Reset:** Dedicated compass button that smoothly animates camera bearing back to True North (0°) and restores default 18.5 zoom.
 * [x] **📐 "Buy Land" Cinematic 2D Mode:** One-tap button that smoothly flies the camera from 60° 3D down to a flat 2D top-down view (`pitch: 0`), reveals the 10×10 ft grid strictly within reach, and allows precise land claims without building occlusions.
-* [x] **🧍 3D Animated Mixamo Characters (Three.js WebGL):** Integrated Three.js custom layer rendering upright, hero-scaled 3D character models (`.glb`) at real-time GPS coordinates with automatic `Idle` $\leftrightarrow$ `Walk` speed-based animation blending.
-* [x] **👗 3D Wardrobe & Character Selector:** In-game wardrobe modal accessible via a gold **✏️ Pencil** on the Player Info profile card, allowing players to hot-swap between multiple 3D models (`Soldier`, `Xbot`, `Fox`, `CesiumMan`, `Custom`).
+* [x] **👗 3D Wardrobe & Character Selector:** In-game wardrobe modal accessible via a gold **✎ Pencil** on the Player Info profile card, allowing players to hot-swap between multiple 3D models (`Soldier`, `Xbot`, `Fox`, `CesiumMan`, `Custom`).
+* [x] **🎰 Hardware-Secured Cryptographic Spin Wheel:** 100% mathematically unpredictable and provably fair spin wheel using the **Web Cryptography API (`window.crypto.getRandomValues`)** and modulo-bias-free rejection sampling, featuring rare **+12 and +24 Diamond Mega Jackpots**!
+* [x] **🚶 3-Tier Proximity Diamond Spawning (1km Realm):** Generates diamonds across a full 1,000-meter radius (40% immediate reach within 85m, 35% walking distance up to 350m, 25% horizon exploration up to 1,000m) with a generous **25-minute lifetime** designed for real-world walks.
+* [x] **⚡ Anti-Bot 20-Minute Boost Loop:** Floating `+2 EB` boost button appearing on a strict 20-minute cooldown locked to `state.lastBoostClaim` to prevent multi-tab and refresh abuse.
 * [x] **🔥 Real-time Multiplayer Firestore Sync:** Live WebSocket streaming across all players worldwide to see newly claimed lands, plot rarities, and avatars in real time without refreshing.
-* [x] **☁️ Firebase Cloud Saves & Anti-Exploit Security:** Permanent account backups stored in Google Cloud Firestore with strict document overwriting and a persistent collected-diamond blacklist (`collectedDiamondIds`) that eliminates force-close duplication glitches.
-* [x] **💬 Global Live Activity Feed:** A subtle activity feed ticker at the top showing live accomplishments.
-* [x] **📅 30-Day Daily Login Calendar:** Scaling daily check-in rewards: Day 2 = 5 EB, Day 7 = 20 EB, Day 12 = 75 EB, scaling up to a **200 EB Jackpot on Day 30**.
-* [x] **⏳ Sequential Boot Pipeline:** Dedicated `js/loading.js` bootloader with an animated gold/teal progress bar and terminal logs that pre-fetches world plots and coordinates with zero race conditions.
-* [x] **📱 Forced Portrait Guard:** Orientation guard overlay preventing unintended screen rotation on mobile devices.
-* [x] **💎 3D Hovering Gemstones & Particle FX:** Upright 3D faceted crystals with specular lighting, real-time ground shadows, organic desynchronized hover physics, ambient rising stardust, and a 10-point particle explosion on collection.
-* [x] **🖥️ HUD Micro-Interactions & Flying 3D Gems:** Floating `+1 ◆` and `+EB` combat-text popups rising from tap points, accompanied by physical flying 3D crystals traveling from the street into the top HUD counter with impact bumps.
-* [x] **🏰 3D Raised Parcels & Orbital Extractor:** Elevation bevels and neon rarity glow edges on claimed plots flush with the ground, plus a 3D levitating Extractor Beacon with counter-rotating orbital energy rings.
-* [x] **👑 Local Mayorship & Regional Dividends:** The player owning the most plots in a town or city becomes **Mayor**, wears a golden crown, and collects a **1%–3% dividend** on every local land sale.
-* [x] **🏆 Global & Local Leaderboards:** Top 100 rankings for Most Plots Owned, Total Rent Accrued, and Active Mayors.
-* [x] **📡 Dynamic 100m Geodesic Sonar & GPU Shockwaves:** Full geodesic Web Mercator polygon circle generator (`createCirclePolygon`) producing an exact 100-meter outer dashed perimeter matching the Buy Land claim grid 1:1, driven by multi-stage, 60fps GPU-accelerated WebGL radar shockwaves that expand smoothly from the player to the boundary.
+* [x] **☁️ Firebase Cloud Saves & Anti-Exploit Security:** Permanent account backups stored in Google Cloud Firestore with automatic session recovery and instant auto-login for returning players.
+* [x] **📅 30-Day Daily Login Calendar:** Strict 1-day-per-day streak check-in rewards scaling up to a **200 EB Jackpot on Day 30**.
+* [x] **💎 Automated Diamond Extractor Base:** Unlockable beacon for players owning **5+ connected plots** (Limit 1 per player) that automatically mines 1 Diamond every 10 minutes (holds up to 50 gems). Upgradable with Cash Balance.
 * [x] **💵 Dual-Currency Economy:**
-  * **Cash Balance ($USD):** High-precision simulated rent (15 decimal places) generated in real-time by your owned plots every 0.5 seconds with dual-scale typography and suppressed leading zeros under $1.00.
+  * **Cash Balance ($USD):** High-precision simulated rent (15 decimal places) generated in real-time by your owned plots every 0.5 seconds with dual-scale typography.
   * **Elden Bucks (EB):** Game currency used to claim new plots (100 EB) or construct base structures.
-* [x] **⚡ 30X / 50X Income Multiplier:** Stackable 1-hour booster (up to 6 hours max bank) that electrifies the UI with animated gold pulses and speeds up real-time rent generation. Alternate days feature a rare **0.05% chance for a 50X Super Multiplier**.
-* [x] **💎 Automated Diamond Extractor:** Unlockable beacon for players owning **5+ connected plots** (Limit 1 per player) that automatically mines 1 Diamond every 2 minutes (holds up to 50 gems). Upgradable with Cash Balance to expand capacity and reduce mining time.
-* [x] **🎡 Weighted Diamond Spin Wheel:** Realistic physics-based spin wheel with weighted odds, jackpot prizes (25 EB & 50 EB), 3D canvas gems, diamond refunds, and **`🚫` (Miss)** bust slices with background failsafe recovery.
-* [x] **👤 Clustered Player Profile & Info Modal:** Google avatar sync that groups adjacent owned tiles into clean territories with centralized badges and an interactive Player Stats modal (supports inspecting other players' live cash earnings).
-* [x] **📱 Progressive Web App (PWA):** Installable directly to iOS & Android home screens with network-first offline asset caching via `sw.js`.
+* [x] **📱 Progressive Web App (PWA):** Installable directly to iOS & Android home screens with responsive 5-button flexbox controls and network-first offline asset caching via `sw.js`.
 
 ---
 
 ## 🗺️ Master Development Roadmap
 
 ### 🔊 I. Sensory & Audiovisual Polish
-* [ ] **1. Phase 4: Web Audio SFX & Mobile Haptics:**
+* [x] **1. Phase 4: Web Audio SFX & Mobile Haptics:** *(Next Priority)*
   * Synthesized crystal chimes when picking up diamonds.
   * Tactile phone vibration pulses when collecting gems or spinning the wheel.
   * Ticking clicks on the wheel and a royal trumpet fanfare on claiming land.
@@ -53,8 +53,8 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 ---
 
 ### 🗺️ II. Map Exploration & World Features
-* [ ] **5. Phase 6: 🌐 Community Globe Mode:**
-  * Dedicated interactive 3D Earth Globe viewing mode (`map.setProjection('globe')`). Spin the planet, inspect foreign continents, and view other players' international empires.
+* [x] **5. Phase 6: 🌐 Community Globe Mode:** *(Completed)*
+  * Interactive 3D Earth Globe viewing mode. Spin the planet, inspect foreign continents, and view other players' international empires.
 * [ ] **6. 🎁 Tiered Mystery Chests on the Map:**
   * Bronze, Silver, and Golden chests spawning randomly that require keys or diamonds to open for big EB payouts.
 * [ ] **7. 💎 Diamond Radar Compass Pointers:**
@@ -67,46 +67,53 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 ---
 
 ### 👑 III. Social, Multiplayer & Prestige
-* [x] **10. 👑 Local Mayorship & Regional Dividends:**
-  * The player owning the most plots in a town or city becomes **Mayor**, wears a golden crown, and collects a **1%–3% dividend** on every local land sale.
-* [x] **11. 💬 Global Live Activity Feed:**
-  * A subtle ticker at the bottom showing live accomplishments: *"Artistic just claimed a Legendary plot in Phoenix!"*, *"Player X hit the 50 EB Jackpot!"*
-* [x] **12. 🏆 Global & Local Leaderboards:**
-  * Top 100 rankings for Most Plots Owned, Total Rent Accrued, and Active Mayors.
-* [ ] **13. 🤝 Player-to-Player Parcel Marketplace:**
+* [x] **10. 👑 Local Mayorship & Regional Dividends:** *(Completed)*
+  * 3-tier political leadership (Mayors, Governors, Presidents) with stackable dividends.
+* [x] **11. 💬 Global Live Activity Feed:** *(Completed)*
+  * Chronological activity feed showing live claims, jackpots, and royal dividend announcements.
+* [x] **12. 🏆 Global & Local Leaderboards:** *(Completed)*
+  * 4-tier territory filtering (Global, Country, State, City) with live title badges.
+* [x] **13. 💬 In-Game Global Community Chat:** *(Completed)*
+  * Slide-up mobile MMO chat panel with live moderation, anti-spam, and unread alerts.
+* [ ] **14. 🤝 Player-to-Player Parcel Marketplace:**
   * Put owned plots up for sale on the open market for EB or trade tiles with friends.
-* [ ] **14. 🛡️ Realm Guilds & Joint Kingdoms:**
+* [ ] **15. 🛡️ Realm Guilds & Joint Kingdoms:**
   * Form alliances to connect plots into massive shared kingdoms with a communal Diamond Vault.
-* [ ] **15. 🎟️ Referral / Friend Invite Code System:**
+* [ ] **16. 🎟️ Referral / Friend Invite Code System:**
   * Share your code; when a friend claims their 5th plot, both of you get **+50 EB free**.
 
 ---
 
 ### 📅 IV. Retention & Daily Progression
-* [x] **16. 📅 30-Day Daily Login Calendar:**
-  * Scaling daily check-in rewards: Day 2 = 5 EB, Day 7 = 20 EB, Day 12 = 75 EB, scaling up to a **200 EB Jackpot on Day 30**.
-* [ ] **17. 📜 Daily Quests & Weekly Bounties:**
+* [x] **17. 📅 30-Day Daily Login Calendar:** *(Completed)*
+  * 30-day streak check-in rewards scaling up to 200 EB.
+* [ ] **18. 📜 Daily Quests & Weekly Bounties:**
   * 3 daily missions (*Collect 3 diamonds*, *Spin twice*, *Keep 30X active for 2 hrs*) rewarding bonus EB.
-* [ ] **18. ⚡ "Blood Moon / Solar Flare" 50X Weekend Events:**
+* [ ] **19. ⚡ "Blood Moon / Solar Flare" 50X Weekend Events:**
   * 24-hour weekend flash events where the boost multiplier temporarily jumps to **50X**.
-* [ ] **19. 📈 Prestige Milestones & Player Leveling Track:**
+* [ ] **20. 📈 Prestige Milestones & Player Leveling Track:**
   * Title ranks (*Novice, Baron, Count, Duke, Monarch*) that unlock golden avatar borders and exclusive profile emblems.
-* [ ] **20. 🚶 Real-World Step Counter / Pedometer Sync:**
+* [ ] **21. 🚶 Real-World Step Counter / Pedometer Sync:**
   * Awards passive EB for physical steps taken throughout the day (e.g. 1,000 steps = +5 EB).
 
 ---
 
 ### 🏰 V. Customization & Base Building
-* [ ] **21. 🏰 3D Plot Landmarks & Monuments:**
+* [ ] **22. 🔮 Realm Citadels & Dyson Sphere Territory Holds (Pokémon GO Style Gyms):** *(Next Major Feature)*
+  * **One-Time Sacred Capsule Drop:** Automatically awarded to players reaching $\ge \$0.25$ balance with true RNG rarities (Common 50%, Rare 30%, Epic 15%, Legendary 5%).
+  * **Global Permanent Planting:** Plant on any unowned parcel on Earth with real-time billboard growth countdown pin.
+  * **4X Tall 3D Dyson Sphere Monument:** Massive glassmorphism structure with nested rotating kinetic rings and glowing rarity core on the world map.
+  * **Multiplayer Garrison Defense:** Any player can visit an empty Citadel to "Station Defender", locking their 3D avatar inside with a live defense ticker: `(05D : 12H : 23M : 02s)`.
+  * **Hourly Passive Spoils:** Generates free Diamonds and rolled EB findings every hour stationed; recall defender anytime to collect banked loot!
+  * **Interactive Holographic Chamber Modal:** Zoom in to inspect the defending player's 3D avatar, profile stats, and accumulated spoils.
+* [ ] **23. 🏰 3D Plot Landmarks & Monuments:**
   * Place 3D structures on owned land (Castles, Golden Trees, Neon Shrines) that grant a **+15% permanent income boost** to surrounding tiles.
-* [ ] **22. 🎨 Parcel Ground Skins & Theme Customization:**
+* [ ] **24. 🎨 Parcel Ground Skins & Theme Customization:**
   * Customize how your owned plots look: Cyberpunk Grid, Medieval Cobblestone, Molten Lava, or Glacial Ice.
-* [ ] **23. 🛂 Travel Passport & City Stamps:**
+* [ ] **25. 🛂 Travel Passport & City Stamps:**
   * Collect digital passport stamps when claiming land in new cities; each badge gives an account-wide **+5% rent multiplier**.
-* [ ] **24. 📦 Player Inventory & Item Bag:**
+* [ ] **26. 📦 Player Inventory & Item Bag:**
   * A clean inventory screen to manage boost potions, keys, cosmetic badges, and collectible relics.
-* [ ] **25. ⚔️ Contested Landmark Duels (Friendly Mini-Game):**
-  * Stake diamonds in a mini-game to contest neutral high-yield landmarks like parks, museums, or city halls for temporary mega-dividends.
 
 ---
 
@@ -126,15 +133,19 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 │   └── character.glb   # Custom Champion
 └── js/
     ├── config.js       # Central tuning file (rates, drop weights, radiuses, Firebase keys)
-    ├── geo.js          # Web Mercator math, geodesic circle generator, tile bounds & Haversine
+    ├── geo.js          # Web Mercator math, 3-tier proximity diamond spawner, tile bounds
     ├── storage.js      # Save engine, Firestore cloud sync, offline progress & rate lookups
-    ├── auth.js         # Google Identity Services OAuth & cloud save retrieval
-    ├── loading.js      # Bootloader pipeline, progress bar & zero-race condition loader
-    ├── character.js    # Three.js WebGL custom layer & GPS animation controller
-    ├── diamonds.js     # Spawn engine, expiration timer, and 3D crystal particle FX
-    ├── grid.js         # 10x10ft tile rendering, flood-fill clustering & multiplayer sync
-    ├── wheel.js        # Canvas-rendered 10-slice wheel with 3D gems & failsafe timer
-    └── main.js         # Game loop, 500ms ticker, WebGL sonar pulse animation & UI wiring
+    ├── auth.js         # Google Identity Services OAuth & instant auto-login session restore
+    ├── loading.js      # 3D slow-motion stage, bootloader pipeline & zero-race condition loader
+    ├── character.js    # Three.js WebGL custom layer & GPS speed animation controller
+    ├── diamonds.js     # MapLibre 3D markers, flying gem arc particle to HUD & burst FX
+    ├── grid.js         # 10x10ft tile rendering, flood-fill clustering, Buy Land mode & multiplayer
+    ├── wheel.js        # Canvas-rendered CSPRNG wheel with 3D gems & failsafe timer
+    ├── feed.js         # Live activity feed ticker with chronological sorting
+    ├── leaderboard.js  # 4-tier scoped leaderboards (Global, Country, State, City) & dividends
+    ├── foliage.js      # Standing grass tufts & zero-context pre-rendered 3D mushrooms
+    ├── chat.js         # Real-time community global chat drawer with moderation & anti-spam
+    └── main.js         # Game loop, 500ms ticker, camera transitions & UI wiring
 ```
 
 ---
@@ -184,18 +195,19 @@ All gameplay tuning parameters are centralized in **`js/config.js`**:
 
 ---
 
+## 👥 3D Assets & Model Attributions
+
+* **Character Models:** Mixamo / Adobe (CC0 / Royalty Free Standard)
+* **CesiumMan & Xbot:** Khronos Group & Three.js Official Samples
+* **Grass Yellowing:** Steve B [CC-BY] via Poly Pizza
+* **White Dandelions:** Aeres Vistaas [CC-BY] via Poly Pizza
+* **Pine Tree & Autumn Foliage:** Quaternius [CC0]
+* **Mushrooms:** Jarlan Perez [CC-BY] via Poly Pizza
+* **Tower / Landmark:** Anonymous [CC-BY] via Poly Pizza
+* **Twisted Tree & Bushes:** Quaternius [CC0]
+
+---
+
 ## 📄 License & Disclaimer
 
 This is a personal, open-source fan implementation of real-world grid collection games. Built from scratch with pure web standards for educational and entertainment purposes. For Shits and Giggles.
-
----
-## 👥 3D Assets Attribution
-- asset attribution,
-- **grass yellowing by Steve B [CC-BY] via Poly Pizza,**
-- **White Dandelions by Aeres Vistaas [CC-BY] via Poly Pizza,**
-- **Pine Tree by Quaternius,**
-- **Mushrooms by Jarlan Perez [CC-BY] via Poly Pizza,**
-- **Tower by Anonymous [CC-BY] via Poly Pizza,**
-- **Pine Tree Autumn by Quaternius,**
-- **Twisted Tree by Quaternius,**
-- **Bush with Flowers by Quaternius,**

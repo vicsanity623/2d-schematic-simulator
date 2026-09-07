@@ -43,18 +43,18 @@ const CONFIG = {
   EXTRACTOR_MAX_STORED: 50,             // Stores up to 50 diamonds max
   EXTRACTOR_BUILD_COST_EB: 50,          // 50 EB to construct
   
-  // --- Spin wheel --- (Includes 🚫 Miss Slices & 2 Diamond Cost)
+  // --- Spin wheel --- (+12 & +24 Diamond Jackpots, 1 Miss Slice)
   WHEEL_SLICES: [
-    { type: "diamond", label: "+1 ◆", color: "#8fa3b8", weight: 110 },
-    { type: "eb", amount: 1,  label: "1 EB",  color: "#4fd6c4", weight: 240 },
-    { type: "miss",    label: "🚫",   color: "#3f2832", weight: 80  }, // Miss / No reward
-    { type: "eb", amount: 2,  label: "2 EB",  color: "#4f9dd6", weight: 130 },
-    { type: "diamond", label: "+1 ◆", color: "#8fa3b8", weight: 110 },
-    { type: "eb", amount: 5,  label: "5 EB",  color: "#a86ee0", weight: 50  },
-    { type: "miss",    label: "🚫",   color: "#3f2832", weight: 80  }, // Miss / No reward
-    { type: "eb", amount: 25, label: "25 EB", color: "#e0a84f", weight: 15  },
-    { type: "diamond", label: "+1 ◆", color: "#8fa3b8", weight: 110 },
-    { type: "eb", amount: 50, label: "50 EB", color: "#d4af61", weight: 5   },
+    { type: "diamond",         amount: 1,  label: "+1 ◆",  color: "#8fa3b8", weight: 110 },
+    { type: "eb",              amount: 1,  label: "1 EB",  color: "#4fd6c4", weight: 240 },
+    { type: "diamond_jackpot", amount: 12, label: "+12 ◆", color: "#4fd6c4", weight: 20  }, // 💎 +12 Diamond Jackpot!
+    { type: "eb",              amount: 2,  label: "2 EB",  color: "#4f9dd6", weight: 130 },
+    { type: "diamond",         amount: 1,  label: "+1 ◆",  color: "#8fa3b8", weight: 110 },
+    { type: "eb",              amount: 5,  label: "5 EB",  color: "#a86ee0", weight: 50  },
+    { type: "miss",            amount: 0,  label: "🚫",    color: "#3f2832", weight: 80  }, // 1 Remaining Miss Slice
+    { type: "eb",              amount: 25, label: "25 EB", color: "#e0a84f", weight: 15  },
+    { type: "diamond_jackpot", amount: 24, label: "+24 ◆", color: "#2ee59d", weight: 8   }, // 💎 +24 Diamond Mega Jackpot!
+    { type: "eb",              amount: 50, label: "50 EB", color: "#d4af61", weight: 5   },
   ],
   SPIN_COST_DIAMONDS: 2,
 
