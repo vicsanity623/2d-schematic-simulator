@@ -99,13 +99,20 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 ---
 
 ### 🏰 V. Customization & Base Building
-* [ ] **22. 🏰 3D Plot Landmarks & Monuments:**
+* [ ] **22. 🔮 Realm Citadels & Dyson Sphere Territory Holds (Pokémon GO Style Gyms):** *(Next Major Feature)*
+  * **One-Time Sacred Capsule Drop:** Automatically awarded to players reaching $\ge \$0.01$ balance with true RNG rarities (Common 50%, Rare 30%, Epic 15%, Legendary 5%).
+  * **Global Permanent Planting:** Plant on any unowned parcel on Earth with real-time billboard growth countdown pin.
+  * **4X Tall 3D Dyson Sphere Monument:** Massive glassmorphism structure with nested rotating kinetic rings and glowing rarity core on the world map.
+  * **Multiplayer Garrison Defense:** Any player can visit an empty Citadel to "Station Defender", locking their 3D avatar inside with a live defense ticker: `(05D : 12H : 23M : 02s)`.
+  * **Hourly Passive Spoils:** Generates free Diamonds and rolled EB findings every hour stationed; recall defender anytime to collect banked loot!
+  * **Interactive Holographic Chamber Modal:** Zoom in to inspect the defending player's 3D avatar, profile stats, and accumulated spoils.
+* [ ] **23. 🏰 3D Plot Landmarks & Monuments:**
   * Place 3D structures on owned land (Castles, Golden Trees, Neon Shrines) that grant a **+15% permanent income boost** to surrounding tiles.
-* [ ] **23. 🎨 Parcel Ground Skins & Theme Customization:**
+* [ ] **24. 🎨 Parcel Ground Skins & Theme Customization:**
   * Customize how your owned plots look: Cyberpunk Grid, Medieval Cobblestone, Molten Lava, or Glacial Ice.
-* [ ] **24. 🛂 Travel Passport & City Stamps:**
+* [ ] **25. 🛂 Travel Passport & City Stamps:**
   * Collect digital passport stamps when claiming land in new cities; each badge gives an account-wide **+5% rent multiplier**.
-* [ ] **25. 📦 Player Inventory & Item Bag:**
+* [ ] **26. 📦 Player Inventory & Item Bag:**
   * A clean inventory screen to manage boost potions, keys, cosmetic badges, and collectible relics.
 
 ---
