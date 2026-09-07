@@ -51,7 +51,7 @@ const Grid = (() => {
     // Check if player holds an unplanted Citadel Capsule
     const hasCapsule = state.capsule && state.capsule.awarded && !state.capsule.planted;
 
-    // Allow opening modal even with 0 EB if they have a free Capsule to plant!
+    // Allow opening modal if player has 100 EB OR a free capsule to plant!
     if (state.eb < CONFIG.PLOT_COST_EB && !hasCapsule) {
       onBuyAttempt(false, null);
       return;
@@ -59,32 +59,11 @@ const Grid = (() => {
 
     pendingTile = { tx, ty };
     const modal = document.getElementById("buy-modal");
+    const plantBtn = document.getElementById("plant-capsule-confirm-btn");
 
-    // Dynamic actions: Offers "Plant Citadel (Free)" if holding a Capsule!
-    const actionsWrap = modal ? modal.querySelector(".modal-actions") : null;
-    if (actionsWrap) {
-      if (hasCapsule) {
-        actionsWrap.innerHTML = `
-          <button id="buy-cancel-btn" class="btn btn-secondary">Cancel</button>
-          <button id="plant-capsule-confirm-btn" class="btn btn-primary" style="background: linear-gradient(180deg, #a86ee0, #6c5ce7); color: #fff;">🔮 Plant Citadel (Free)</button>
-          <button id="buy-confirm-btn" class="btn btn-primary">Claim Plot (100 EB)</button>
-        `;
-
-        document.getElementById("plant-capsule-confirm-btn")?.addEventListener("click", () => {
-          const corners = Geo.tileBounds(tx, ty, CONFIG.TILE_SIZE_METERS);
-          const cLat = (corners[0][0] + corners[2][0]) / 2;
-          const cLon = (corners[0][1] + corners[2][1]) / 2;
-          if (typeof Citadels !== "undefined") {
-            Citadels.plantCapsule(tx, ty, cLat, cLon);
-          }
-          modal.classList.add("hidden");
-        });
-      } else {
-        actionsWrap.innerHTML = `
-          <button id="buy-cancel-btn" class="btn btn-secondary">Cancel</button>
-          <button id="buy-confirm-btn" class="btn btn-primary">Claim Tile</button>
-        `;
-      }
+    // Seamless toggle: Shows or hides the plant button without touching innerHTML!
+    if (plantBtn) {
+      plantBtn.style.display = hasCapsule ? "inline-block" : "none";
     }
 
     if (modal) modal.classList.remove("hidden");
@@ -509,23 +488,31 @@ const Grid = (() => {
       promptBuyTile(t.tx, t.ty);
     });
 
-    // Wire up Confirm & Cancel buttons for Claim Land modal
+    // Wire up Persistent Click Listeners for Claim Modal
     const confirmBtn = document.getElementById("buy-confirm-btn");
     const cancelBtn = document.getElementById("buy-cancel-btn");
+    const plantBtn = document.getElementById("plant-capsule-confirm-btn");
     const buyModal = document.getElementById("buy-modal");
 
-    if (confirmBtn) {
-      confirmBtn.addEventListener("click", () => {
-        executeBuy();
-      });
-    }
+    confirmBtn?.addEventListener("click", () => {
+      executeBuy();
+    });
 
-    if (cancelBtn) {
-      cancelBtn.addEventListener("click", () => {
+    cancelBtn?.addEventListener("click", () => {
+      pendingTile = null;
+      if (buyModal) buyModal.classList.add("hidden");
+    });
+
+    plantBtn?.addEventListener("click", () => {
+      if (pendingTile && typeof Citadels !== "undefined") {
+        const corners = Geo.tileBounds(pendingTile.tx, pendingTile.ty, CONFIG.TILE_SIZE_METERS);
+        const cLat = (corners[0][0] + corners[2][0]) / 2;
+        const cLon = (corners[0][1] + corners[2][1]) / 2;
+        Citadels.plantCapsule(pendingTile.tx, pendingTile.ty, cLat, cLon);
         pendingTile = null;
         if (buyModal) buyModal.classList.add("hidden");
-      });
-    }
+      }
+    });
 
     // Render only on true camera movements and when Firestore broadcasts updates
     map.on("moveend zoomend", render);
