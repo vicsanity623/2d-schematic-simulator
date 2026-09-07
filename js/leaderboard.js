@@ -24,6 +24,18 @@ const Leaderboard = (() => {
     const stateCounts = {};
     const countryCounts = {};
 
+    // Ensure self cash is immediately present for tie-breakers
+    if (state.player?.id) {
+      playerStats[state.player.id] = {
+        id: state.player.id,
+        name: state.player.name || "Traveler",
+        avatar: state.player.avatar || "🙂",
+        plotsCount: Object.keys(state.plots || {}).length,
+        cash: Number(state.cash) || 0,
+        cities: {}, states: {}, countries: {}
+      };
+    }
+
     for (const tid in allPlots) {
       const p = allPlots[tid];
       const oid = p.ownerId || "unknown";
@@ -121,11 +133,11 @@ const Leaderboard = (() => {
     const governorsMap = pickTopRuler(stateCounts);
     const presidentsMap = pickTopRuler(countryCounts);
 
-    // Sort Global with Highest Passive Rent Tie-Breaker
+    // Sort Global with Highest Passive Rent Tie-Breaker (Descending: highest cash first)
     const sortedGlobal = Object.values(playerStats).sort((a, b) => {
       const plotDiff = (b.plotsCount || 0) - (a.plotsCount || 0);
       if (plotDiff !== 0) return plotDiff;
-      return (Number(b.cash) || 0) - (Number(a.cash) || 0); // Tie breaker: Highest Rent!
+      return (Number(b.cash) || 0) - (Number(a.cash) || 0);
     });
     const globalLordId = sortedGlobal.length > 0 ? sortedGlobal[0].id : null;
 
