@@ -39,7 +39,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 ## 🗺️ Master Development Roadmap
 
 ### 🔊 I. Sensory & Audiovisual Polish
-* [ ] **1. Phase 4: Web Audio SFX & Mobile Haptics:** *(Next Priority)*
+* [x] **1. Phase 4: Web Audio SFX & Mobile Haptics:** *(Next Priority)*
   * Synthesized crystal chimes when picking up diamonds.
   * Tactile phone vibration pulses when collecting gems or spinning the wheel.
   * Ticking clicks on the wheel and a royal trumpet fanfare on claiming land.
