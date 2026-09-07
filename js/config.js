@@ -60,14 +60,21 @@ const CONFIG = {
   
   // --- Realm Citadels & Dyson Sphere Holds ---
   CITADEL_UNLOCK_BALANCE: 0.01,        // $0.01 threshold to unlock the Capsule
-  CITADEL_GROWTH_MS: 30 * 60 * 1000,   // 30 mins growth timer (set to 1 * 60 * 1000 for fast testing if desired)
+  CITADEL_GROWTH_MS: 30 * 60 * 1000,   // 30 mins growth timer
   CITADEL_SIEGE_COST_DIAMONDS: 1,      // 1 Diamond to challenge an enemy Citadel
   CITADEL_CONQUEST_BOUNTY_EB: 5,       // +5 EB bonus for dethroning a defender
+  CITADEL_EVOLUTION_MS: 10 * 60 * 1000, // 10 Minutes Evolution Timer
   CITADEL_RARITIES: {
     common:    { key: "common",    label: "Common Hold",    color: "#8fa3b8", diamondHours: 3,   ebChance: 0.15, ebAmount: 1, weight: 50 },
     rare:      { key: "rare",      label: "Rare Hold",      color: "#4fd6c4", diamondHours: 2,   ebChance: 0.25, ebAmount: 2, weight: 30 },
     epic:      { key: "epic",      label: "Epic Hold",      color: "#a86ee0", diamondHours: 1.5, ebChance: 0.40, ebAmount: 3, weight: 15 },
     legendary: { key: "legendary", label: "Legendary Hold", color: "#f0d38a", diamondHours: 1,   ebChance: 0.60, ebAmount: 5, weight: 5  },
+  },
+  // Upgrade Forge Progression (Balanced: Diamonds as an Active Walking Sink)
+  CITADEL_UPGRADE_COSTS: {
+    common: { next: "rare",      eb: 50,  diamonds: 75,  nextLabel: "Rare Hold",      nextColor: "#4fd6c4" },
+    rare:   { next: "epic",      eb: 100, diamonds: 125, nextLabel: "Epic Hold",      nextColor: "#a86ee0" },
+    epic:   { next: "legendary", eb: 300, diamonds: 400, nextLabel: "Legendary Hold", nextColor: "#f0d38a" },
   },
 
   // --- Land plots (Exact Rates & Odds) ---
