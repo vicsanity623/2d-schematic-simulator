@@ -254,7 +254,7 @@ const Leaderboard = (() => {
         <div class="lb-avatar">${renderAvatar(p.avatar)}</div>
         <div class="lb-info">
           <span class="lb-name">${p.name} ${isSelf ? "<em>(You)</em>" : ""}</span>
-          <span class="lb-sub lb-title-glow">👑 ${primaryTitle}</span>
+          <span class="lb-sub lb-title-glow">${badgeIcon} ${badgeText}</span>
         </div>
         <div class="lb-metric ${currentTab === "rent" ? "gold" : ""}">${metricVal}</div>
       `;
