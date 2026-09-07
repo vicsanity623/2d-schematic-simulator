@@ -283,23 +283,33 @@ const Citadels = (() => {
     }
   }
 
-  // --- 3. Defense Spoils & Modal ---
+  // --- 3. Guaranteed Progressive Defense Spoils Engine ---
   function calculateSpoils(citadel) {
     if (!citadel.defender || !citadel.defender.startedAt) return { diamonds: 0, eb: 0, hoursDefended: 0, elapsedMs: 0 };
 
-    const rConfig = CONFIG.CITADEL_RARITIES[citadel.rarity] || CONFIG.CITADEL_RARITIES.common;
+    const rarity = citadel.rarity || "common";
     const now = Date.now();
     const elapsedMs = Math.max(0, now - citadel.defender.startedAt);
     const hours = elapsedMs / 3600000;
+    const fullHours = Math.floor(hours);
 
-    const diamondsEarned = Math.floor(hours / (rConfig.diamondHours || 2));
-    const ebRolls = Math.floor(hours);
+    let diamondsEarned = 0;
     let ebEarned = 0;
 
-    for (let i = 0; i < ebRolls; i++) {
-      if (Math.random() < (rConfig.ebChance || 0.2)) {
-        ebEarned += rConfig.ebAmount || 1;
-      }
+    // Guaranteed Progressive Yields based on Rarity Tier
+    if (rarity === "legendary") {
+      diamondsEarned = fullHours;          // 1 Diamond every 1 hr
+      ebEarned = fullHours * 3;             // Guaranteed +3 EB every 1 hr
+    } else if (rarity === "epic") {
+      diamondsEarned = Math.floor(hours / 1.5); // 1 Diamond every 1.5 hrs
+      ebEarned = fullHours * 2;                 // Guaranteed +2 EB every 1 hr
+    } else if (rarity === "rare") {
+      diamondsEarned = Math.floor(hours / 2.0); // 1 Diamond every 2 hrs
+      ebEarned = fullHours * 1;                 // Guaranteed +1 EB every 1 hr
+    } else {
+      // Common
+      diamondsEarned = Math.floor(hours / 3.0); // 1 Diamond every 3 hrs
+      ebEarned = Math.floor(fullHours / 2.0);   // Guaranteed +1 EB every 2 hrs
     }
 
     return { diamonds: diamondsEarned, eb: ebEarned, hoursDefended: hours, elapsedMs };
@@ -320,7 +330,8 @@ const Citadels = (() => {
     document.getElementById("citadel-modal-name").textContent = `${cit.creatorName}'s Hold`;
     document.getElementById("citadel-modal-coords").textContent = `Coords: [${cit.lat.toFixed(4)}, ${cit.lon.toFixed(4)}]`;
 
-    const rateText = `Mining Rate: 1 Diamond / ${rConfig.diamondHours} Hrs (${Math.round((rConfig.ebChance || 0.2) * 100)}% chance for +${rConfig.ebAmount || 1} EB / hr)`;
+    const ebRateDesc = cit.rarity === "legendary" ? "+3 EB / hr" : cit.rarity === "epic" ? "+2 EB / hr" : cit.rarity === "rare" ? "+1 EB / hr" : "+1 EB / 2 hrs";
+    const rateText = `Mining Rate: 1 Diamond / ${rConfig.diamondHours} Hrs & Guaranteed ${ebRateDesc}`;
     const rateDescEl = document.getElementById("citadel-rate-desc");
     if (rateDescEl) rateDescEl.textContent = rateText;
 
