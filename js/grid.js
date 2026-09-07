@@ -34,7 +34,7 @@ const Grid = (() => {
 
   function promptBuyTile(tx, ty) {
     const state = Store.get();
-    if (state.player.id && state.player.id.startsWith("guest-")) {
+    if (state.player && state.player.id && state.player.id.startsWith("guest-")) {
       alert("YOU ARE A GUEST IN THIS REALM. Sign in with Google to buy plots.");
       onBuyAttempt(false, null);
       return;
@@ -48,13 +48,24 @@ const Grid = (() => {
       return;
     }
 
-    if (state.eb < CONFIG.PLOT_COST_EB) {
+    // Check if player holds an unplanted Citadel Capsule
+    const hasCapsule = state.capsule && state.capsule.awarded && !state.capsule.planted;
+
+    // Allow opening modal if player has 100 EB OR a free capsule to plant!
+    if (state.eb < CONFIG.PLOT_COST_EB && !hasCapsule) {
       onBuyAttempt(false, null);
       return;
     }
 
     pendingTile = { tx, ty };
     const modal = document.getElementById("buy-modal");
+    const plantBtn = document.getElementById("plant-capsule-confirm-btn");
+
+    // Seamless toggle: Shows or hides the plant button without touching innerHTML!
+    if (plantBtn) {
+      plantBtn.style.display = hasCapsule ? "inline-block" : "none";
+    }
+
     if (modal) modal.classList.remove("hidden");
   }
 
@@ -477,23 +488,31 @@ const Grid = (() => {
       promptBuyTile(t.tx, t.ty);
     });
 
-    // Wire up Confirm & Cancel buttons for Claim Land modal
+    // Wire up Persistent Click Listeners for Claim Modal
     const confirmBtn = document.getElementById("buy-confirm-btn");
     const cancelBtn = document.getElementById("buy-cancel-btn");
+    const plantBtn = document.getElementById("plant-capsule-confirm-btn");
     const buyModal = document.getElementById("buy-modal");
 
-    if (confirmBtn) {
-      confirmBtn.addEventListener("click", () => {
-        executeBuy();
-      });
-    }
+    confirmBtn?.addEventListener("click", () => {
+      executeBuy();
+    });
 
-    if (cancelBtn) {
-      cancelBtn.addEventListener("click", () => {
+    cancelBtn?.addEventListener("click", () => {
+      pendingTile = null;
+      if (buyModal) buyModal.classList.add("hidden");
+    });
+
+    plantBtn?.addEventListener("click", () => {
+      if (pendingTile && typeof Citadels !== "undefined") {
+        const corners = Geo.tileBounds(pendingTile.tx, pendingTile.ty, CONFIG.TILE_SIZE_METERS);
+        const cLat = (corners[0][0] + corners[2][0]) / 2;
+        const cLon = (corners[0][1] + corners[2][1]) / 2;
+        Citadels.plantCapsule(pendingTile.tx, pendingTile.ty, cLat, cLon);
         pendingTile = null;
         if (buyModal) buyModal.classList.add("hidden");
-      });
-    }
+      }
+    });
 
     // Render only on true camera movements and when Firestore broadcasts updates
     map.on("moveend zoomend", render);

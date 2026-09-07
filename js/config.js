@@ -57,6 +57,18 @@ const CONFIG = {
     { type: "eb",              amount: 50, label: "50 EB", color: "#d4af61", weight: 5   },
   ],
   SPIN_COST_DIAMONDS: 2,
+  
+  // --- Realm Citadels & Dyson Sphere Holds ---
+  CITADEL_UNLOCK_BALANCE: 0.01,        // $0.01 threshold to unlock the Capsule
+  CITADEL_GROWTH_MS: 30 * 60 * 1000,   // 30 mins growth timer (set to 1 * 60 * 1000 for fast testing if desired)
+  CITADEL_SIEGE_COST_DIAMONDS: 1,      // 1 Diamond to challenge an enemy Citadel
+  CITADEL_CONQUEST_BOUNTY_EB: 5,       // +5 EB bonus for dethroning a defender
+  CITADEL_RARITIES: {
+    common:    { key: "common",    label: "Common Hold",    color: "#8fa3b8", diamondHours: 3,   ebChance: 0.15, ebAmount: 1, weight: 50 },
+    rare:      { key: "rare",      label: "Rare Hold",      color: "#4fd6c4", diamondHours: 2,   ebChance: 0.25, ebAmount: 2, weight: 30 },
+    epic:      { key: "epic",      label: "Epic Hold",      color: "#a86ee0", diamondHours: 1.5, ebChance: 0.40, ebAmount: 3, weight: 15 },
+    legendary: { key: "legendary", label: "Legendary Hold", color: "#f0d38a", diamondHours: 1,   ebChance: 0.60, ebAmount: 5, weight: 5  },
+  },
 
   // --- Land plots (Exact Rates & Odds) ---
   PLOT_COST_EB: 100,
