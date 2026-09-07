@@ -173,7 +173,7 @@ const Citadels = (() => {
     return wrap;
   }
 
-  // --- Render 3D Monuments & Ground Parcels ---
+  // --- Render 3D Monuments & Ground Stronghold Parcels ---
   function render() {
     if (!mapInstance || !mapInstance.getStyle()) return;
 
@@ -181,36 +181,44 @@ const Citadels = (() => {
     activeMarkers = [];
 
     const citadelFeatures = [];
+    const tileSize = CONFIG.TILE_SIZE_METERS || 6.096;
 
     for (const cid in globalCitadels) {
       const cit = globalCitadels[cid];
       const rConfig = CONFIG.CITADEL_RARITIES[cit.rarity] || CONFIG.CITADEL_RARITIES.common;
 
-      // 1. DYNAMIC TILE-SNAP: Recalculate exact tile center from original tx, ty (fixes all old citadels!)
-      let trueLat = cit.lat;
-      let trueLon = cit.lon;
+      // 1. RECALCULATE TX / TY IF MISSING (Fixes 100% of all old already-placed Citadels!)
+      let tx = cit.tx;
+      let ty = cit.ty;
 
-      if (cit.tx !== undefined && cit.ty !== undefined) {
-        const center = Geo.fromMercator(
-          cit.tx * CONFIG.TILE_SIZE_METERS + CONFIG.TILE_SIZE_METERS / 2,
-          cit.ty * CONFIG.TILE_SIZE_METERS + CONFIG.TILE_SIZE_METERS / 2
-        );
-        trueLat = center.lat;
-        trueLon = center.lon;
-
-        // 2. Build 10x10ft Ground Stronghold Parcel GeoJSON
-        const bounds = Geo.tileBounds(cit.tx, cit.ty, CONFIG.TILE_SIZE_METERS);
-        const coords = bounds.map(pt => [pt[1], pt[0]]);
-        coords.push(coords[0]);
-
-        citadelFeatures.push({
-          type: "Feature",
-          properties: { color: rConfig.color },
-          geometry: { type: "Polygon", coordinates: [coords] }
-        });
+      if (tx === undefined || ty === undefined || isNaN(tx) || isNaN(ty)) {
+        const t = Geo.tileForLatLon(cit.lat, cit.lon, tileSize);
+        tx = t.tx;
+        ty = t.ty;
+        cit.tx = tx;
+        cit.ty = ty;
       }
 
-      // 3. Mount Upright 10X 3D Monument firmly at tile center
+      // 2. Exact Mathematical Center of the 10x10ft tile
+      const center = Geo.fromMercator(
+        tx * tileSize + tileSize / 2,
+        ty * tileSize + tileSize / 2
+      );
+      const trueLat = center.lat;
+      const trueLon = center.lon;
+
+      // 3. Build 10x10ft Ground Stronghold Parcel GeoJSON directly under the Hold
+      const bounds = Geo.tileBounds(tx, ty, tileSize);
+      const coords = bounds.map(pt => [pt[1], pt[0]]);
+      coords.push(coords[0]); // Close polygon ring
+
+      citadelFeatures.push({
+        type: "Feature",
+        properties: { color: rConfig.color },
+        geometry: { type: "Polygon", coordinates: [coords] }
+      });
+
+      // 4. Mount Upright 10X 3D Monument firmly at the exact tile center
       const el = createDysonSphereMarker(cit);
       const marker = new mapboxgl.Marker({
         element: el,
@@ -224,7 +232,7 @@ const Citadels = (() => {
       activeMarkers.push(marker);
     }
 
-    // Update Ground Parcel Layers
+    // 5. Render Ground Stronghold Parcels Layer
     const geojsonData = { type: "FeatureCollection", features: citadelFeatures };
 
     if (mapInstance.getSource("citadel-parcels-source")) {
@@ -232,16 +240,18 @@ const Citadels = (() => {
     } else {
       mapInstance.addSource("citadel-parcels-source", { type: "geojson", data: geojsonData });
 
+      // Solid glowing stronghold base
       mapInstance.addLayer({
         id: "citadel-parcels-fill",
         type: "fill",
         source: "citadel-parcels-source",
         paint: {
           "fill-color": ["get", "color"],
-          "fill-opacity": 0.45
+          "fill-opacity": 0.55
         }
       });
 
+      // Pulsing neon border
       mapInstance.addLayer({
         id: "citadel-parcels-line",
         type: "line",
