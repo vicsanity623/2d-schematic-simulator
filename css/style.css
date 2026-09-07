@@ -477,9 +477,10 @@ html,body{
 /* ---------- Floating +2 EB Boost Button ---------- */
 .boost-btn {
   position: absolute;
-  right: 18px;
-  bottom: 95px;
-  z-index: 15;
+  right: 16px;
+  /* Floats cleanly above the bottom bar & chat button */
+  bottom: calc(125px + env(safe-area-inset-bottom));
+  z-index: 22;
   display: flex;
   align-items: center;
   gap: 8px;
