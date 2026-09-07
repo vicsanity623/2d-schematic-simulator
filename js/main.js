@@ -322,6 +322,8 @@
     currentPos = { lat: coords.latitude, lon: coords.longitude };
     if (!map) return;
     
+    if (typeof Citadels !== "undefined") Citadels.setPlayerPosition(currentPos.lat, currentPos.lon);
+    
     // 1. Move 3D Character & Geographic Radius Layer
     Character3D.setPlayerPosition(currentPos.lon, currentPos.lat);
     updatePlayerRadiusLayer();
@@ -541,6 +543,7 @@
     if (typeof Feed !== "undefined") Feed.init();
     if (typeof Leaderboard !== "undefined") Leaderboard.init();
     if (typeof Chat !== "undefined") Chat.init();
+    if (typeof Citadels !== "undefined") Citadels.init(map);
     startIncomeLoop();
     wireUI();
   }
@@ -557,6 +560,7 @@
     setInterval(() => {
       if (document.hidden) return; // Sleep income ticker calculations when app is minimized
 
+      if (typeof Citadels !== "undefined") Citadels.checkCapsuleUnlock();
       const now = Date.now();
       const deltaSec = (now - lastTickTime) / 1000;
       lastTickTime = now;
