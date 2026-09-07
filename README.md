@@ -8,15 +8,20 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ## ✨ Implemented Core Features & Mechanics
 
+* [x] **🔮 Realm Citadels & Dyson Sphere Territory Holds (Pokémon GO Style Gyms):** 
+  * **$0.01 Capsule Drop:** Automatically rolls a Common (50%), Rare (30%), Epic (15%), or Legendary (5%) permanent Capsule when reaching $\ge \$0.01$ balance.
+  * **10X Colossal Monuments:** Plantable on any unowned parcel with real-time growth countdowns evolving into 4X–10X tall glassmorphism monuments with nested rotating kinetic rings.
+  * **Multiplayer Garrison Defense:** Station 3D avatars inside holds with live defense tickers (`05D : 12H : 23M : 02s`) and passive hourly Diamond & EB harvesting (scaling up to 24 Diamonds/day for Legendary).
+  * **Reflex Meter Siege Duels:** Walk within 100m, spend 1 Diamond, and time your strike in the gold zone to shatter the defender's shield, dethrone them, and earn a **+5 EB Conquest Bounty**.
 * [x] **🎮 3D WebGL Engine & 60° Isometric Camera:** Powered by **MapLibre GL JS & OpenFreeMap** for unlimited, 100% free vector map loads with 60° isometric camera tilt, free 360° touch orbit gestures, and true 3D extruded city buildings with zero token rate-limits.
-* [x] **🌐 Phase 6: Interactive 3D Community Globe:** Dedicated right-edge HUD button triggering a cinematic 2.5s space launch to a full 3D interactive spinning Earth globe, allowing free planetary exploration to inspect international player territories.
+* [x] **🌐 Interactive 3D Community Globe:** Dedicated right-edge HUD button triggering a cinematic 2.5s space launch to a full 3D interactive spinning Earth globe, allowing free planetary exploration to inspect international player territories.
 * [x] **💬 Real-Time Global Community Chat:** Slide-up mobile MMO chat drawer in the bottom bar with a 25-message live log, profanity filter, 4-second anti-spam cooldown, XSS sanitization, and unread notification badge.
 * [x] **👑 3-Tier Political Leadership & Stackable Dividends:** Real-time leadership hierarchy based on parcel counts:
   * **👑 Mayors:** City / Town rulers earn **+2 EB (2%)** on local land purchases.
   * **🏛️ Governors:** State / Province rulers earn **+2 EB (2%)** on regional land purchases.
   * **🦅 Presidents:** Country rulers earn **+2 EB (2%)** on national land purchases.
   * **⚔️ Stackable Royalties:** Holding all 3 titles simultaneously unlocks a **+6 EB (6%) Triple Crown Royalty** deposited directly to Google Cloud saves!
-* [x] **🏆 Territory-Scoped Leaderboards:** 4-tier filtering tabs (🌐 Global, 🇺🇸 Country, 🏛️ State, 🏘️ City) displaying active royal titles (`⚔️ Lord of the Elden Realm`, `🦅 President`, `🏛️ Governor`, `👑 Mayor`) with 0ms in-memory cached switching.
+* [x] **🏆 Territory-Scoped Leaderboards:** 4-tier filtering tabs (🌐 Global, 🇺🇸 Country, 🏛️ State, 🏘️ City) displaying active royal titles (`⚔️ Lord of the Elden Realm`, `🦅 President`, `🏛️ Governor`, `👑 Mayor`) with 0ms in-memory cached switching and Passive Rent tie-breakers.
 * [x] **🧍 3D Animated Mixamo Characters (Three.js WebGL):** Integrated Three.js custom layer rendering upright, hero-scaled 3D character models (`.glb`) at real-time GPS coordinates with automatic `Idle` $\leftrightarrow$ `Walk` speed-based animation blending.
 * [x] **⏳ Cinematic Slow-Motion 3D Loading Stage:** Auto-framed Three.js stage showcasing CesiumMan stepping forward in 40% slow motion with cyan/gold rim lighting behind the spinning diamond logo, with automatic WebGL context cleanup.
 * [x] **🧭 True North Navigation & Compass Reset:** Dedicated compass button that smoothly animates camera bearing back to True North (0°) and restores default 18.5 zoom.
@@ -39,7 +44,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 ## 🗺️ Master Development Roadmap
 
 ### 🔊 I. Sensory & Audiovisual Polish
-* [x] **1. Phase 4: Web Audio SFX & Mobile Haptics:** *(Next Priority)*
+* [ ] **1. Phase 4: Web Audio SFX & Mobile Haptics:** *(Next Priority)*
   * Synthesized crystal chimes when picking up diamonds.
   * Tactile phone vibration pulses when collecting gems or spinning the wheel.
   * Ticking clicks on the wheel and a royal trumpet fanfare on claiming land.
@@ -54,58 +59,46 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ### 🗺️ II. Map Exploration & World Features
 * [x] **5. Phase 6: 🌐 Community Globe Mode:** *(Completed)*
-  * Interactive 3D Earth Globe viewing mode. Spin the planet, inspect foreign continents, and view other players' international empires.
-* [ ] **6. 🎁 Tiered Mystery Chests on the Map:**
+* [x] **6. 🔮 Realm Citadels & Dyson Sphere Territory Holds:** *(Completed)*
+* [ ] **7. 🎁 Tiered Mystery Chests on the Map:**
   * Bronze, Silver, and Golden chests spawning randomly that require keys or diamonds to open for big EB payouts.
-* [ ] **7. 💎 Diamond Radar Compass Pointers:**
+* [ ] **8. 💎 Diamond Radar Compass Pointers:**
   * Subtle glowing arrows around the edge of your screen pointing toward off-screen diamonds so you know which street to walk down.
-* [ ] **8. 🌈 Prismatic / Super Diamonds (1-in-50 Spawn):**
+* [ ] **9. 🌈 Prismatic / Super Diamonds (1-in-50 Spawn):**
   * Rare iridescent rainbow crystals that award **+3 Diamonds** or an instant 2-hour boost potion when tapped.
-* [ ] **9. 🧲 Diamond Magnet Boost Potion:**
+* [ ] **10. 🧲 Diamond Magnet Boost Potion:**
   * A 15-minute consumable buff that doubles your collection reach to vacuum up all neighborhood diamonds without moving.
 
 ---
 
 ### 👑 III. Social, Multiplayer & Prestige
-* [x] **10. 👑 Local Mayorship & Regional Dividends:** *(Completed)*
-  * 3-tier political leadership (Mayors, Governors, Presidents) with stackable dividends.
-* [x] **11. 💬 Global Live Activity Feed:** *(Completed)*
-  * Chronological activity feed showing live claims, jackpots, and royal dividend announcements.
-* [x] **12. 🏆 Global & Local Leaderboards:** *(Completed)*
-  * 4-tier territory filtering (Global, Country, State, City) with live title badges.
-* [x] **13. 💬 In-Game Global Community Chat:** *(Completed)*
-  * Slide-up mobile MMO chat panel with live moderation, anti-spam, and unread alerts.
-* [ ] **14. 🤝 Player-to-Player Parcel Marketplace:**
+* [x] **11. 👑 Local Mayorship & Regional Dividends:** *(Completed)*
+* [x] **12. 💬 Global Live Activity Feed:** *(Completed)*
+* [x] **13. 🏆 Global & Local Leaderboards:** *(Completed)*
+* [x] **14. 💬 In-Game Global Community Chat:** *(Completed)*
+* [ ] **15. 🤝 Player-to-Player Parcel Marketplace:**
   * Put owned plots up for sale on the open market for EB or trade tiles with friends.
-* [ ] **15. 🛡️ Realm Guilds & Joint Kingdoms:**
+* [ ] **16. 🛡️ Realm Guilds & Joint Kingdoms:**
   * Form alliances to connect plots into massive shared kingdoms with a communal Diamond Vault.
-* [ ] **16. 🎟️ Referral / Friend Invite Code System:**
+* [ ] **17. 🎟️ Referral / Friend Invite Code System:**
   * Share your code; when a friend claims their 5th plot, both of you get **+50 EB free**.
 
 ---
 
 ### 📅 IV. Retention & Daily Progression
-* [x] **17. 📅 30-Day Daily Login Calendar:** *(Completed)*
-  * 30-day streak check-in rewards scaling up to 200 EB.
-* [ ] **18. 📜 Daily Quests & Weekly Bounties:**
+* [x] **18. 📅 30-Day Daily Login Calendar:** *(Completed)*
+* [ ] **19. 📜 Daily Quests & Weekly Bounties:**
   * 3 daily missions (*Collect 3 diamonds*, *Spin twice*, *Keep 30X active for 2 hrs*) rewarding bonus EB.
-* [ ] **19. ⚡ "Blood Moon / Solar Flare" 50X Weekend Events:**
+* [ ] **20. ⚡ "Blood Moon / Solar Flare" 50X Weekend Events:**
   * 24-hour weekend flash events where the boost multiplier temporarily jumps to **50X**.
-* [ ] **20. 📈 Prestige Milestones & Player Leveling Track:**
+* [ ] **21. 📈 Prestige Milestones & Player Leveling Track:**
   * Title ranks (*Novice, Baron, Count, Duke, Monarch*) that unlock golden avatar borders and exclusive profile emblems.
-* [ ] **21. 🚶 Real-World Step Counter / Pedometer Sync:**
+* [ ] **22. 🚶 Real-World Step Counter / Pedometer Sync:**
   * Awards passive EB for physical steps taken throughout the day (e.g. 1,000 steps = +5 EB).
 
 ---
 
 ### 🏰 V. Customization & Base Building
-* [ ] **22. 🔮 Realm Citadels & Dyson Sphere Territory Holds (Pokémon GO Style Gyms):** *(Next Major Feature)*
-  * **One-Time Sacred Capsule Drop:** Automatically awarded to players reaching $\ge \$0.25$ balance with true RNG rarities (Common 50%, Rare 30%, Epic 15%, Legendary 5%).
-  * **Global Permanent Planting:** Plant on any unowned parcel on Earth with real-time billboard growth countdown pin.
-  * **4X Tall 3D Dyson Sphere Monument:** Massive glassmorphism structure with nested rotating kinetic rings and glowing rarity core on the world map.
-  * **Multiplayer Garrison Defense:** Any player can visit an empty Citadel to "Station Defender", locking their 3D avatar inside with a live defense ticker: `(05D : 12H : 23M : 02s)`.
-  * **Hourly Passive Spoils:** Generates free Diamonds and rolled EB findings every hour stationed; recall defender anytime to collect banked loot!
-  * **Interactive Holographic Chamber Modal:** Zoom in to inspect the defending player's 3D avatar, profile stats, and accumulated spoils.
 * [ ] **23. 🏰 3D Plot Landmarks & Monuments:**
   * Place 3D structures on owned land (Castles, Golden Trees, Neon Shrines) that grant a **+15% permanent income boost** to surrounding tiles.
 * [ ] **24. 🎨 Parcel Ground Skins & Theme Customization:**
@@ -145,6 +138,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
     ├── leaderboard.js  # 4-tier scoped leaderboards (Global, Country, State, City) & dividends
     ├── foliage.js      # Standing grass tufts & zero-context pre-rendered 3D mushrooms
     ├── chat.js         # Real-time community global chat drawer with moderation & anti-spam
+    ├── citadels.js     # 3D Dyson Sphere monuments, garrison defense & reflex siege combat
     └── main.js         # Game loop, 500ms ticker, camera transitions & UI wiring
 ```
 
