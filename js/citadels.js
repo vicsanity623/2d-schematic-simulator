@@ -21,7 +21,7 @@ const Citadels = (() => {
     return "citadel_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   }
 
-  // --- 1. Capsule Drop Unlock & Auto-Refund Reset ---
+  // --- 1. Capsule Drop Unlock & Safe One-Time Refund ---
   function checkCapsuleUnlock() {
     const state = Store.get();
     if (!state) return;
@@ -30,12 +30,15 @@ const Citadels = (() => {
       state.capsule = { awarded: false, rarity: null, planted: false, tileId: null };
     }
 
-    // AUTO-REFUND PATCH: Reset planted status so all players get their Capsule back to replant!
-    if (state.capsule.awarded && state.capsule.planted) {
-      state.capsule.planted = false;
-      state.capsule.tileId = null;
+    // TAMPER-PROOF ONE-TIME REFUND: Runs strictly ONCE per account, then locks forever!
+    if (!state.capsuleRefundV1) {
+      state.capsuleRefundV1 = true; // Permanently marks as refunded
+      if (state.capsule && state.capsule.awarded) {
+        state.capsule.planted = false;
+        state.capsule.tileId = null;
+        console.log("[Citadels] Capsule refunded safely (1-time migration locked).");
+      }
       Store.save();
-      console.log("[Citadels] Capsule refunded to player inventory!");
     }
 
     if (!state.capsule.awarded && (Number(state.cash) || 0) >= CONFIG.CITADEL_UNLOCK_BALANCE) {
