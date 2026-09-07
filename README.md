@@ -100,7 +100,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ### 🏰 V. Customization & Base Building
 * [ ] **22. 🔮 Realm Citadels & Dyson Sphere Territory Holds (Pokémon GO Style Gyms):** *(Next Major Feature)*
-  * **One-Time Sacred Capsule Drop:** Automatically awarded to players reaching $\ge \$0.01$ balance with true RNG rarities (Common 50%, Rare 30%, Epic 15%, Legendary 5%).
+  * **One-Time Sacred Capsule Drop:** Automatically awarded to players reaching $\ge \$0.25$ balance with true RNG rarities (Common 50%, Rare 30%, Epic 15%, Legendary 5%).
   * **Global Permanent Planting:** Plant on any unowned parcel on Earth with real-time billboard growth countdown pin.
   * **4X Tall 3D Dyson Sphere Monument:** Massive glassmorphism structure with nested rotating kinetic rings and glowing rarity core on the world map.
   * **Multiplayer Garrison Defense:** Any player can visit an empty Citadel to "Station Defender", locking their 3D avatar inside with a live defense ticker: `(05D : 12H : 23M : 02s)`.
