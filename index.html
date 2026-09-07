@@ -89,7 +89,7 @@
     <div class="hero-balance-card" id="hero-balance-card">
       <div class="hero-top-line">
         <div class="hero-brand-title">
-          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.6.4.20</span>
+          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.6.4.21</span>
         </div>
         <div id="boost-timer-badge" class="boost-timer-badge hidden">⚡ 30X BOOST <span id="boost-countdown">00:00:00</span></div>
       </div>
@@ -629,6 +629,96 @@
   </div>
 </div>
 
+<!-- ===================== CAPSULE DISCOVERY MODAL ===================== -->
+<div id="capsule-reward-modal" class="modal hidden">
+  <div class="modal-card capsule-reward-card">
+    <button class="close-btn" data-close="capsule-reward-modal">✕</button>
+    <div class="capsule-glow-icon" id="capsule-reward-icon">🔮</div>
+    <h2 id="capsule-reward-title">Ancient Capsule Unlocked!</h2>
+    <p class="modal-sub">You have reached the $0.01 balance milestone.</p>
+    
+    <div class="capsule-info-card" id="capsule-info-card">
+      <div class="capsule-rarity-badge" id="capsule-rarity-badge">EPIC CAPSULE</div>
+      <p id="capsule-desc-text">Plant this permanent 3D Dyson Sphere Citadel on any unowned territory to claim your stronghold!</p>
+    </div>
+
+    <button id="plant-capsule-btn" class="btn btn-primary" style="margin-top: 14px;">Plant Citadel on Map ➔</button>
+  </div>
+</div>
+
+<!-- ===================== CITADEL CHAMBER MODAL ===================== -->
+<div id="citadel-modal" class="modal hidden">
+  <div class="modal-card citadel-chamber-card">
+    <button class="close-btn" data-close="citadel-modal">✕</button>
+    
+    <div class="citadel-chamber-header">
+      <span class="citadel-badge-pill" id="citadel-modal-rarity">EPIC CITADEL</span>
+      <h2 id="citadel-modal-name">Phoenix Hold</h2>
+      <p class="modal-sub" id="citadel-modal-coords">Coordinates: [33.4484, -112.0740]</p>
+    </div>
+
+    <!-- 3D Holographic Chamber View -->
+    <div class="citadel-dyson-stage">
+      <div class="dyson-outer-ring ring-a"></div>
+      <div class="dyson-outer-ring ring-b"></div>
+      <div class="dyson-core-chamber" id="citadel-defender-avatar">
+        <span>🛡️</span>
+      </div>
+    </div>
+
+    <!-- Garrison & Defense Stats -->
+    <div class="citadel-stats-box">
+      <div class="stat-row">
+        <span>Reigning Defender:</span>
+        <strong id="citadel-defender-name" class="gold-text">Empty (Unclaimed)</strong>
+      </div>
+      <div class="stat-row">
+        <span>Defense Duration:</span>
+        <strong id="citadel-defense-timer" class="teal-text">00D : 00H : 00M : 00s</strong>
+      </div>
+      <div class="stat-row">
+        <span>Banked Spoils:</span>
+        <strong id="citadel-banked-spoils" class="gold-text">0 <span class="hud-gem-icon"></span> & 0 EB</strong>
+      </div>
+    </div>
+
+    <!-- Action Buttons (Dynamically switches based on status) -->
+    <div class="modal-actions" id="citadel-actions-wrap">
+      <!-- Injected dynamically in citadels.js -->
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SIEGE REFLEX COMBAT MODAL ===================== -->
+<div id="siege-modal" class="modal hidden">
+  <div class="modal-card siege-card">
+    <button class="close-btn" data-close="siege-modal">✕</button>
+    <div class="siege-header">
+      <h2>⚔️ Breach the Citadel!</h2>
+      <p class="modal-sub">Time your strike inside the gold zone to shatter the shield!</p>
+    </div>
+
+    <!-- Defender Health Shield -->
+    <div class="shield-hp-wrap">
+      <div class="shield-hp-labels">
+        <span>Defender Shield</span>
+        <strong id="siege-hp-text">100 / 100 HP</strong>
+      </div>
+      <div class="shield-hp-bar-outer">
+        <div id="siege-hp-bar" class="shield-hp-bar-inner"></div>
+      </div>
+    </div>
+
+    <!-- Reflex Timing Gauge -->
+    <div class="reflex-gauge-container">
+      <div class="reflex-sweet-spot"></div>
+      <div class="reflex-needle" id="reflex-needle"></div>
+    </div>
+
+    <button id="siege-strike-btn" class="btn btn-primary" style="margin-top: 18px; font-size: 17px;">⚔️ STRIKE!</button>
+  </div>
+</div>
+
 <div id="signout-wrap" style="display:none">
   <button id="signout-btn">Sign out</button>
 </div>
@@ -652,6 +742,7 @@
 <script src="js/feed.js"></script>
 <script src="js/leaderboard.js"></script>
 <script src="js/foliage.js"></script>
+<script src="js/citadels.js"></script>
 <script src="js/chat.js"></script>
 <script src="js/main.js"></script>
 
