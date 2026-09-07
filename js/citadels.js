@@ -682,9 +682,37 @@ const Citadels = (() => {
       pills.forEach((pill) => {
         const finish = parseInt(pill.dataset.finish, 10);
         const rem = Math.max(0, Math.floor((finish - now) / 1000));
+        const cid = pill.dataset.cid;
+        const cit = globalCitadels[cid];
 
         if (rem <= 0) {
-          pill.textContent = "✨ GROWN!";
+          if (cit && cit.isEvolving) {
+            // Finish Evolution & Promote Rarity!
+            const newRarity = cit.targetRarity || "rare";
+            cit.rarity = newRarity;
+            cit.isEvolving = false;
+            delete cit.evolutionFinish;
+            delete cit.targetRarity;
+
+            const db = Store.getDb();
+            if (db) {
+              db.collection("citadels").doc(cid).update({
+                rarity: newRarity,
+                isEvolving: false,
+                evolutionFinish: null,
+                targetRarity: null
+              });
+            }
+
+            if (typeof Feed !== "undefined") {
+              Feed.broadcast("land", {
+                rarity: `✨ ${cit.creatorName} evolved their Hold to a ${CONFIG.CITADEL_RARITIES[newRarity].label}!`,
+                location: "the Realm 🌐"
+              });
+            }
+          }
+
+          pill.textContent = "✨ ASCENDED!";
           needsReRender = true;
         } else {
           const m = Math.floor(rem / 60);
