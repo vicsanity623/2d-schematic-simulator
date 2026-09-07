@@ -3392,3 +3392,108 @@ div[aria-label="Advertisement"] {
 .guide-rules-hint strong {
   color: var(--parchment);
 }
+
+/* ================= CITADEL UPGRADE FORGE ================= */
+.citadel-upgrade-card {
+  max-width: 420px;
+  text-align: center;
+}
+
+.forge-icon {
+  font-size: 38px;
+  color: var(--gold-hi);
+  filter: drop-shadow(0 0 14px rgba(240, 211, 138, 0.9));
+  margin-bottom: 2px;
+  animation: boostPulse 2s infinite ease-in-out;
+}
+
+/* Comparison Box */
+.forge-comparison-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--panel-2);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin: 12px 0 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+}
+
+.forge-tier-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.forge-col-sub {
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.forge-tier-badge {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: rgba(13, 20, 32, 0.85);
+}
+
+.forge-perk-text {
+  font-size: 11px;
+  color: var(--teal);
+  font-weight: 700;
+}
+
+.forge-arrow {
+  font-size: 20px;
+  color: var(--gold-hi);
+  font-weight: 800;
+  padding: 0 8px;
+}
+
+.forge-timer-notice {
+  font-size: 11.5px;
+  color: var(--gold-hi);
+  background: rgba(212, 175, 97, 0.12);
+  border: 1px dashed var(--gold);
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 16px;
+}
+
+/* Dual Payment Buttons */
+.forge-payment-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.forge-btn-eb {
+  background: linear-gradient(180deg, var(--gold-hi), var(--gold)) !important;
+  color: #1a1204 !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+}
+
+.forge-btn-diamonds {
+  background: linear-gradient(180deg, var(--teal), #1d7a6e) !important;
+  color: #0d1420 !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  box-shadow: 0 0 12px rgba(79, 214, 196, 0.4) !important;
+}
+
+.btn-citadel-upgrade {
+  background: linear-gradient(180deg, var(--gold-hi), var(--gold)) !important;
+  color: #1a1204 !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  margin-top: 8px !important;
+}
