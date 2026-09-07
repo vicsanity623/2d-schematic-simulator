@@ -123,7 +123,7 @@ const Citadels = (() => {
     alert("🔮 Citadel Capsule planted! Watch it grow into a 3D Dyson Sphere monument!");
   }
 
-  // Create 10X Colossal 3D Dyson Sphere Monument Marker
+  // Create 10X Colossal 3D Dyson Sphere Monument Marker (Upright Stacking)
   function createDysonSphereMarker(citadel) {
     const wrap = document.createElement("div");
     wrap.className = "citadel-3d-monument";
@@ -136,6 +136,7 @@ const Citadels = (() => {
       const mins = Math.floor(remainingSec / 60);
       const secs = remainingSec % 60;
 
+      // Stacks upward from ground: Ground Pulse -> Stem -> Seed Core -> Timer Pill on top
       wrap.innerHTML = `
         <div class="citadel-growth-pin" style="--r-color: ${rConfig.color}">
           <div class="growth-timer-pill" data-finish="${citadel.growthFinish}" data-cid="${citadel.id}">⏳ ${mins}:${String(secs).padStart(2, "0")}</div>
@@ -145,22 +146,20 @@ const Citadels = (() => {
         </div>
       `;
     } else {
-      // 4X Tall 3D Kinetic Dyson Sphere Monument
       const defAvatar = citadel.defender?.avatar || "🛡️";
       const avatarHTML = defAvatar.startsWith("img:")
         ? `<img src="${defAvatar.slice(4)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
         : `<span>${defAvatar}</span>`;
 
+      // Stacks upward: Ground Shadow -> Rotating Rings & Avatar -> Spire Tip on top
       wrap.innerHTML = `
         <div class="dyson-monument-root" style="--core-color: ${rConfig.color}">
-          <div class="dyson-ground-shadow"></div>
+          <div class="dyson-spire-tip">✦</div>
+          <div class="dyson-core-avatar">${avatarHTML}</div>
           <div class="dyson-ring ring-1"></div>
           <div class="dyson-ring ring-2"></div>
           <div class="dyson-ring ring-3"></div>
-          <div class="dyson-core-avatar">
-            ${avatarHTML}
-          </div>
-          <div class="dyson-spire-tip">✦</div>
+          <div class="dyson-ground-shadow"></div>
         </div>
       `;
     }
@@ -168,7 +167,7 @@ const Citadels = (() => {
     wrap.addEventListener("click", () => openCitadelModal(citadel.id));
     return wrap;
   }
-
+  
   function render() {
     if (!mapInstance) return;
 
