@@ -366,13 +366,27 @@ const Citadels = (() => {
     const distToCitadel = Geo.haversine(playerCoords.lat, playerCoords.lon, cit.lat, cit.lon);
     const isNearby = distToCitadel <= (CONFIG.DIAMOND_COLLECT_RADIUS_METERS || 100);
 
+    const isOwnerOrDefender = (def && def.id === myId) || (cit.creatorId === myId);
+
     if (def && def.id === myId) {
       const recallBtn = document.createElement("button");
       recallBtn.className = "btn btn-primary";
       recallBtn.innerHTML = `Recall Defender & Collect Loot (+${spoils.diamonds} ◆ & +${spoils.eb} EB)`;
       recallBtn.addEventListener("click", () => recallDefender(cid));
       actionsWrap.appendChild(recallBtn);
-    } else if (!def || !def.id) {
+    }
+
+    // --- Upgrade Forge Trigger (Available for Hold Owner or Defender) ---
+    if (isOwnerOrDefender && cit.rarity !== "legendary" && !cit.isEvolving) {
+      const upgradeBtn = document.createElement("button");
+      upgradeBtn.className = "btn btn-citadel-upgrade";
+      const nextInfo = CONFIG.CITADEL_UPGRADE_COSTS[cit.rarity];
+      upgradeBtn.innerHTML = `⚡ Upgrade Hold to ${nextInfo ? nextInfo.nextLabel : "Next Tier"}`;
+      upgradeBtn.addEventListener("click", () => openUpgradeModal(cid));
+      actionsWrap.appendChild(upgradeBtn);
+    }
+
+    if (!def || !def.id) {
       const stationBtn = document.createElement("button");
       stationBtn.className = "btn btn-primary";
       stationBtn.textContent = isNearby ? "Station My Avatar (Defend Hold)" : "Too Far to Station (Walk Closer)";
@@ -430,6 +444,91 @@ const Citadels = (() => {
     render();
     if (typeof showToast === "function") {
       showToast(`🏆 Defender Recalled! Banked +${spoils.diamonds} Diamonds & +${spoils.eb} EB!`, 3500);
+    }
+  }
+  
+  // --- CITADEL UPGRADE FORGE ENGINE ---
+  let upgradingCitadelId = null;
+
+  function openUpgradeModal(cid) {
+    const cit = globalCitadels[cid];
+    if (!cit || cit.rarity === "legendary") return;
+    upgradingCitadelId = cid;
+
+    const costs = CONFIG.CITADEL_UPGRADE_COSTS[cit.rarity];
+    if (!costs) return;
+
+    const currentConf = CONFIG.CITADEL_RARITIES[cit.rarity];
+    const nextConf = CONFIG.CITADEL_RARITIES[costs.next];
+
+    document.getElementById("forge-current-tier").textContent = currentConf.label;
+    document.getElementById("forge-current-tier").style.color = currentConf.color;
+    document.getElementById("forge-current-perk").textContent = `1 ◆ / ${currentConf.diamondHours} hrs`;
+
+    document.getElementById("forge-next-tier").textContent = nextConf.label;
+    document.getElementById("forge-next-tier").style.color = nextConf.color;
+    document.getElementById("forge-next-perk").textContent = `1 ◆ / ${nextConf.diamondHours} hrs & +${nextConf.ebAmount || 1} EB/hr`;
+
+    document.getElementById("forge-cost-eb").textContent = costs.eb;
+    document.getElementById("forge-cost-diamonds").textContent = costs.diamonds;
+
+    document.getElementById("citadel-modal")?.classList.add("hidden");
+    document.getElementById("citadel-upgrade-modal")?.classList.remove("hidden");
+  }
+
+  async function executeUpgrade(paymentType) {
+    if (!upgradingCitadelId) return;
+    const cit = globalCitadels[upgradingCitadelId];
+    if (!cit) return;
+
+    const costs = CONFIG.CITADEL_UPGRADE_COSTS[cit.rarity];
+    if (!costs) return;
+
+    const state = Store.get();
+
+    // Verify balance
+    if (paymentType === "eb") {
+      if ((Number(state.eb) || 0) < costs.eb) {
+        alert(`You need ${costs.eb} EB to forge this upgrade!`);
+        return;
+      }
+      state.eb -= costs.eb;
+    } else {
+      if ((Number(state.diamonds) || 0) < costs.diamonds) {
+        alert(`You need ${costs.diamonds} Diamonds to forge this upgrade!`);
+        return;
+      }
+      state.diamonds -= costs.diamonds;
+    }
+
+    Store.save();
+
+    // Trigger 10-Minute Evolution Timer
+    const now = Date.now();
+    const evoFinish = now + (CONFIG.CITADEL_EVOLUTION_MS || 600000);
+
+    cit.isEvolving = true;
+    cit.evolutionFinish = evoFinish;
+    cit.targetRarity = costs.next;
+
+    const db = Store.getDb();
+    if (db) {
+      try {
+        await db.collection("citadels").doc(cit.id).update({
+          isEvolving: true,
+          evolutionFinish: evoFinish,
+          targetRarity: costs.next
+        });
+      } catch (e) {
+        console.warn("[Citadels] Upgrade sync notice:", e);
+      }
+    }
+
+    document.getElementById("citadel-upgrade-modal")?.classList.add("hidden");
+    render();
+
+    if (typeof showToast === "function") {
+      showToast(`⚡ Citadel Evolution started! 10-minute transformation underway!`, 4000);
     }
   }
 
