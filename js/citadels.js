@@ -1,6 +1,6 @@
 // ============================================================
 // Elden Earth — 3D Citadels & Dyson Sphere Territory Holds
-// Multiplayer Pokémon GO-Style Garrison Defense & Reflex Siege Duels
+// Auto-Snaps All Old/New Citadels to Exact Tile Center + Ground Parcels
 // ============================================================
 const Citadels = (() => {
   let mapInstance = null;
@@ -30,9 +30,7 @@ const Citadels = (() => {
       state.capsule = { awarded: false, rarity: null, planted: false, tileId: null };
     }
 
-    // Trigger on $0.01 balance or retroactive for existing players
     if (!state.capsule.awarded && (Number(state.cash) || 0) >= CONFIG.CITADEL_UNLOCK_BALANCE) {
-      // Roll True Cryptographic RNG Rarity
       const rarities = Object.values(CONFIG.CITADEL_RARITIES);
       const totalWeight = rarities.reduce((s, r) => s + r.weight, 0);
       let roll = Math.random() * totalWeight;
@@ -71,7 +69,7 @@ const Citadels = (() => {
     if (modal) modal.classList.remove("hidden");
   }
 
-  // --- 2. Planting & 3D Dyson Sphere Monument Renderer ---
+  // --- 2. Planting on Tile ---
   function plantCapsule(tx, ty, lat, lon) {
     const state = Store.get();
     if (!state.capsule || !state.capsule.awarded || state.capsule.planted) {
@@ -84,12 +82,18 @@ const Citadels = (() => {
     const now = Date.now();
     const growthFinish = now + (CONFIG.CITADEL_GROWTH_MS || 1800000);
 
+    // Calculate exact tile center coordinates
+    const center = Geo.fromMercator(
+      tx * CONFIG.TILE_SIZE_METERS + CONFIG.TILE_SIZE_METERS / 2,
+      ty * CONFIG.TILE_SIZE_METERS + CONFIG.TILE_SIZE_METERS / 2
+    );
+
     const citadelData = {
       id: cid,
-      tx,
-      ty,
-      lat,
-      lon,
+      tx: parseInt(tx, 10),
+      ty: parseInt(ty, 10),
+      lat: center.lat,
+      lon: center.lon,
       rarity,
       creatorId: state.player?.id || "guest",
       creatorName: state.player?.name || "Traveler",
@@ -100,7 +104,7 @@ const Citadels = (() => {
         id: state.player?.id || "guest",
         name: state.player?.name || "Traveler",
         avatar: state.player?.avatar || "🙂",
-        startedAt: growthFinish, // Defense starts when growth completes
+        startedAt: growthFinish,
       }
     };
 
@@ -109,7 +113,6 @@ const Citadels = (() => {
     globalCitadels[cid] = citadelData;
     Store.save();
 
-    // Broadcast to Firestore
     const db = Store.getDb();
     if (db) {
       db.collection("citadels").doc(cid).set(citadelData).catch(e => console.warn(e));
@@ -120,10 +123,10 @@ const Citadels = (() => {
     }
 
     render();
-    alert("🔮 Citadel Capsule planted! Watch it grow into a 3D Dyson Sphere monument!");
+    alert("🔮 Citadel Capsule planted! Your Hold is now anchored to this tile!");
   }
 
-  // Create 10X Colossal 3D Dyson Sphere Monument Marker (Strict Ground-Up Anchoring)
+  // Create 10X Colossal 3D Dyson Sphere Monument Marker
   function createDysonSphereMarker(citadel) {
     const wrap = document.createElement("div");
     wrap.className = "citadel-3d-monument";
@@ -136,7 +139,6 @@ const Citadels = (() => {
       const mins = Math.floor(remainingSec / 60);
       const secs = remainingSec % 60;
 
-      // Built strictly upwards from ground level
       wrap.innerHTML = `
         <div class="citadel-growth-pin" style="--r-color: ${rConfig.color}">
           <div class="growth-ground-pulse"></div>
@@ -151,7 +153,6 @@ const Citadels = (() => {
         ? `<img src="${defAvatar.slice(4)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
         : `<span>${defAvatar}</span>`;
 
-      // Built strictly upwards from ground level
       wrap.innerHTML = `
         <div class="dyson-monument-root" style="--core-color: ${rConfig.color}">
           <div class="dyson-ground-shadow"></div>
@@ -171,33 +172,92 @@ const Citadels = (() => {
 
     return wrap;
   }
-  
+
+  // --- Render 3D Monuments & Ground Parcels ---
   function render() {
-    if (!mapInstance) return;
+    if (!mapInstance || !mapInstance.getStyle()) return;
 
     activeMarkers.forEach(m => m.remove());
     activeMarkers = [];
 
+    const citadelFeatures = [];
+
     for (const cid in globalCitadels) {
       const cit = globalCitadels[cid];
-      const el = createDysonSphereMarker(cit);
+      const rConfig = CONFIG.CITADEL_RARITIES[cit.rarity] || CONFIG.CITADEL_RARITIES.common;
 
+      // 1. DYNAMIC TILE-SNAP: Recalculate exact tile center from original tx, ty (fixes all old citadels!)
+      let trueLat = cit.lat;
+      let trueLon = cit.lon;
+
+      if (cit.tx !== undefined && cit.ty !== undefined) {
+        const center = Geo.fromMercator(
+          cit.tx * CONFIG.TILE_SIZE_METERS + CONFIG.TILE_SIZE_METERS / 2,
+          cit.ty * CONFIG.TILE_SIZE_METERS + CONFIG.TILE_SIZE_METERS / 2
+        );
+        trueLat = center.lat;
+        trueLon = center.lon;
+
+        // 2. Build 10x10ft Ground Stronghold Parcel GeoJSON
+        const bounds = Geo.tileBounds(cit.tx, cit.ty, CONFIG.TILE_SIZE_METERS);
+        const coords = bounds.map(pt => [pt[1], pt[0]]);
+        coords.push(coords[0]);
+
+        citadelFeatures.push({
+          type: "Feature",
+          properties: { color: rConfig.color },
+          geometry: { type: "Polygon", coordinates: [coords] }
+        });
+      }
+
+      // 3. Mount Upright 10X 3D Monument firmly at tile center
+      const el = createDysonSphereMarker(cit);
       const marker = new mapboxgl.Marker({
         element: el,
         anchor: "bottom",
         pitchAlignment: "viewport",
         rotationAlignment: "viewport",
       })
-        .setLngLat([cit.lon, cit.lat])
+        .setLngLat([trueLon, trueLat])
         .addTo(mapInstance);
 
       activeMarkers.push(marker);
     }
+
+    // Update Ground Parcel Layers
+    const geojsonData = { type: "FeatureCollection", features: citadelFeatures };
+
+    if (mapInstance.getSource("citadel-parcels-source")) {
+      mapInstance.getSource("citadel-parcels-source").setData(geojsonData);
+    } else {
+      mapInstance.addSource("citadel-parcels-source", { type: "geojson", data: geojsonData });
+
+      mapInstance.addLayer({
+        id: "citadel-parcels-fill",
+        type: "fill",
+        source: "citadel-parcels-source",
+        paint: {
+          "fill-color": ["get", "color"],
+          "fill-opacity": 0.45
+        }
+      });
+
+      mapInstance.addLayer({
+        id: "citadel-parcels-line",
+        type: "line",
+        source: "citadel-parcels-source",
+        paint: {
+          "line-color": ["get", "color"],
+          "line-width": 3,
+          "line-dasharray": [2, 1]
+        }
+      });
+    }
   }
 
-  // --- 3. Defense Spoils Math & Modal ---
+  // --- 3. Defense Spoils & Modal ---
   function calculateSpoils(citadel) {
-    if (!citadel.defender || !citadel.defender.startedAt) return { diamonds: 0, eb: 0, hoursDefended: 0 };
+    if (!citadel.defender || !citadel.defender.startedAt) return { diamonds: 0, eb: 0, hoursDefended: 0, elapsedMs: 0 };
 
     const rConfig = CONFIG.CITADEL_RARITIES[citadel.rarity] || CONFIG.CITADEL_RARITIES.common;
     const now = Date.now();
@@ -231,15 +291,14 @@ const Citadels = (() => {
     document.getElementById("citadel-modal-rarity").style.color = rConfig.color;
     document.getElementById("citadel-modal-name").textContent = `${cit.creatorName}'s Hold`;
     document.getElementById("citadel-modal-coords").textContent = `Coords: [${cit.lat.toFixed(4)}, ${cit.lon.toFixed(4)}]`;
-    
-    // Update dynamic rate description based on rarity
+
     const rateText = `Mining Rate: 1 Diamond / ${rConfig.diamondHours} Hrs (${Math.round((rConfig.ebChance || 0.2) * 100)}% chance for +${rConfig.ebAmount || 1} EB / hr)`;
-    document.getElementById("citadel-rate-desc").textContent = rateText;
+    const rateDescEl = document.getElementById("citadel-rate-desc");
+    if (rateDescEl) rateDescEl.textContent = rateText;
 
     const spoils = calculateSpoils(cit);
     const def = cit.defender;
 
-    // Defender Avatar Chamber
     const chamberAvatar = document.getElementById("citadel-defender-avatar");
     if (chamberAvatar) {
       if (def && def.avatar) {
@@ -253,7 +312,6 @@ const Citadels = (() => {
 
     document.getElementById("citadel-defender-name").textContent = def ? def.name : "Unclaimed Hold";
 
-    // Format Duration
     const totalSec = Math.floor(spoils.elapsedMs / 1000);
     const d = Math.floor(totalSec / 86400);
     const h = Math.floor((totalSec % 86400) / 3600);
@@ -263,7 +321,6 @@ const Citadels = (() => {
 
     document.getElementById("citadel-banked-spoils").innerHTML = `${spoils.diamonds} <span class="hud-gem-icon"></span> & ${spoils.eb} EB`;
 
-    // Action Buttons
     const actionsWrap = document.getElementById("citadel-actions-wrap");
     actionsWrap.innerHTML = "";
 
@@ -271,14 +328,12 @@ const Citadels = (() => {
     const isNearby = distToCitadel <= (CONFIG.DIAMOND_COLLECT_RADIUS_METERS || 100);
 
     if (def && def.id === myId) {
-      // Self is Defending: Allow Recall
       const recallBtn = document.createElement("button");
       recallBtn.className = "btn btn-primary";
       recallBtn.innerHTML = `Recall Defender & Collect Loot (+${spoils.diamonds} ◆ & +${spoils.eb} EB)`;
       recallBtn.addEventListener("click", () => recallDefender(cid));
       actionsWrap.appendChild(recallBtn);
     } else if (!def || !def.id) {
-      // Empty Citadel: Allow Stationing
       const stationBtn = document.createElement("button");
       stationBtn.className = "btn btn-primary";
       stationBtn.textContent = isNearby ? "Station My Avatar (Defend Hold)" : "Too Far to Station (Walk Closer)";
@@ -286,7 +341,6 @@ const Citadels = (() => {
       stationBtn.addEventListener("click", () => stationDefender(cid));
       actionsWrap.appendChild(stationBtn);
     } else {
-      // Enemy is Defending: Allow Siege
       const siegeBtn = document.createElement("button");
       siegeBtn.className = "btn btn-danger";
       siegeBtn.innerHTML = isNearby ? `⚔️ Initiate Siege (Cost: 1 <span class="hud-gem-icon"></span>)` : "Too Far to Attack (Walk Closer)";
@@ -359,7 +413,6 @@ const Citadels = (() => {
     const siegeModal = document.getElementById("siege-modal");
     updateSiegeHPBar();
 
-    // Start Reflex Needle Animation (Swings smoothly 0% to 100%)
     const needleEl = document.getElementById("reflex-needle");
     needlePosition = 0;
     needleDirection = 1;
@@ -388,7 +441,6 @@ const Citadels = (() => {
     if (isStriking || combatShieldHP <= 0) return;
     isStriking = true;
 
-    // Sweet spot is between 42% and 58%
     const isCritical = needlePosition >= 40 && needlePosition <= 60;
     const isHit = needlePosition >= 25 && needlePosition <= 75;
 
@@ -408,7 +460,6 @@ const Citadels = (() => {
     updateSiegeHPBar();
 
     if (combatShieldHP <= 0) {
-      // Victory: Defender Dethroned!
       cancelAnimationFrame(needleAnimId);
       setTimeout(() => completeConquest(), 400);
     } else {
@@ -423,13 +474,11 @@ const Citadels = (() => {
 
     document.getElementById("siege-modal")?.classList.add("hidden");
 
-    // Award Conqueror +5 EB Bounty
     state.eb = (Number(state.eb) || 0) + CONFIG.CITADEL_CONQUEST_BOUNTY_EB;
     Store.save();
 
     const oldDefenderName = cit.defender?.name || "Defender";
 
-    // Station attacker as the new Reigning Champion
     cit.defender = {
       id: state.player?.id || "guest",
       name: state.player?.name || "Traveler",
@@ -453,7 +502,6 @@ const Citadels = (() => {
     }
   }
 
-  // Live Firestore Synchronization
   function listen() {
     const db = Store.getDb();
     if (!db) return;
@@ -488,7 +536,6 @@ const Citadels = (() => {
 
     document.getElementById("siege-strike-btn")?.addEventListener("click", handleSiegeStrike);
 
-    // Live 1-Second Real-Time Countdown & Auto-Evolution Ticker
     setInterval(() => {
       const pills = document.querySelectorAll(".growth-timer-pill[data-finish]");
       const now = Date.now();
@@ -508,7 +555,6 @@ const Citadels = (() => {
         }
       });
 
-      // Automatically transforms into the 3D Dyson Sphere when countdown hits 00:00!
       if (needsReRender) {
         render();
       }
