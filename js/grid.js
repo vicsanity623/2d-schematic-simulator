@@ -34,7 +34,7 @@ const Grid = (() => {
 
   function promptBuyTile(tx, ty) {
     const state = Store.get();
-    if (state.player.id && state.player.id.startsWith("guest-")) {
+    if (state.player && state.player.id && state.player.id.startsWith("guest-")) {
       alert("YOU ARE A GUEST IN THIS REALM. Sign in with Google to buy plots.");
       onBuyAttempt(false, null);
       return;
@@ -48,13 +48,45 @@ const Grid = (() => {
       return;
     }
 
-    if (state.eb < CONFIG.PLOT_COST_EB) {
+    // Check if player holds an unplanted Citadel Capsule
+    const hasCapsule = state.capsule && state.capsule.awarded && !state.capsule.planted;
+
+    // Allow opening modal even with 0 EB if they have a free Capsule to plant!
+    if (state.eb < CONFIG.PLOT_COST_EB && !hasCapsule) {
       onBuyAttempt(false, null);
       return;
     }
 
     pendingTile = { tx, ty };
     const modal = document.getElementById("buy-modal");
+
+    // Dynamic actions: Offers "Plant Citadel (Free)" if holding a Capsule!
+    const actionsWrap = modal ? modal.querySelector(".modal-actions") : null;
+    if (actionsWrap) {
+      if (hasCapsule) {
+        actionsWrap.innerHTML = `
+          <button id="buy-cancel-btn" class="btn btn-secondary">Cancel</button>
+          <button id="plant-capsule-confirm-btn" class="btn btn-primary" style="background: linear-gradient(180deg, #a86ee0, #6c5ce7); color: #fff;">🔮 Plant Citadel (Free)</button>
+          <button id="buy-confirm-btn" class="btn btn-primary">Claim Plot (100 EB)</button>
+        `;
+
+        document.getElementById("plant-capsule-confirm-btn")?.addEventListener("click", () => {
+          const corners = Geo.tileBounds(tx, ty, CONFIG.TILE_SIZE_METERS);
+          const cLat = (corners[0][0] + corners[2][0]) / 2;
+          const cLon = (corners[0][1] + corners[2][1]) / 2;
+          if (typeof Citadels !== "undefined") {
+            Citadels.plantCapsule(tx, ty, cLat, cLon);
+          }
+          modal.classList.add("hidden");
+        });
+      } else {
+        actionsWrap.innerHTML = `
+          <button id="buy-cancel-btn" class="btn btn-secondary">Cancel</button>
+          <button id="buy-confirm-btn" class="btn btn-primary">Claim Tile</button>
+        `;
+      }
+    }
+
     if (modal) modal.classList.remove("hidden");
   }
 
