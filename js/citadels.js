@@ -146,7 +146,6 @@ const Citadels = (() => {
         </div>
       `;
     } else {
-      } else {
       const defAvatar = citadel.defender?.avatar || "🛡️";
       const avatarHTML = defAvatar.startsWith("img:")
         ? `<img src="${defAvatar.slice(4)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
