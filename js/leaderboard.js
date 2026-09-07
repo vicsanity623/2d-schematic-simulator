@@ -36,6 +36,8 @@ const Leaderboard = (() => {
       };
     }
 
+    const uniquePlots = {}; // oid -> Set of unique "tx_ty" coordinates
+
     for (const tid in allPlots) {
       const p = allPlots[tid];
       const oid = p.ownerId || "unknown";
@@ -52,7 +54,11 @@ const Leaderboard = (() => {
           countries: {}
         };
       }
-      playerStats[oid].plotsCount++;
+
+      // Track unique plot coordinates to prevent double-counting between local state & cloud sync
+      const plotKey = (p.tx !== undefined && p.ty !== undefined) ? `${p.tx}_${p.ty}` : tid;
+      if (!uniquePlots[oid]) uniquePlots[oid] = new Set();
+      uniquePlots[oid].add(plotKey);
 
       // Normalize City
       let rawCity = p.city || "Phoenix, AZ 🇺🇸";
@@ -132,6 +138,12 @@ const Leaderboard = (() => {
     const mayorsMap = pickTopRuler(cityCounts);
     const governorsMap = pickTopRuler(stateCounts);
     const presidentsMap = pickTopRuler(countryCounts);
+    // Assign exact deduplicated unique plot counts from our Set
+    for (const oid in uniquePlots) {
+      if (playerStats[oid]) {
+        playerStats[oid].plotsCount = uniquePlots[oid].size;
+      }
+    }
 
     // Sort Global with Highest Passive Rent Tie-Breaker (Descending: highest cash first)
     const sortedGlobal = Object.values(playerStats).sort((a, b) => {
