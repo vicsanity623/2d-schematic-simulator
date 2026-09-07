@@ -673,6 +673,8 @@ const Citadels = (() => {
     });
 
     document.getElementById("siege-strike-btn")?.addEventListener("click", handleSiegeStrike);
+    document.getElementById("forge-pay-eb-btn")?.addEventListener("click", () => executeUpgrade("eb"));
+    document.getElementById("forge-pay-diamonds-btn")?.addEventListener("click", () => executeUpgrade("diamonds"));
 
     setInterval(() => {
       const pills = document.querySelectorAll(".growth-timer-pill[data-finish]");
