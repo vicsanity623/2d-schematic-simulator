@@ -1292,6 +1292,20 @@
           showToast("💎 +1 Diamond Refunded!");
           spawnFlyingGemToHUD(originX, originY);
 
+        } else if (slice.type === "diamond_jackpot") {
+          // 💎 +12 or +24 Diamond Jackpot!
+          const winDiamonds = Number(slice.amount) || 12;
+          s.diamonds = (Number(s.diamonds) || 0) + winDiamonds;
+          el("wheel-result").textContent = `🎉 MEGA JACKPOT! +${winDiamonds} Diamonds!`;
+          showToast(`💎 MEGA JACKPOT! Won +${winDiamonds} Diamonds!`);
+
+          // Broadcast diamond jackpot to Feed
+          if (typeof Feed !== "undefined") {
+            Feed.broadcast("diamond_jackpot", { amount: winDiamonds });
+          }
+
+          launchFlyingGemStream(originX, originY, winDiamonds);
+
         } else if (slice.type === "miss") {
           el("wheel-result").textContent = "Better luck next time! (No reward)";
           showToast("🚫 Nothing this time — keep searching!");
