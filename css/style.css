@@ -3541,3 +3541,225 @@ div[aria-label="Advertisement"] {
   border-radius: 10px;
   margin-bottom: 10px;
 }
+
+/* ================= WEEKLY REALM TREASURY POOL UI ================= */
+
+/* Side Floating HUD Button */
+.weekly-pool-btn {
+  position: absolute;
+  right: 14px;
+  bottom: calc(188px + env(safe-area-inset-bottom));
+  z-index: 22;
+  background: linear-gradient(135deg, rgba(22, 32, 47, 0.96), rgba(13, 20, 32, 0.98));
+  border: 1.5px solid var(--gold);
+  border-radius: 999px;
+  padding: 6px 14px 6px 10px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(212, 175, 97, 0.4), 0 4px 12px rgba(0, 0, 0, 0.7);
+  animation: boostPulse 2.8s infinite ease-in-out;
+  transition: transform 0.15s ease;
+}
+
+.weekly-pool-btn:active {
+  transform: scale(0.92);
+}
+
+.pool-btn-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pool-icon {
+  font-size: 20px;
+  filter: drop-shadow(0 0 6px rgba(240, 211, 138, 0.9));
+}
+
+.pool-btn-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.pool-tag {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--gold-hi);
+  letter-spacing: 0.5px;
+}
+
+.pool-sub {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--teal);
+}
+
+/* Modal Styling */
+.weekly-pool-card {
+  max-width: 420px;
+  text-align: center;
+}
+
+.pool-glow-crown {
+  font-size: 40px;
+  filter: drop-shadow(0 0 16px rgba(240, 211, 138, 0.9));
+  margin-bottom: 2px;
+}
+
+.pool-hero-stats {
+  background: var(--panel-2);
+  border: 1.5px solid rgba(212, 175, 97, 0.45);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+}
+
+.pool-stat-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.pool-stat-divider {
+  width: 1px;
+  height: 38px;
+  background: var(--line);
+  margin: 0 10px;
+}
+
+.pool-stat-label {
+  font-size: 9px;
+  color: var(--text-dim);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.pool-stat-cash {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--parchment);
+}
+
+.pool-stat-pool {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--gold-hi);
+  text-shadow: 0 0 10px rgba(240, 211, 138, 0.4);
+}
+
+.pool-countdown-card {
+  background: rgba(79, 214, 196, 0.12);
+  border: 1px solid var(--teal);
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--parchment);
+  margin-bottom: 14px;
+}
+
+.pool-countdown-card strong {
+  color: var(--teal);
+  font-family: var(--font-display);
+  font-size: 13px;
+}
+
+.pool-tiers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  margin-bottom: 12px;
+}
+
+.pool-tier-item {
+  background: rgba(13, 20, 32, 0.85);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.pool-tier-item.tier-top3 {
+  border-color: rgba(212, 175, 97, 0.5);
+  background: linear-gradient(135deg, rgba(34, 48, 68, 0.7), rgba(20, 28, 42, 0.9));
+}
+
+.tier-badge {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--gold-hi);
+  margin-bottom: 3px;
+}
+
+.tier-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.tier-desc strong {
+  color: var(--teal);
+}
+
+/* Monday Celebration Claim Modal */
+.weekly-reward-card {
+  max-width: 380px;
+  text-align: center;
+}
+
+.reward-fireworks-icon {
+  font-size: 44px;
+  animation: coreFloat 2s infinite alternate ease-in-out;
+  margin-bottom: 4px;
+}
+
+.reward-payout-box {
+  background: var(--panel-2);
+  border: 1.5px solid var(--gold);
+  border-radius: 14px;
+  padding: 16px;
+  margin: 14px 0;
+  box-shadow: 0 0 20px rgba(212, 175, 97, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reward-rank-badge {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--gold-hi);
+}
+
+.reward-amount-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-dim);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 8px;
+}
+
+.reward-cash-val {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--teal);
+  text-shadow: 0 0 10px rgba(79, 214, 196, 0.6);
+}
