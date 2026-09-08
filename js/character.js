@@ -51,8 +51,8 @@ const Character3D = (() => {
         renderer = new THREE.WebGLRenderer({
           canvas: map.getCanvas(),
           context: gl,
-          antialias: true,
-          powerPreference: "high-performance",
+          antialias: false,
+          powerPreference: "low-power"
         });
         renderer.autoClear = false;
 
