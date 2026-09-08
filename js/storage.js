@@ -99,7 +99,7 @@ const Store = (() => {
 
       // 2. Cwood's Restoration (Automatically writes $0.854+ to his Cloud file on login)
       if (pName.includes("cwood") && (Number(state.lifetimeRent) || 0) < 0.854236) {
-        state.lifetimeRent = 0.854230;
+        state.lifetimeRent = 0.854236;
         console.log("[Storage] Automatically stamped Cwood's lifetime rent to $0.854+ in Cloud!");
         try {
           localStorage.setItem(KEY, JSON.stringify(state));
