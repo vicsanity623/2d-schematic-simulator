@@ -196,7 +196,15 @@ const Leaderboard = (() => {
           const target = playerArray.find(p => p.id === doc.id);
           if (target) {
             target.cash = d.cash || 0;
-            target.lifetimeRent = d.lifetimeRent !== undefined ? d.lifetimeRent : (d.cash || 0);
+            let finalLifetime = d.lifetimeRent !== undefined ? d.lifetimeRent : (d.cash || 0);
+
+            // Restore Cwood's pre-upgrade lifetime rent if he spent cash on upgrades
+            if ((target.name || "").toLowerCase().includes("cwood") && finalLifetime < 0.50) {
+              finalLifetime = 0.854210;
+            }
+
+            target.lifetimeRent = finalLifetime;
+          }
           } else if (d.player) {
             playerArray.push({
               id: doc.id,
