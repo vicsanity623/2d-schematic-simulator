@@ -107,9 +107,14 @@ const Wheel = (() => {
 
   function init() {
     canvas = document.getElementById("wheel-canvas");
-    ctx = canvas.getContext("2d");
+    if (!canvas) return;
+    ctx = canvas.getContext("2d", { alpha: true });
+    
+    // Promote Canvas to Dedicated GPU Hardware Texture
     canvas.style.transition = "none";
-    canvas.style.transform = "rotate(0deg)";
+    canvas.style.transform = "rotate(0deg) translateZ(0)";
+    canvas.style.willChange = "transform";
+    
     draw();
   }
 
@@ -189,8 +194,9 @@ let spinTimeoutId = null;
     const base = Math.ceil(rotation / 360) * 360;
     const finalRotation = base + extraSpins * 360 + neededRotation;
 
+    // Silky Smooth 60fps Hardware-Accelerated Spin
     canvas.style.transition = "transform 4.2s cubic-bezier(0.16, 0.85, 0.2, 1)";
-    canvas.style.transform = `rotate(${finalRotation}deg)`;
+    canvas.style.transform = `rotate(${finalRotation}deg) translateZ(0)`;
     rotation = finalRotation;
 
     let finished = false;
