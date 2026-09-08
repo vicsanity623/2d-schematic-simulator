@@ -110,8 +110,14 @@ const WeeklyPool = (() => {
     pendingRewardAmount = 0;
   }
 
-  // Update Live Ticker on HUD & Modal
-  async function updateCountdownTicker() {
+  let cachedHudCountdown = null;
+  let cachedModalCountdown = null;
+  let lastHudText = "";
+
+  // Battery-Efficient Countdown Ticker (Zero Unnecessary DOM Updates)
+  function updateCountdownTicker() {
+    if (document.hidden) return; // 0% CPU in pocket
+
     const nextMondayMs = getNextMondayUTCTimestamp();
     const now = Date.now();
     const diffSec = Math.max(0, Math.floor((nextMondayMs - now) / 1000));
@@ -121,19 +127,24 @@ const WeeklyPool = (() => {
     const mins = Math.floor((diffSec % 3600) / 60);
     const secs = diffSec % 60;
 
-    const timerStr = `${String(days).padStart(2, "0")}D : ${String(hrs).padStart(2, "0")}H : ${String(mins).padStart(2, "0")}M : ${String(secs).padStart(2, "0")}s`;
-    
-    const hudCountdown = document.getElementById("hud-pool-countdown");
-    const modalCountdown = document.getElementById("modal-pool-countdown-timer");
+    // 1. Only update HUD text if the hour string actually changed
+    const newHudText = `${days}D ${hrs}H`;
+    if (newHudText !== lastHudText && cachedHudCountdown) {
+      cachedHudCountdown.textContent = newHudText;
+      lastHudText = newHudText;
+    }
 
-    if (hudCountdown) hudCountdown.textContent = `${days}D ${hrs}H`;
-    if (modalCountdown) modalCountdown.textContent = timerStr;
+    // 2. ONLY update the second-by-second timer if the modal is currently OPEN!
+    if (modal && !modal.classList.contains("hidden") && cachedModalCountdown) {
+      cachedModalCountdown.textContent = `${String(days).padStart(2, "0")}D : ${String(hrs).padStart(2, "0")}H : ${String(mins).padStart(2, "0")}M : ${String(secs).padStart(2, "0")}s`;
+    }
   }
 
   async function open() {
     if (!modal) modal = document.getElementById("weekly-pool-modal");
     if (modal) modal.classList.remove("hidden");
 
+    updateCountdownTicker();
     const { totalGlobalRent, weeklyPool } = await calculateGlobalPool();
     document.getElementById("modal-global-rent-val").textContent = `$${totalGlobalRent.toFixed(6)}`;
     document.getElementById("modal-weekly-pool-val").textContent = `$${weeklyPool.toFixed(6)}`;
@@ -142,14 +153,23 @@ const WeeklyPool = (() => {
   function init() {
     modal = document.getElementById("weekly-pool-modal");
     rewardModal = document.getElementById("weekly-reward-modal");
+    cachedHudCountdown = document.getElementById("hud-pool-countdown");
+    cachedModalCountdown = document.getElementById("modal-pool-countdown-timer");
 
     document.getElementById("weekly-pool-hud-btn")?.addEventListener("click", open);
     document.getElementById("claim-weekly-reward-btn")?.addEventListener("click", claimWeeklyReward);
 
+    // Single 1-Second Ticker with Sleep Guard
     setInterval(updateCountdownTicker, 1000);
     updateCountdownTicker();
 
-    setTimeout(checkMondayDistribution, 2000);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        updateCountdownTicker();
+      }
+    });
+
+    setTimeout(checkMondayDistribution, 2500);
   }
 
   return { init, open, calculateGlobalPool, checkMondayDistribution };
