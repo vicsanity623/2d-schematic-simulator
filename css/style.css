@@ -2248,8 +2248,9 @@ html,body{
   width: 22px;
   height: 26px;
   display: block;
-  filter: drop-shadow(0 0 6px rgba(79, 214, 196, 0.85));
   animation: boostPulse 2.6s infinite ease-in-out;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* ================= LEADERBOARD HUD & MODAL ================= */
@@ -2308,8 +2309,10 @@ html,body{
 
 .trophy-emoji {
   font-size: 26px;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.7));
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.7);
   animation: boostPulse 2.8s infinite ease-in-out;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .side-hud-subtext {
@@ -3405,9 +3408,11 @@ div[aria-label="Advertisement"] {
 .forge-icon {
   font-size: 38px;
   color: var(--gold-hi);
-  filter: drop-shadow(0 0 14px rgba(240, 211, 138, 0.9));
+  text-shadow: 0 0 14px rgba(240, 211, 138, 0.9);
   margin-bottom: 2px;
   animation: boostPulse 2s infinite ease-in-out;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 /* Comparison Box */
@@ -3765,4 +3770,28 @@ div[aria-label="Advertisement"] {
   font-weight: 800;
   color: var(--teal);
   text-shadow: 0 0 10px rgba(79, 214, 196, 0.6);
+}
+
+/* ================= SINGLE ACTIVE SESSION CONFLICT MODAL ================= */
+.session-conflict-card {
+  max-width: 380px;
+  text-align: center;
+  border-top: 2px solid var(--ruby) !important;
+}
+
+.session-conflict-icon {
+  font-size: 40px;
+  margin-bottom: 6px;
+  animation: boostPulse 2s infinite ease-in-out;
+}
+
+.session-conflict-info {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 12px 0 16px;
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.45;
 }
