@@ -77,27 +77,35 @@ const Store = (() => {
       }
     }
 
-    // --- ONE-TIME CASH AUDIT & LIFETIME RENT RESTORATION (SELF-SEALING) ---
-    if (state && state.player && !state.cashAuditV1Done) {
-      state.cashAuditV1Done = true; // Permanently marks as audited (never runs again!)
+    // --- SELF-SEALING LIFETIME RENT & CASH AUDIT RESTORATION ---
+    if (state && state.player) {
+      const pName = (state.player.name || "").toLowerCase();
 
-      if (state.player.name === "Vic" || (state.plots && Object.keys(state.plots).length >= 20)) {
-        // 1. Lock Lifetime Rent at $1.01+
+      // 1. Vic's Restoration ($1.01+ Lifetime Rent & $0.087 Spendable Cash)
+      if ((pName.includes("vic") || (state.plots && Object.keys(state.plots).length >= 20)) && !state.cashAuditV1Done) {
+        state.cashAuditV1Done = true;
         if ((Number(state.lifetimeRent) || 0) < 1.01) {
           state.lifetimeRent = 1.017436000000000;
         }
-
-        // 2. Audit spendable cash: Reset the accidental dividend spam back to $0.087
         if ((Number(state.cash) || 0) > 0.30 && state.extractor && state.extractor.level >= 2) {
           state.cash = 0.087474587225872;
           console.log("[Audit] Corrected Vic's spendable cash back to $0.087.");
         }
+        try {
+          localStorage.setItem(KEY, JSON.stringify(state));
+          setTimeout(() => syncToCloud(), 500);
+        } catch (e) {}
       }
 
-      try {
-        localStorage.setItem(KEY, JSON.stringify(state));
-        setTimeout(() => syncToCloud(), 500);
-      } catch (e) {}
+      // 2. Cwood's Restoration (Automatically writes $0.854+ to his Cloud file on login)
+      if (pName.includes("cwood") && (Number(state.lifetimeRent) || 0) < 0.854230) {
+        state.lifetimeRent = 0.854230;
+        console.log("[Storage] Automatically stamped Cwood's lifetime rent to $0.854+ in Cloud!");
+        try {
+          localStorage.setItem(KEY, JSON.stringify(state));
+          setTimeout(() => syncToCloud(), 500);
+        } catch (e) {}
+      }
     }
 
     updateBaseRateCache(); // Warm the O(1) cache immediately on boot
