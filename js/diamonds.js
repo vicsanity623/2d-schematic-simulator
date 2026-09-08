@@ -77,51 +77,33 @@ const Diamonds = (() => {
     setTimeout(() => container.remove(), 700);
   }
 
+  // Lightweight GPU-Accelerated 3D Gem (Zero Duplicate Shader Overhead)
   function createGemElement(dim, did) {
     const el = document.createElement("div");
     el.className = "diamond-3d-wrapper" + (dim ? " far" : "");
 
-    const randomDuration = (2.8 + Math.random() * 1.0).toFixed(2) + "s";
-    const randomDelay = (-Math.random() * 3.5).toFixed(2) + "s";
+    const randomDuration = (2.8 + Math.random() * 0.8).toFixed(2) + "s";
+    const randomDelay = (-Math.random() * 3.0).toFixed(2) + "s";
 
     el.innerHTML = `
       <div class="gem-anchor" style="--hover-dur:${randomDuration}; --hover-delay:${randomDelay};">
         <div class="gem-shadow"></div>
         <div class="gem-3d">
           <svg viewBox="0 0 32 38" class="gem-svg">
-            <defs>
-              <linearGradient id="gemTop" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#a8f5ec"/>
-                <stop offset="100%" stop-color="#4fd6c4"/>
-              </linearGradient>
-              <linearGradient id="gemLeft" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#36b8a7"/>
-                <stop offset="100%" stop-color="#1d7a6e"/>
-              </linearGradient>
-              <linearGradient id="gemRight" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#4fd6c4"/>
-                <stop offset="100%" stop-color="#289b8d"/>
-              </linearGradient>
-              <linearGradient id="gemGlint" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
-                <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-            <polygon points="16,2 29,12 16,16 3,12" fill="url(#gemTop)"/>
-            <polygon points="3,12 16,16 16,36" fill="url(#gemLeft)"/>
-            <polygon points="29,12 16,16 16,36" fill="url(#gemRight)"/>
-            <polygon points="16,2 20,8 16,16 12,8" fill="url(#gemGlint)"/>
+            <polygon points="16,2 29,12 16,16 3,12" fill="#a8f5ec"/>
+            <polygon points="3,12 16,16 16,36" fill="#1d7a6e"/>
+            <polygon points="29,12 16,16 16,36" fill="#4fd6c4"/>
+            <polygon points="16,2 20,8 16,16 12,8" fill="rgba(255,255,255,0.85)"/>
           </svg>
           <div class="gem-sparkle-1">✦</div>
-          <div class="gem-sparkle-2">✦</div>
-          <span class="dust-particle p1"></span>
-          <span class="dust-particle p2"></span>
-          <span class="dust-particle p3"></span>
         </div>
       </div>
     `;
 
-    el.addEventListener("click", () => attemptCollect(did));
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      attemptCollect(did);
+    });
     return el;
   }
 
@@ -135,7 +117,8 @@ const Diamonds = (() => {
   }
 
   function renderAll() {
-    if (!map) return;
+    // Battery Saver: Skip marker rendering if phone is in pocket or map not loaded
+    if (!map || document.hidden) return;
     const state = Store.get();
     const live = state.liveDiamonds;
 
@@ -259,11 +242,23 @@ const Diamonds = (() => {
     spawnTimer = setInterval(trySpawn, CONFIG.DIAMOND_SPAWN_CHECK_MS || 35000);
   }
 
+  let lastPosUpdate = 0;
+  let lastRenderPos = null;
+
   function setPlayerPosition(lat, lon) {
+    const now = Date.now();
     playerPos = { lat, lon };
-    pruneExpired();
-    trySpawn();
-    renderAll();
+
+    // Throttle checks: Only re-render if moved > 2 meters or 3 seconds elapsed
+    const distMoved = lastRenderPos ? Geo.haversine(lastRenderPos.lat, lastRenderPos.lon, lat, lon) : 999;
+
+    if (distMoved > 2 || (now - lastPosUpdate > 3000)) {
+      lastPosUpdate = now;
+      lastRenderPos = { lat, lon };
+      pruneExpired();
+      trySpawn();
+      renderAll();
+    }
   }
 
   return { init, setPlayerPosition, renderAll };
