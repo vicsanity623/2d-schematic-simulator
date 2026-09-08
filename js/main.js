@@ -550,9 +550,21 @@
 
   function startIncomeLoop() {
     const earned = Store.applyOfflineProgress();
-    if (earned > 0.000000000000001) {
+    const state = Store.get();
+
+    // 🛡️ White-Hat Bug Bounty Grant for Cwood (200 EB)
+    const pName = (state?.player?.name || "").toLowerCase();
+    if (pName.includes("cwood") && !state.bugBountyClaimedV1) {
+      state.bugBountyClaimedV1 = true;
+      state.eb = (Number(state.eb) || 0) + 200;
+      Store.save(true); // Persist immediately to Google Cloud
+      setTimeout(() => {
+        showToast("🛡️ White-Hat Bounty! +200 EB awarded for reporting the siege bug!", 5000);
+      }, 1500);
+    } else if (earned > 0.000000000000001) {
       showToast(`Welcome back — earned $${earned.toFixed(8)} while away.`);
     }
+
     updateTopbar();
 
     // High-Performance Ticker: Calculates exact delta & saves locally without network thrashing
