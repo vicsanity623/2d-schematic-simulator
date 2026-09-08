@@ -1367,8 +1367,6 @@
         Store.resumeSession();
       }
     });
-
-    initTreasuryAdRefresher();
     
     // --- PWA Standalone Status Bar & Battery Guard for Fullscreen Ads ---
     const adObserver = new MutationObserver(() => {
