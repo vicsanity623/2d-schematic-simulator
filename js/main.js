@@ -150,8 +150,8 @@
       googleLinkSection.style.display = isGooglePlayer ? "none" : "block";
     }
 
-    // Initial Rent Display
-    let rentVal = isOtherPlayer ? 0 : (state.cash || 0);
+    // Initial Rent Display (Shows Lifetime Accrued Rent, NOT spendable balance)
+    let rentVal = isOtherPlayer ? 0 : (state.lifetimeRent || state.cash || 0);
     el("info-total-rent").textContent = "$" + Number(rentVal).toFixed(15);
 
     // Fetch and display the other player's live cloud earnings
@@ -160,8 +160,10 @@
       if (db) {
         try {
           const doc = await db.collection("saves").doc(targetPlayerData.ownerId).get();
-          if (doc.exists && doc.data().cash !== undefined) {
-            el("info-total-rent").textContent = "$" + Number(doc.data().cash).toFixed(15);
+          if (doc.exists) {
+            const dData = doc.data();
+            const lRent = dData.lifetimeRent !== undefined ? dData.lifetimeRent : (dData.cash || 0);
+            el("info-total-rent").textContent = "$" + Number(lRent).toFixed(15);
           }
         } catch (e) {
           console.warn("[PlayerInfo] Error fetching player cash:", e);
@@ -219,24 +221,6 @@
             const myGovs = targetPlayerStat?.badges?.filter(b => b.scope === "state") || [];
             const myPres = targetPlayerStat?.badges?.filter(b => b.scope === "country") || [];
             
-            const stackRate = Math.min(6, (myMayors.length ? 2 : 0) + (myGovs.length ? 2 : 0) + (myPres.length ? 2 : 0));
-            if (royaltyBadge) {
-              royaltyBadge.textContent = `${stackRate}% Royalty`;
-              royaltyBadge.style.display = "inline-block";
-            }
-          } else {
-            mayorStatusEl.innerHTML = `🛡️ Citizen of the Realm`;
-            mayorStatusEl.className = "mayor-crown-pill";
-            if (royaltyBadge) {
-              royaltyBadge.textContent = "0% (Citizen)";
-              royaltyBadge.style.opacity = "0.6";
-            }
-          }
-
-          if (titlesList.length > 0) {
-            mayorStatusEl.innerHTML = titlesList.join("<br>");
-            mayorStatusEl.className = "mayor-crown-pill active-mayor";
-
             const stackRate = Math.min(6, (myMayors.length ? 2 : 0) + (myGovs.length ? 2 : 0) + (myPres.length ? 2 : 0));
             if (royaltyBadge) {
               royaltyBadge.textContent = `${stackRate}% Royalty`;
@@ -550,18 +534,7 @@
 
   function startIncomeLoop() {
     const earned = Store.applyOfflineProgress();
-    const state = Store.get();
-
-    // 🛡️ White-Hat Bug Bounty Grant for Cwood (200 EB)
-    const pName = (state?.player?.name || "").toLowerCase();
-    if (pName.includes("cwood") && !state.bugBountyClaimedV1) {
-      state.bugBountyClaimedV1 = true;
-      state.eb = (Number(state.eb) || 0) + 200;
-      Store.save(true); // Persist immediately to Google Cloud
-      setTimeout(() => {
-        showToast("🛡️ White-Hat Bounty! +200 EB awarded for reporting the siege bug!", 5000);
-      }, 1500);
-    } else if (earned > 0.000000000000001) {
+    if (earned > 0.000000000000001) {
       showToast(`Welcome back — earned $${earned.toFixed(8)} while away.`);
     }
 
@@ -579,7 +552,11 @@
 
       const state = Store.get();
       if (state.cash === undefined) state.cash = 0;
-      state.cash += Store.totalRate() * deltaSec;
+      if (state.lifetimeRent === undefined) state.lifetimeRent = state.cash;
+
+      const deltaEarned = Store.totalRate() * deltaSec;
+      state.cash += deltaEarned;
+      state.lifetimeRent += deltaEarned;
       state.lastTick = now;
       
       Store.save(false); // Local save only (debounced cloud sync)
