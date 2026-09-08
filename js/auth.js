@@ -27,7 +27,16 @@ const Auth = (() => {
       return;
     }
 
-    guestBtn.addEventListener("click", () => {
+    let guestTriggered = false;
+    function handleGuestLogin(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (guestTriggered) return;
+      guestTriggered = true;
+
+      console.log("[Auth] Play as Guest tapped!");
       const s = Store.get();
       if (!s.player.id) {
         s.player.id = "guest-" + Math.random().toString(36).slice(2, 10);
@@ -35,7 +44,12 @@ const Auth = (() => {
         Store.save();
       }
       onSignedIn(s.player);
-    });
+    }
+
+    if (guestBtn) {
+      guestBtn.addEventListener("click", handleGuestLogin);
+      guestBtn.addEventListener("touchend", handleGuestLogin);
+    }
 
     if (!CONFIG.GOOGLE_CLIENT_ID) {
       slot.innerHTML = `<p class="fine-print">Google sign-in isn't configured for this deployment — continue as a guest below.</p>`;
@@ -46,10 +60,13 @@ const Auth = (() => {
     const tryInit = () => {
       attempts++;
       if (!window.google || !google.accounts || !google.accounts.id) {
-        if (attempts < 30) {
+        if (attempts < 25) {
           setTimeout(tryInit, 150);
         } else {
-          console.warn("[Auth] Google GSI script failed to load. Check network connection.");
+          console.warn("[Auth] Google GSI script blocked (Brave Shields or network).");
+          if (slot) {
+            slot.innerHTML = `<p class="fine-print" style="color:var(--teal);font-size:11.5px;margin-bottom:12px;">🛡️ Brave Shields active — Google sign-in blocked.<br>Continue as Guest below or disable Shields for Google login.</p>`;
+          }
         }
         return;
       }
