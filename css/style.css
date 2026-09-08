@@ -3021,28 +3021,24 @@ html,body{
   background: transparent !important;
 }
 
-/* ---------- PWA STANDALONE NOTCH & BATTERY GUARD FOR FULLSCREEN ADS ---------- */
-/* Pushes the entire Google AdSense Fullscreen Overlay & Iframes down below Status Bar */
+/* ---------- Safe-Area Notch & Dynamic Island Guard for Fullscreen Vignette Ads ---------- */
 body > div[style*="2147483647"],
 body > ins[style*="2147483647"],
-body > div[id*="aswift"],
-body > div[id*="google-ads"],
 .adsbygoogle-noablate,
-iframe[id*="google_ads_iframe"],
-iframe[src*="googleads"] {
-  top: max(54px, env(safe-area-inset-top)) !important;
-  height: calc(100vh - max(54px, env(safe-area-inset-top))) !important;
+div[id*="google-ads-annotation"],
+div[aria-label="Advertisement"] {
+  padding-top: max(52px, env(safe-area-inset-top)) !important;
   box-sizing: border-box !important;
 }
 
-/* Standalone Home Screen PWA Mode Override */
-@media all and (display-mode: standalone) {
-  body > div[style*="2147483647"],
-  body > div[style*="position: fixed"],
-  .adsbygoogle-noablate {
-    top: max(54px, env(safe-area-inset-top)) !important;
-    height: calc(100% - 54px) !important;
-  }
+/* Force Google's [X] Close Button below the Camera Notch & Status Bar Clock */
+div.google-anno-skip,
+div[aria-label="Close ad"],
+button[aria-label="Close ad"],
+[id*="dismiss-button"] {
+  top: max(54px, calc(env(safe-area-inset-top) + 12px)) !important;
+  right: 16px !important;
+  z-index: 2147483647 !important;
 }
 
 /* ---------- Territory Scope Bar ---------- */
