@@ -21,27 +21,27 @@ const Citadels = (() => {
     return "citadel_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
   }
 
-  // --- 1. Capsule Drop Unlock & Safe One-Time Refund ---
+  // --- 1. Capsule Drop Unlock & Cross-Device Sync Guard ---
   function checkCapsuleUnlock() {
     const state = Store.get();
-    if (!state) return;
+    if (!state || !state.player?.id) return;
 
     if (!state.capsule) {
       state.capsule = { awarded: false, rarity: null, planted: false, tileId: null };
     }
 
-    // TAMPER-PROOF ONE-TIME REFUND: Runs strictly ONCE per account, then locks forever!
-    if (!state.capsuleRefundV1) {
-      state.capsuleRefundV1 = true; // Permanently marks as refunded
-      if (state.capsule && state.capsule.awarded) {
-        state.capsule.planted = false;
-        state.capsule.tileId = null;
-        console.log("[Citadels] Capsule refunded safely (1-time migration locked).");
-      }
-      Store.save();
+    // CROSS-DEVICE CHECK: If player already has an active Citadel in the world, lock planted to true!
+    const myCitadel = Object.values(globalCitadels).find(c => c.creatorId === state.player.id);
+    if (myCitadel) {
+      state.capsule.awarded = true;
+      state.capsule.planted = true;
+      state.capsule.tileId = myCitadel.id;
+      state.capsule.rarity = myCitadel.rarity;
+      return; // Already planted on another device, no second capsule!
     }
 
-    if (!state.capsule.awarded && (Number(state.cash) || 0) >= CONFIG.CITADEL_UNLOCK_BALANCE) {
+    // Trigger unlock only if never awarded and balance >= $0.01
+    if (!state.capsule.awarded && (Number(state.lifetimeRent || state.cash) || 0) >= CONFIG.CITADEL_UNLOCK_BALANCE) {
       const rarities = Object.values(CONFIG.CITADEL_RARITIES);
       const totalWeight = rarities.reduce((s, r) => s + r.weight, 0);
       let roll = Math.random() * totalWeight;
