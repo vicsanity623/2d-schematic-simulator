@@ -8,6 +8,20 @@ const Leaderboard = (() => {
   let cachedData = null;
   let lastFetchTime = 0;
   const CACHE_TTL_MS = 60000;
+  
+  // Helper to calculate any player's base plot income rate ($/sec)
+  function getPlayerIncomeRate(ownerId, allPlots) {
+    let rate = 0;
+    for (const tid in allPlots) {
+      const p = allPlots[tid];
+      if (p.ownerId === ownerId) {
+        const rarityKey = p.rarity?.key || p.rarity;
+        const configRarity = CONFIG.PLOT_RARITIES.find(r => r.key === rarityKey);
+        rate += (configRarity ? configRarity.rate : 0.0000000011);
+      }
+    }
+    return rate;
+  }
 
   async function fetchRankings(forceRefresh = false) {
     const now = Date.now();
@@ -191,18 +205,27 @@ const Leaderboard = (() => {
     if (db) {
       try {
         const snap = await db.collection("saves").limit(50).get();
+        const now = Date.now();
+
         snap.forEach(doc => {
           const d = doc.data();
           const target = playerArray.find(p => p.id === doc.id);
+
+          // Calculate exact offline elapsed time and accrued rent
+          const lastActive = d.lastTick || d.createdAt || now;
+          const offlineSec = Math.max(0, (now - lastActive) / 1000);
+          const rate = getPlayerIncomeRate(doc.id, allPlots);
+          const offlineAccrued = offlineSec * rate;
+
+          let finalLifetime = (d.lifetimeRent !== undefined ? d.lifetimeRent : (d.cash || 0)) + offlineAccrued;
+
+          // Restore Cwood's pre-upgrade lifetime rent if he spent cash on upgrades
+          if ((doc.data().player?.name || "").toLowerCase().includes("cwood") && finalLifetime < 0.50) {
+            finalLifetime = 0.854210 + offlineAccrued;
+          }
+
           if (target) {
-            target.cash = d.cash || 0;
-            let finalLifetime = d.lifetimeRent !== undefined ? d.lifetimeRent : (d.cash || 0);
-
-            // Restore Cwood's pre-upgrade lifetime rent if he spent cash on upgrades
-            if ((target.name || "").toLowerCase().includes("cwood") && finalLifetime < 0.50) {
-              finalLifetime = 0.854210;
-            }
-
+            target.cash = (d.cash || 0) + offlineAccrued;
             target.lifetimeRent = finalLifetime;
           } else if (d.player) {
             playerArray.push({
@@ -210,8 +233,8 @@ const Leaderboard = (() => {
               name: d.player.name || "Traveler",
               avatar: d.player.avatar || "🙂",
               plotsCount: Object.keys(d.plots || {}).length,
-              cash: d.cash || 0,
-              lifetimeRent: d.lifetimeRent !== undefined ? d.lifetimeRent : (d.cash || 0),
+              cash: (d.cash || 0) + offlineAccrued,
+              lifetimeRent: finalLifetime,
               cities: {}, states: {}, countries: {}
             });
           }
