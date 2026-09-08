@@ -528,6 +528,7 @@
     if (typeof Leaderboard !== "undefined") Leaderboard.init();
     if (typeof Chat !== "undefined") Chat.init();
     if (typeof Citadels !== "undefined") Citadels.init(map);
+    if (typeof WeeklyPool !== "undefined") WeeklyPool.init();
     startIncomeLoop();
     wireUI();
   }

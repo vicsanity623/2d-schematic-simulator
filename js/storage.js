@@ -59,17 +59,27 @@ const Store = (() => {
       state = defaultState();
     }
 
-    // --- PERMANENT LIFETIME RENT RESTORATION PATCH ---
-    if (state && state.player && (state.player.name === "Vic" || (state.plots && Object.keys(state.plots).length >= 20))) {
-      // If lifetimeRent is lower than 1.01, restore it immediately
-      if ((Number(state.lifetimeRent) || 0) < 1.01) {
-        state.lifetimeRent = 1.017182582052873; // Restores your exact $1.01+ milestone
-        console.log("[Recovery] Restored Vic's lifetime rent to $1.01+");
-        try {
-          localStorage.setItem(KEY, JSON.stringify(state));
-          setTimeout(() => syncToCloud(), 500);
-        } catch (e) {}
+    // --- ONE-TIME CASH AUDIT & LIFETIME RENT RESTORATION (SELF-SEALING) ---
+    if (state && state.player && !state.cashAuditV1Done) {
+      state.cashAuditV1Done = true; // Permanently marks as audited (never runs again!)
+
+      if (state.player.name === "Vic" || (state.plots && Object.keys(state.plots).length >= 20)) {
+        // 1. Lock Lifetime Rent at $1.01+
+        if ((Number(state.lifetimeRent) || 0) < 1.01) {
+          state.lifetimeRent = 1.017436000000000;
+        }
+
+        // 2. Audit spendable cash: Reset the accidental dividend spam back to $0.087
+        if ((Number(state.cash) || 0) > 0.30 && state.extractor && state.extractor.level >= 2) {
+          state.cash = 0.087474587225872;
+          console.log("[Audit] Corrected Vic's spendable cash back to $0.087.");
+        }
       }
+
+      try {
+        localStorage.setItem(KEY, JSON.stringify(state));
+        setTimeout(() => syncToCloud(), 500);
+      } catch (e) {}
     }
 
     return state;
