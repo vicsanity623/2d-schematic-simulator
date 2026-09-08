@@ -197,9 +197,10 @@ const Citadels = (() => {
   }
 
   function render() {
-    if (!mapInstance || !mapInstance.getStyle()) return;
+    // Battery Saver: Don't spend CPU rebuilding markers if phone is in pocket!
+    if (!mapInstance || !mapInstance.getStyle() || document.hidden) return;
 
-    // --- AUTO-PROMOTE COMPLETED EVOLUTIONS (Instant Fix for Cwood & offline players) ---
+    // --- AUTO-PROMOTE COMPLETED EVOLUTIONS ---
     const now = Date.now();
     for (const cid in globalCitadels) {
       const c = globalCitadels[cid];
@@ -739,8 +740,23 @@ const Citadels = (() => {
     document.getElementById("forge-pay-eb-btn")?.addEventListener("click", () => executeUpgrade("eb"));
     document.getElementById("forge-pay-diamonds-btn")?.addEventListener("click", () => executeUpgrade("diamonds"));
 
+    // Clean up animation frame loop when siege modal is closed
+    document.querySelectorAll("[data-close='siege-modal']").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (needleAnimId) {
+          cancelAnimationFrame(needleAnimId);
+          needleAnimId = null;
+        }
+      });
+    });
+
+    // Battery Saver: 1-Second Countdown Ticker (Paused when screen locked)
     setInterval(() => {
+      if (document.hidden) return; // 0% CPU in pocket
+
       const pills = document.querySelectorAll(".growth-timer-pill[data-finish]");
+      if (pills.length === 0) return; // No active timers, skip DOM work
+
       const now = Date.now();
       let needsReRender = false;
 
