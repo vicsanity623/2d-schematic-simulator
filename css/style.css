@@ -1338,7 +1338,8 @@ html,body{
   height: 36px;
   animation: gemHover var(--hover-dur, 3.2s) ease-in-out infinite;
   animation-delay: var(--hover-delay, 0s);
-  filter: drop-shadow(0 0 8px rgba(79, 214, 196, 0.75));
+  will-change: transform;
+  transform: translateZ(0); /* Forces mobile GPU compositing layer */
 }
 .gem-svg {
   width: 100%;
@@ -3174,10 +3175,12 @@ div[aria-label="Advertisement"] {
 .dyson-ring {
   position: absolute;
   border-radius: 50%;
-  border: 2.5px solid var(--core-color, #4fd6c4);
-  box-shadow: 0 0 18px var(--core-color, #4fd6c4);
+  border: 2px solid var(--core-color, #4fd6c4);
+  box-shadow: 0 0 10px var(--core-color, #4fd6c4);
   left: 50%;
   transform-origin: center center;
+  will-change: transform;
+  transform: translateZ(0); /* Zero CPU overhead */
 }
 
 .dyson-ring.ring-1 {
