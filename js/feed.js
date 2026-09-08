@@ -144,6 +144,11 @@ const Feed = (() => {
       const location = details.location || "the Realm 🌐";
       const rarityLabel = details.rarity || "land";
       message = `<strong>${playerName}</strong> claimed a ${rarityLabel} plot in <em>${location}</em>`;
+    } else if (type === "citadel_evolve") {
+      const creator = details.creatorName || playerName;
+      const tier = details.tierName || "Legendary Hold";
+      const location = details.location || "the Realm 🌐";
+      message = `✨ <strong>${creator}</strong> ascended their Hold to a <strong>${tier}</strong> in <em>${location}</em>!`;
     } else if (type === "jackpot") {
       const amount = details.amount || 25;
       message = `🎉 <strong>${playerName}</strong> hit the <strong>${amount} EB</strong> Jackpot on the Wheel!`;

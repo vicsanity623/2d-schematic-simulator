@@ -144,25 +144,30 @@ const Citadels = (() => {
     alert("🔮 Citadel planted directly at your location! Stronghold parcel activated!");
   }
 
-  // Create 10X Colossal 3D Dyson Sphere Monument Marker
+  // Create 10X Colossal 3D Dyson Sphere Monument Marker (Handles Growth & Evolution)
   function createDysonSphereMarker(citadel) {
     const wrap = document.createElement("div");
     wrap.className = "citadel-3d-monument";
     const now = Date.now();
-    const isUnderConstruction = now < citadel.growthFinish;
-    const rConfig = CONFIG.CITADEL_RARITIES[citadel.rarity] || CONFIG.CITADEL_RARITIES.common;
+
+    // Check if either initial build OR 10-minute evolution is active
+    const activeFinish = citadel.isEvolving ? citadel.evolutionFinish : citadel.growthFinish;
+    const isUnderConstruction = activeFinish && now < activeFinish;
+    const displayRarity = citadel.isEvolving ? (citadel.targetRarity || citadel.rarity) : citadel.rarity;
+    const rConfig = CONFIG.CITADEL_RARITIES[displayRarity] || CONFIG.CITADEL_RARITIES.common;
 
     if (isUnderConstruction) {
-      const remainingSec = Math.max(0, Math.floor((citadel.growthFinish - now) / 1000));
+      const remainingSec = Math.max(0, Math.floor((activeFinish - now) / 1000));
       const mins = Math.floor(remainingSec / 60);
       const secs = remainingSec % 60;
+      const labelPrefix = citadel.isEvolving ? "⚡ Evolving" : "⏳";
 
       wrap.innerHTML = `
         <div class="citadel-growth-pin" style="--r-color: ${rConfig.color}">
           <div class="growth-ground-pulse"></div>
           <div class="growth-pin-stem"></div>
-          <div class="growth-seed-core">🔮</div>
-          <div class="growth-timer-pill" data-finish="${citadel.growthFinish}" data-cid="${citadel.id}">⏳ ${mins}:${String(secs).padStart(2, "0")}</div>
+          <div class="growth-seed-core">${citadel.isEvolving ? "⚡" : "🔮"}</div>
+          <div class="growth-timer-pill" data-finish="${activeFinish}" data-cid="${citadel.id}">${labelPrefix} ${mins}:${String(secs).padStart(2, "0")}</div>
         </div>
       `;
     } else {
@@ -191,9 +196,41 @@ const Citadels = (() => {
     return wrap;
   }
 
-  // --- Render 3D Monuments & Ground Stronghold Parcels ---
   function render() {
     if (!mapInstance || !mapInstance.getStyle()) return;
+
+    // --- AUTO-PROMOTE COMPLETED EVOLUTIONS (Instant Fix for Cwood & offline players) ---
+    const now = Date.now();
+    for (const cid in globalCitadels) {
+      const c = globalCitadels[cid];
+      if (c.isEvolving && c.evolutionFinish && now >= c.evolutionFinish) {
+        const promotedTier = c.targetRarity || "rare";
+        c.rarity = promotedTier;
+        c.isEvolving = false;
+        delete c.evolutionFinish;
+        delete c.targetRarity;
+
+        const db = Store.getDb();
+        if (db) {
+          db.collection("citadels").doc(cid).update({
+            rarity: promotedTier,
+            isEvolving: false,
+            evolutionFinish: null,
+            targetRarity: null
+          }).catch(e => console.warn(e));
+        }
+
+        // Only broadcast once from the creator's own device
+        const state = Store.get();
+        if (typeof Feed !== "undefined" && c.creatorId === state?.player?.id) {
+          Feed.broadcast("citadel_evolve", {
+            creatorName: c.creatorName,
+            tierName: CONFIG.CITADEL_RARITIES[promotedTier].label,
+            location: "the Realm 🌐"
+          });
+        }
+      }
+    }
 
     activeMarkers.forEach(m => m.remove());
     activeMarkers = [];
@@ -368,32 +405,34 @@ const Citadels = (() => {
 
     const isOwnerOrDefender = (def && def.id === myId) || (cit.creatorId === myId);
 
+    // 1. REIGNING DEFENDER VIEW: Show Recall and Upgrade. NEVER show Siege!
     if (def && def.id === myId) {
       const recallBtn = document.createElement("button");
       recallBtn.className = "btn btn-primary";
       recallBtn.innerHTML = `Recall Defender & Collect Loot (+${spoils.diamonds} ◆ & +${spoils.eb} EB)`;
       recallBtn.addEventListener("click", () => recallDefender(cid));
       actionsWrap.appendChild(recallBtn);
-    }
 
-    // --- Upgrade Forge Trigger (Available for Hold Owner or Defender) ---
-    if (isOwnerOrDefender && cit.rarity !== "legendary" && !cit.isEvolving) {
-      const upgradeBtn = document.createElement("button");
-      upgradeBtn.className = "btn btn-citadel-upgrade";
-      const nextInfo = CONFIG.CITADEL_UPGRADE_COSTS[cit.rarity];
-      upgradeBtn.innerHTML = `⚡ Upgrade Hold to ${nextInfo ? nextInfo.nextLabel : "Next Tier"}`;
-      upgradeBtn.addEventListener("click", () => openUpgradeModal(cid));
-      actionsWrap.appendChild(upgradeBtn);
-    }
-
-    if (!def || !def.id) {
+      if (cit.rarity !== "legendary" && !cit.isEvolving) {
+        const upgradeBtn = document.createElement("button");
+        upgradeBtn.className = "btn btn-citadel-upgrade";
+        const nextInfo = CONFIG.CITADEL_UPGRADE_COSTS[cit.rarity];
+        upgradeBtn.innerHTML = `⚡ Upgrade Hold to ${nextInfo ? nextInfo.nextLabel : "Next Tier"}`;
+        upgradeBtn.addEventListener("click", () => openUpgradeModal(cid));
+        actionsWrap.appendChild(upgradeBtn);
+      }
+    } 
+    // 2. UNCLAIMED HOLD VIEW: Allow Stationing
+    else if (!def || !def.id) {
       const stationBtn = document.createElement("button");
       stationBtn.className = "btn btn-primary";
       stationBtn.textContent = isNearby ? "Station My Avatar (Defend Hold)" : "Too Far to Station (Walk Closer)";
       stationBtn.disabled = !isNearby;
       stationBtn.addEventListener("click", () => stationDefender(cid));
       actionsWrap.appendChild(stationBtn);
-    } else {
+    } 
+    // 3. ENEMY DEFENDER VIEW ONLY: Allow Siege (Only when someone else is defending!)
+    else if (def.id !== myId) {
       const siegeBtn = document.createElement("button");
       siegeBtn.className = "btn btn-danger";
       siegeBtn.innerHTML = isNearby ? `⚔️ Initiate Siege (Cost: 1 <span class="hud-gem-icon"></span>)` : "Too Far to Attack (Walk Closer)";
@@ -535,6 +574,30 @@ const Citadels = (() => {
   // --- 4. Reflex Meter Siege Battle ---
   function startSiege(cid) {
     const state = Store.get();
+    const targetCit = globalCitadels[cid];
+
+    // Rule 1: Must have unlocked and planted your own Capsule first!
+    if (!state.capsule || !state.capsule.planted) {
+      alert("🛡️ You must reach $0.01 balance and plant your own Realm Capsule before you can launch Sieges against other players!");
+      return;
+    }
+
+    // Rule 2: Cannot attack any Citadel within 250 meters of your own Citadel
+    const myCitadel = Object.values(globalCitadels).find(c => c.creatorId === state.player?.id);
+    if (myCitadel && targetCit) {
+      const distToMyHold = Geo.haversine(myCitadel.lat, myCitadel.lon, targetCit.lat, targetCit.lon);
+      if (distToMyHold < 250) {
+        alert(`🛡️ Peace Treaty Active: You cannot siege holds within 250 meters of your own Citadel (currently ${Math.round(distToMyHold)}m away). Travel further to conquer foreign lands!`);
+        return;
+      }
+    }
+
+    // Anti-Exploit Security Check: Block self-sieges completely!
+    if (targetCit && targetCit.defender && targetCit.defender.id === state.player?.id) {
+      alert("🛡️ You already hold this Citadel! You cannot siege yourself.");
+      return;
+    }
+    
     if ((Number(state.diamonds) || 0) < CONFIG.CITADEL_SIEGE_COST_DIAMONDS) {
       alert("You need at least 1 Diamond to initiate a Siege!");
       return;

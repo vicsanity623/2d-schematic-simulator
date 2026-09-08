@@ -150,8 +150,8 @@
       googleLinkSection.style.display = isGooglePlayer ? "none" : "block";
     }
 
-    // Initial Rent Display
-    let rentVal = isOtherPlayer ? 0 : (state.cash || 0);
+    // Initial Rent Display (Shows Lifetime Accrued Rent, NOT spendable balance)
+    let rentVal = isOtherPlayer ? 0 : (state.lifetimeRent || state.cash || 0);
     el("info-total-rent").textContent = "$" + Number(rentVal).toFixed(15);
 
     // Fetch and display the other player's live cloud earnings
@@ -160,8 +160,10 @@
       if (db) {
         try {
           const doc = await db.collection("saves").doc(targetPlayerData.ownerId).get();
-          if (doc.exists && doc.data().cash !== undefined) {
-            el("info-total-rent").textContent = "$" + Number(doc.data().cash).toFixed(15);
+          if (doc.exists) {
+            const dData = doc.data();
+            const lRent = dData.lifetimeRent !== undefined ? dData.lifetimeRent : (dData.cash || 0);
+            el("info-total-rent").textContent = "$" + Number(lRent).toFixed(15);
           }
         } catch (e) {
           console.warn("[PlayerInfo] Error fetching player cash:", e);
@@ -219,24 +221,6 @@
             const myGovs = targetPlayerStat?.badges?.filter(b => b.scope === "state") || [];
             const myPres = targetPlayerStat?.badges?.filter(b => b.scope === "country") || [];
             
-            const stackRate = Math.min(6, (myMayors.length ? 2 : 0) + (myGovs.length ? 2 : 0) + (myPres.length ? 2 : 0));
-            if (royaltyBadge) {
-              royaltyBadge.textContent = `${stackRate}% Royalty`;
-              royaltyBadge.style.display = "inline-block";
-            }
-          } else {
-            mayorStatusEl.innerHTML = `🛡️ Citizen of the Realm`;
-            mayorStatusEl.className = "mayor-crown-pill";
-            if (royaltyBadge) {
-              royaltyBadge.textContent = "0% (Citizen)";
-              royaltyBadge.style.opacity = "0.6";
-            }
-          }
-
-          if (titlesList.length > 0) {
-            mayorStatusEl.innerHTML = titlesList.join("<br>");
-            mayorStatusEl.className = "mayor-crown-pill active-mayor";
-
             const stackRate = Math.min(6, (myMayors.length ? 2 : 0) + (myGovs.length ? 2 : 0) + (myPres.length ? 2 : 0));
             if (royaltyBadge) {
               royaltyBadge.textContent = `${stackRate}% Royalty`;
@@ -553,6 +537,7 @@
     if (earned > 0.000000000000001) {
       showToast(`Welcome back — earned $${earned.toFixed(8)} while away.`);
     }
+
     updateTopbar();
 
     // High-Performance Ticker: Calculates exact delta & saves locally without network thrashing
@@ -567,7 +552,11 @@
 
       const state = Store.get();
       if (state.cash === undefined) state.cash = 0;
-      state.cash += Store.totalRate() * deltaSec;
+      if (state.lifetimeRent === undefined) state.lifetimeRent = state.cash;
+
+      const deltaEarned = Store.totalRate() * deltaSec;
+      state.cash += deltaEarned;
+      state.lifetimeRent += deltaEarned;
       state.lastTick = now;
       
       Store.save(false); // Local save only (debounced cloud sync)
@@ -935,7 +924,23 @@
       if (el("extractor-next-timer")) el("extractor-next-timer").textContent = `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
       if (el("extractor-stored-count")) el("extractor-stored-count").innerHTML = `${state.extractor.stored} / ${maxStored} <span class="hud-gem-icon"></span>`;
       if (el("extractor-next-perk")) el("extractor-next-perk").textContent = nextIsCapacity ? "Next: +1 Max Diamond Capacity" : "Next: -0.0001% Mining Time";
-      if (el("upgrade-extractor-btn")) el("upgrade-extractor-btn").textContent = `Upgrade ($${nextCost.toFixed(2)})`;
+      
+      // $1.00 Unlock Condition Check
+      const upgradeBtn = el("upgrade-extractor-btn");
+      const lockNotice = el("extractor-locked-notice");
+      const hasReachedOneDollar = (Number(state.cash) || 0) >= 1.00 || lvl > 1;
+
+      if (upgradeBtn && lockNotice) {
+        if (hasReachedOneDollar) {
+          upgradeBtn.style.display = "block";
+          upgradeBtn.textContent = `⚡ Upgrade ($${nextCost.toFixed(2)})`;
+          lockNotice.classList.add("hidden");
+        } else {
+          upgradeBtn.style.display = "none";
+          lockNotice.classList.remove("hidden");
+        }
+      }
+
       if (el("collect-extractor-btn")) {
         el("collect-extractor-btn").innerHTML = `Collect All (${state.extractor.stored} <span class="hud-gem-icon"></span>)`;
         el("collect-extractor-btn").disabled = state.extractor.stored === 0;

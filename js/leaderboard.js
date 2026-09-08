@@ -194,7 +194,27 @@ const Leaderboard = (() => {
         snap.forEach(doc => {
           const d = doc.data();
           const target = playerArray.find(p => p.id === doc.id);
-          if (target) target.cash = d.cash || 0;
+          if (target) {
+            target.cash = d.cash || 0;
+            let finalLifetime = d.lifetimeRent !== undefined ? d.lifetimeRent : (d.cash || 0);
+
+            // Restore Cwood's pre-upgrade lifetime rent if he spent cash on upgrades
+            if ((target.name || "").toLowerCase().includes("cwood") && finalLifetime < 0.50) {
+              finalLifetime = 0.854210;
+            }
+
+            target.lifetimeRent = finalLifetime;
+          } else if (d.player) {
+            playerArray.push({
+              id: doc.id,
+              name: d.player.name || "Traveler",
+              avatar: d.player.avatar || "🙂",
+              plotsCount: Object.keys(d.plots || {}).length,
+              cash: d.cash || 0,
+              lifetimeRent: d.lifetimeRent !== undefined ? d.lifetimeRent : (d.cash || 0),
+              cities: {}, states: {}, countries: {}
+            });
+          }
         });
       } catch (e) {
         console.warn("[Leaderboard] Saves query notice:", e);
@@ -202,7 +222,10 @@ const Leaderboard = (() => {
     }
 
     const me = playerArray.find(p => p.id === state.player?.id);
-    if (me) me.cash = state.cash || 0;
+    if (me) {
+      me.cash = state.cash || 0;
+      me.lifetimeRent = state.lifetimeRent || state.cash || 0;
+    }
 
     cachedData = { players: playerArray, mayorsMap, governorsMap, presidentsMap };
     lastFetchTime = Date.now();
@@ -248,21 +271,21 @@ const Leaderboard = (() => {
       filteredPlayers.sort((a, b) => {
         const diff = (b.cities[local.city] || 0) - (a.cities[local.city] || 0);
         if (diff !== 0) return diff;
-        return (Number(b.cash) || 0) - (Number(a.cash) || 0); // Tie-breaker
+        return (Number(b.lifetimeRent || b.cash) || 0) - (Number(a.lifetimeRent || a.cash) || 0);
       });
     } else if (currentScope === "state") {
       filteredPlayers = filteredPlayers.filter(p => p.states && p.states[local.state] > 0);
       filteredPlayers.sort((a, b) => {
         const diff = (b.states[local.state] || 0) - (a.states[local.state] || 0);
         if (diff !== 0) return diff;
-        return (Number(b.cash) || 0) - (Number(a.cash) || 0); // Tie-breaker
+        return (Number(b.lifetimeRent || b.cash) || 0) - (Number(a.lifetimeRent || a.cash) || 0);
       });
     } else if (currentScope === "country") {
       filteredPlayers = filteredPlayers.filter(p => p.countries && p.countries[local.country] > 0);
       filteredPlayers.sort((a, b) => {
         const diff = (b.countries[local.country] || 0) - (a.countries[local.country] || 0);
         if (diff !== 0) return diff;
-        return (Number(b.cash) || 0) - (Number(a.cash) || 0); // Tie-breaker
+        return (Number(b.lifetimeRent || b.cash) || 0) - (Number(a.lifetimeRent || a.cash) || 0);
       });
     } else {
       // Global Scope
@@ -270,10 +293,10 @@ const Leaderboard = (() => {
         filteredPlayers.sort((a, b) => {
           const diff = (b.plotsCount || 0) - (a.plotsCount || 0);
           if (diff !== 0) return diff;
-          return (Number(b.cash) || 0) - (Number(a.cash) || 0); // Tie-breaker
+          return (Number(b.lifetimeRent || b.cash) || 0) - (Number(a.lifetimeRent || a.cash) || 0);
         });
       } else {
-        filteredPlayers.sort((a, b) => (Number(b.cash) || 0) - (Number(a.cash) || 0));
+        filteredPlayers.sort((a, b) => (Number(b.lifetimeRent || b.cash) || 0) - (Number(a.lifetimeRent || a.cash) || 0));
       }
     }
 
@@ -298,7 +321,8 @@ const Leaderboard = (() => {
       }
       const badgeIcon = activeBadge ? activeBadge.icon : "🛡️";
       const badgeText = activeBadge ? activeBadge.title : "Citizen of the Realm";
-      const metricVal = currentTab === "plots" ? `${displayCount} <span class="lb-unit">Plots</span>` : `$${(Number(p.cash) || 0).toFixed(6)}`;
+      const rentDisplay = Number(p.lifetimeRent || p.cash) || 0;
+      const metricVal = currentTab === "plots" ? `${displayCount} <span class="lb-unit">Plots</span>` : `$${rentDisplay.toFixed(6)}`;
 
       const row = document.createElement("div");
       row.className = "lb-row" + (isSelf ? " self-row" : "");

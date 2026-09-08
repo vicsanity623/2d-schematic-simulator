@@ -3497,3 +3497,47 @@ div[aria-label="Advertisement"] {
   font-size: 13px !important;
   margin-top: 8px !important;
 }
+
+/* ---------- Diamond Extractor Upgrade Elements ---------- */
+.extractor-level-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.extractor-level-pill {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--teal);
+  background: rgba(79, 214, 196, 0.15);
+  border: 1px solid var(--teal);
+  padding: 3px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+}
+
+.extractor-next-perk {
+  font-size: 11px;
+  color: var(--gold-hi);
+  font-weight: 700;
+}
+
+.btn-extractor-upgrade {
+  background: linear-gradient(180deg, var(--gold-hi), var(--gold)) !important;
+  color: #1a1204 !important;
+  font-weight: 800 !important;
+  font-size: 14px !important;
+  box-shadow: 0 4px 14px rgba(212, 175, 97, 0.4) !important;
+}
+
+.extractor-locked-notice {
+  font-size: 11.5px;
+  color: var(--text-dim);
+  background: rgba(13, 20, 32, 0.85);
+  border: 1px dashed var(--line);
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}

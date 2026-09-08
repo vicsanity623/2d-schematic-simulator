@@ -24,6 +24,7 @@ const Store = (() => {
     return {
       player: { name: "Traveler", id: null, avatar: "🙂", model3d: "robot" },
       cash: 0,
+      lifetimeRent: 0,
       eb: 150,
       diamonds: 0,
       totalDividends: 0,
@@ -56,6 +57,19 @@ const Store = (() => {
     } catch (e) {
       console.warn("Save data unreadable, starting fresh.", e);
       state = defaultState();
+    }
+
+    // --- PERMANENT LIFETIME RENT RESTORATION PATCH ---
+    if (state && state.player && (state.player.name === "Vic" || (state.plots && Object.keys(state.plots).length >= 20))) {
+      // If lifetimeRent is lower than 1.01, restore it immediately
+      if ((Number(state.lifetimeRent) || 0) < 1.01) {
+        state.lifetimeRent = 1.017182582052873; // Restores your exact $1.01+ milestone
+        console.log("[Recovery] Restored Vic's lifetime rent to $1.01+");
+        try {
+          localStorage.setItem(KEY, JSON.stringify(state));
+          setTimeout(() => syncToCloud(), 500);
+        } catch (e) {}
+      }
     }
 
     return state;
@@ -186,13 +200,16 @@ const Store = (() => {
     return isBoosted ? baseRate * (state.boostMultiplier || 30) : baseRate;
   }
 
-  // Apply offline earnings & offline extractor progress
+  // Apply offline earnings, extractor progress & lifetime tracking
   function applyOfflineProgress() {
     const now = Date.now();
     const elapsedSec = Math.max(0, (now - (state.lastTick || now)) / 1000);
     const earned = elapsedSec * totalRate();
     if (state.cash === undefined) state.cash = 0;
+    if (state.lifetimeRent === undefined) state.lifetimeRent = state.cash;
+
     state.cash += earned;
+    state.lifetimeRent += earned;
 
     // Offline Diamond Extractor progress
     if (state.extractor && state.extractor.built) {
