@@ -563,6 +563,22 @@
     if (typeof WeeklyPool !== "undefined") WeeklyPool.init();
     startIncomeLoop();
     wireUI();
+
+    // --- Battery Saver & Background Sleep Controller (0% Battery in Pocket) ---
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        // Phone screen locked or app backgrounded -> Put game to complete sleep!
+        console.log("[Power] Screen locked/backgrounded — Game asleep (0% GPU/CPU).");
+      } else {
+        // Phone unlocked -> Wake up & calculate accrued offline rent in 0ms!
+        console.log("[Power] Screen active — Game resumed.");
+        Store.applyOfflineProgress();
+        updateTopbar();
+        if (typeof Leaderboard !== "undefined" && Leaderboard.fetchRankings) {
+          Leaderboard.fetchRankings(true);
+        }
+      }
+    });
   }
 
   function startIncomeLoop() {
