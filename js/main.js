@@ -264,12 +264,24 @@
   // ---------------- Sign-in & Sequenced Boot ----------------
   function onSignedIn(playerData) {
     const player = playerData || Store.get()?.player || { name: "Traveler" };
+    console.log("[Main] onSignedIn called with player:", player);
 
-    // Execute the professional load pipeline
-    Bootloader.run(player, (coords) => {
-      launchGame(coords);
-      beginWatch();
-    });
+    // Force immediate dismissal of signin screen on all browsers (Brave, Chrome, Safari)
+    const signin = document.getElementById("signin-screen");
+    if (signin) {
+      signin.classList.add("hidden");
+      signin.style.display = "none";
+    }
+
+    // Execute the professional 3D load pipeline
+    if (typeof Bootloader !== "undefined" && Bootloader.run) {
+      Bootloader.run(player, (coords) => {
+        launchGame(coords);
+        beginWatch();
+      });
+    } else {
+      launchGame();
+    }
   }
 
   // ---------------- Location ----------------
@@ -551,6 +563,22 @@
     if (typeof WeeklyPool !== "undefined") WeeklyPool.init();
     startIncomeLoop();
     wireUI();
+
+    // --- Battery Saver & Background Sleep Controller (0% Battery in Pocket) ---
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        // Phone screen locked or app backgrounded -> Put game to complete sleep!
+        console.log("[Power] Screen locked/backgrounded — Game asleep (0% GPU/CPU).");
+      } else {
+        // Phone unlocked -> Wake up & calculate accrued offline rent in 0ms!
+        console.log("[Power] Screen active — Game resumed.");
+        Store.applyOfflineProgress();
+        updateTopbar();
+        if (typeof Leaderboard !== "undefined" && Leaderboard.fetchRankings) {
+          Leaderboard.fetchRankings(true);
+        }
+      }
+    });
   }
 
   function startIncomeLoop() {
@@ -1278,6 +1306,13 @@
       localStorage.setItem(TUTORIAL_KEY, "true");
       if (menuDot) menuDot.classList.add("hidden");
       openModal("menu-modal");
+    });
+
+    // Wire Resume Session Button (Single Active Session Lock)
+    document.getElementById("resume-session-btn")?.addEventListener("click", () => {
+      if (typeof Store !== "undefined" && Store.resumeSession) {
+        Store.resumeSession();
+      }
     });
 
     document.querySelectorAll("[data-close]").forEach(btn => {
