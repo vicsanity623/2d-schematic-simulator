@@ -89,7 +89,7 @@
     <div class="hero-balance-card" id="hero-balance-card">
       <div class="hero-top-line">
         <div class="hero-brand-title">
-          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.6.5.14</span>
+          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.6.5.15</span>
         </div>
         <div id="boost-timer-badge" class="boost-timer-badge hidden">⚡ 30X BOOST <span id="boost-countdown">00:00:00</span></div>
       </div>
@@ -396,6 +396,11 @@
 
     <!-- State: Active & Mining -->
     <div id="extractor-active-view" class="extractor-view hidden">
+      <div class="extractor-level-header">
+        <span class="extractor-level-pill" id="extractor-lvl-badge">Level 1</span>
+        <span class="extractor-next-perk" id="extractor-next-perk">Next: -0.0001% Mining Time</span>
+      </div>
+
       <div class="extractor-status-box">
         <div class="stat-row">
           <span>Status:</span>
@@ -414,6 +419,15 @@
           <strong id="extractor-stored-count" class="diamond-ready-val">0 / 50 <span class="hud-gem-icon"></span></strong>
         </div>
       </div>
+
+      <!-- $1.00 Unlockable Upgrade Button -->
+      <button id="upgrade-extractor-btn" class="btn btn-primary btn-extractor-upgrade" style="margin-bottom: 10px;">
+        ⚡ Upgrade ($1.00)
+      </button>
+      <div id="extractor-locked-notice" class="extractor-locked-notice hidden">
+        🔒 Reach $1.00 Cash Balance to unlock Extractor Upgrades!
+      </div>
+
       <button id="collect-extractor-btn" class="btn btn-primary">Collect All (0 <span class="hud-gem-icon"></span>)</button>
     </div>
   </div>
