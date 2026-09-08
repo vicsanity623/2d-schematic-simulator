@@ -9,19 +9,33 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 ## ✨ Implemented Core Features & Mechanics
 
 * [x] **🔮 Realm Citadels & Dyson Sphere Territory Holds (Pokémon GO Style Gyms):** 
-  * **$0.01 Capsule Drop:** Automatically rolls a Common (50%), Rare (30%), Epic (15%), or Legendary (5%) permanent Capsule when reaching $\ge \$0.01$ balance.
+  * **$0.01 Capsule Drop:** Automatically rolls a Common (50%), Rare (30%), Epic (15%), or Legendary (5%) permanent Capsule upon reaching $\ge \$0.01$ balance.
   * **10X Colossal Monuments:** Plantable on any unowned parcel with real-time growth countdowns evolving into 4X–10X tall glassmorphism monuments with nested rotating kinetic rings.
-  * **Multiplayer Garrison Defense:** Station 3D avatars inside holds with live defense tickers (`05D : 12H : 23M : 02s`) and passive hourly Diamond & EB harvesting (scaling up to 24 Diamonds/day for Legendary).
-  * **Reflex Meter Siege Duels:** Walk within 100m, spend 1 Diamond, and time your strike in the gold zone to shatter the defender's shield, dethrone them, and earn a **+5 EB Conquest Bounty**.
-* [x] **🎮 3D WebGL Engine & 60° Isometric Camera:** Powered by **MapLibre GL JS & OpenFreeMap** for unlimited, 100% free vector map loads with 60° isometric camera tilt, free 360° touch orbit gestures, and true 3D extruded city buildings with zero token rate-limits.
-* [x] **🌐 Interactive 3D Community Globe:** Dedicated right-edge HUD button triggering a cinematic 2.5s space launch to a full 3D interactive spinning Earth globe, allowing free planetary exploration to inspect international player territories.
-* [x] **💬 Real-Time Global Community Chat:** Slide-up mobile MMO chat drawer in the bottom bar with a 25-message live log, profanity filter, 4-second anti-spam cooldown, XSS sanitization, and unread notification badge.
+  * **Multiplayer Garrison Defense:** Station 3D avatars inside holds with live defense tickers (`05D : 12H : 23M : 02s`) and guaranteed hourly Diamond & EB harvesting (scaling up to 24 Diamonds + ~72 EB/day for Legendary).
+  * **Reflex Meter Siege Duels:** Walk within 100m, spend 1 Diamond, and time your strike in the gold zone to shatter the defender's shield, dethrone them, and earn a **+5 EB Conquest Bounty** (defender keeps 100% of banked loot!).
+  * **Anti-Abuse Proximity & Prerequisite Locks:** Players must have planted their own Citadel before launching sieges, and cannot attack any Citadel within **250 meters** of their own home Hold (friendly neighborhood treaty).
+* [x] **⚡ Citadel Evolution & Upgrade Forge:**
+  * **Ascension Progression:** Upgrade existing holds through **Common $\rightarrow$ Rare $\rightarrow$ Epic $\rightarrow$ Legendary**!
+  * **Dual-Currency Forge:** Spend either **Elden Bucks (EB)** or **Diamonds (◆)** as an active walking sink (*50 EB / 75 ◆ for Rare, 100 EB / 125 ◆ for Epic, 300 EB / 400 ◆ for Legendary*).
+  * **10-Minute Evolution Phase:** Triggers a 10-minute transformation countdown that automatically promotes the Citadel, updates visual kinetic rings and ground parcel borders, and unlocks upgraded hourly yields upon completion!
+* [x] **💎 Automated Diamond Extractor Base ($1.00 Upgrade Unlock):** 
+  * Unlockable beacon for players owning **5+ connected plots** (Limit 1 per player) that automatically mines 1 Diamond every 10 minutes (holds up to 50 gems). 
+  * Unlocks a dynamic **Level Upgrade Forge at $1.00+ balance** ($1.00, $2.00, etc.) that alternately expands storage capacity (50 $\rightarrow$ 51 $\rightarrow$ 52...) and reduces mining times!
+* [x] **💵 Spendable Cash vs. Lifetime Accrued Rent Separation:**
+  * **Spendable Cash (`state.cash`):** Used to purchase Extractor upgrades without penalizing your standing.
+  * **Lifetime Accrued Rent (`state.lifetimeRent`):** Permanent, non-decreasing score that tracks all earnings generated since day one, powering the Passive Rent leaderboards and tie-breakers!
+* [x] **🏆 Territory-Scoped Leaderboards (Atlas Earth Style):** 
+  * 4-tier filtering tabs (🌐 Global, 🇺🇸 Country, 🏛️ State, 🏘️ City) displaying active royal titles (`⚔️ Lord of the Elden Realm`, `🦅 President`, `🏛️ Governor`, `👑 Mayor`) with 0ms in-memory cached switching.
+  * **Unique Coordinate Set Deduplication:** Mathematically eliminates double-counting between local state and cloud syncs.
+  * **Passive Rent Tie-Breakers:** Ties in plot counts are decisively resolved by highest Lifetime Accrued Rent!
 * [x] **👑 3-Tier Political Leadership & Stackable Dividends:** Real-time leadership hierarchy based on parcel counts:
   * **👑 Mayors:** City / Town rulers earn **+2 EB (2%)** on local land purchases.
   * **🏛️ Governors:** State / Province rulers earn **+2 EB (2%)** on regional land purchases.
   * **🦅 Presidents:** Country rulers earn **+2 EB (2%)** on national land purchases.
   * **⚔️ Stackable Royalties:** Holding all 3 titles simultaneously unlocks a **+6 EB (6%) Triple Crown Royalty** deposited directly to Google Cloud saves!
-* [x] **🏆 Territory-Scoped Leaderboards:** 4-tier filtering tabs (🌐 Global, 🇺🇸 Country, 🏛️ State, 🏘️ City) displaying active royal titles (`⚔️ Lord of the Elden Realm`, `🦅 President`, `🏛️ Governor`, `👑 Mayor`) with 0ms in-memory cached switching and Passive Rent tie-breakers.
+* [x] **🎮 3D WebGL Engine & 60° Isometric Camera:** Powered by **MapLibre GL JS & OpenFreeMap** for unlimited, 100% free vector map loads with 60° isometric camera tilt, free 360° touch orbit gestures, and true 3D extruded city buildings with zero token rate-limits.
+* [x] **🌐 Interactive 3D Community Globe:** Dedicated right-edge HUD button triggering a cinematic 2.5s space launch to a full 3D interactive spinning Earth globe, allowing free planetary exploration to inspect international player territories.
+* [x] **💬 Real-Time Global Community Chat:** Slide-up mobile MMO chat drawer in the bottom bar with a 25-message live log, profanity filter, 4-second anti-spam cooldown, XSS sanitization, and unread notification badge.
 * [x] **🧍 3D Animated Mixamo Characters (Three.js WebGL):** Integrated Three.js custom layer rendering upright, hero-scaled 3D character models (`.glb`) at real-time GPS coordinates with automatic `Idle` $\leftrightarrow$ `Walk` speed-based animation blending.
 * [x] **⏳ Cinematic Slow-Motion 3D Loading Stage:** Auto-framed Three.js stage showcasing CesiumMan stepping forward in 40% slow motion with cyan/gold rim lighting behind the spinning diamond logo, with automatic WebGL context cleanup.
 * [x] **🧭 True North Navigation & Compass Reset:** Dedicated compass button that smoothly animates camera bearing back to True North (0°) and restores default 18.5 zoom.
@@ -31,12 +45,8 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 * [x] **🚶 3-Tier Proximity Diamond Spawning (1km Realm):** Generates diamonds across a full 1,000-meter radius (40% immediate reach within 85m, 35% walking distance up to 350m, 25% horizon exploration up to 1,000m) with a generous **25-minute lifetime** designed for real-world walks.
 * [x] **⚡ Anti-Bot 20-Minute Boost Loop:** Floating `+2 EB` boost button appearing on a strict 20-minute cooldown locked to `state.lastBoostClaim` to prevent multi-tab and refresh abuse.
 * [x] **🔥 Real-time Multiplayer Firestore Sync:** Live WebSocket streaming across all players worldwide to see newly claimed lands, plot rarities, and avatars in real time without refreshing.
-* [x] **☁️ Firebase Cloud Saves & Anti-Exploit Security:** Permanent account backups stored in Google Cloud Firestore with automatic session recovery and instant auto-login for returning players.
+* [x] **☁️ Firebase Cloud Saves & Anti-Exploit Security:** Permanent account backups stored in Google Cloud Firestore with strict document validation rules preventing console value manipulation and automatic session recovery for returning players.
 * [x] **📅 30-Day Daily Login Calendar:** Strict 1-day-per-day streak check-in rewards scaling up to a **200 EB Jackpot on Day 30**.
-* [x] **💎 Automated Diamond Extractor Base:** Unlockable beacon for players owning **5+ connected plots** (Limit 1 per player) that automatically mines 1 Diamond every 10 minutes (holds up to 50 gems). Upgradable with Cash Balance.
-* [x] **💵 Dual-Currency Economy:**
-  * **Cash Balance ($USD):** High-precision simulated rent (15 decimal places) generated in real-time by your owned plots every 0.5 seconds with dual-scale typography.
-  * **Elden Bucks (EB):** Game currency used to claim new plots (100 EB) or construct base structures.
 * [x] **📱 Progressive Web App (PWA):** Installable directly to iOS & Android home screens with responsive 5-button flexbox controls and network-first offline asset caching via `sw.js`.
 
 ---
@@ -76,36 +86,37 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 * [x] **12. 💬 Global Live Activity Feed:** *(Completed)*
 * [x] **13. 🏆 Global & Local Leaderboards:** *(Completed)*
 * [x] **14. 💬 In-Game Global Community Chat:** *(Completed)*
-* [ ] **15. 🤝 Player-to-Player Parcel Marketplace:**
+* [x] **15. ⚡ Citadel Evolution & Upgrade Forge:** *(Completed)*
+* [ ] **16. 🤝 Player-to-Player Parcel Marketplace:**
   * Put owned plots up for sale on the open market for EB or trade tiles with friends.
-* [ ] **16. 🛡️ Realm Guilds & Joint Kingdoms:**
+* [ ] **17. 🛡️ Realm Guilds & Joint Kingdoms:**
   * Form alliances to connect plots into massive shared kingdoms with a communal Diamond Vault.
-* [ ] **17. 🎟️ Referral / Friend Invite Code System:**
+* [ ] **18. 🎟️ Referral / Friend Invite Code System:**
   * Share your code; when a friend claims their 5th plot, both of you get **+50 EB free**.
 
 ---
 
 ### 📅 IV. Retention & Daily Progression
-* [x] **18. 📅 30-Day Daily Login Calendar:** *(Completed)*
-* [ ] **19. 📜 Daily Quests & Weekly Bounties:**
+* [x] **19. 📅 30-Day Daily Login Calendar:** *(Completed)*
+* [ ] **20. 📜 Daily Quests & Weekly Bounties:**
   * 3 daily missions (*Collect 3 diamonds*, *Spin twice*, *Keep 30X active for 2 hrs*) rewarding bonus EB.
-* [ ] **20. ⚡ "Blood Moon / Solar Flare" 50X Weekend Events:**
+* [ ] **21. ⚡ "Blood Moon / Solar Flare" 50X Weekend Events:**
   * 24-hour weekend flash events where the boost multiplier temporarily jumps to **50X**.
-* [ ] **21. 📈 Prestige Milestones & Player Leveling Track:**
+* [ ] **22. 📈 Prestige Milestones & Player Leveling Track:**
   * Title ranks (*Novice, Baron, Count, Duke, Monarch*) that unlock golden avatar borders and exclusive profile emblems.
-* [ ] **22. 🚶 Real-World Step Counter / Pedometer Sync:**
+* [ ] **23. 🚶 Real-World Step Counter / Pedometer Sync:**
   * Awards passive EB for physical steps taken throughout the day (e.g. 1,000 steps = +5 EB).
 
 ---
 
 ### 🏰 V. Customization & Base Building
-* [ ] **23. 🏰 3D Plot Landmarks & Monuments:**
+* [ ] **24. 🏰 3D Plot Landmarks & Monuments:**
   * Place 3D structures on owned land (Castles, Golden Trees, Neon Shrines) that grant a **+15% permanent income boost** to surrounding tiles.
-* [ ] **24. 🎨 Parcel Ground Skins & Theme Customization:**
+* [ ] **25. 🎨 Parcel Ground Skins & Theme Customization:**
   * Customize how your owned plots look: Cyberpunk Grid, Medieval Cobblestone, Molten Lava, or Glacial Ice.
-* [ ] **25. 🛂 Travel Passport & City Stamps:**
+* [ ] **26. 🛂 Travel Passport & City Stamps:**
   * Collect digital passport stamps when claiming land in new cities; each badge gives an account-wide **+5% rent multiplier**.
-* [ ] **26. 📦 Player Inventory & Item Bag:**
+* [ ] **27. 📦 Player Inventory & Item Bag:**
   * A clean inventory screen to manage boost potions, keys, cosmetic badges, and collectible relics.
 
 ---
@@ -127,19 +138,19 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 └── js/
     ├── config.js       # Central tuning file (rates, drop weights, radiuses, Firebase keys)
     ├── geo.js          # Web Mercator math, 3-tier proximity diamond spawner, tile bounds
-    ├── storage.js      # Save engine, Firestore cloud sync, offline progress & rate lookups
+    ├── storage.js      # Save engine, Firestore cloud sync, offline progress & lifetimeRent
     ├── auth.js         # Google Identity Services OAuth & instant auto-login session restore
     ├── loading.js      # 3D slow-motion stage, bootloader pipeline & zero-race condition loader
     ├── character.js    # Three.js WebGL custom layer & GPS speed animation controller
     ├── diamonds.js     # MapLibre 3D markers, flying gem arc particle to HUD & burst FX
     ├── grid.js         # 10x10ft tile rendering, flood-fill clustering, Buy Land mode & multiplayer
     ├── wheel.js        # Canvas-rendered CSPRNG wheel with 3D gems & failsafe timer
-    ├── feed.js         # Live activity feed ticker with chronological sorting
+    ├── feed.js         # Live activity feed ticker with dedicated event broadcasting
     ├── leaderboard.js  # 4-tier scoped leaderboards (Global, Country, State, City) & dividends
     ├── foliage.js      # Standing grass tufts & zero-context pre-rendered 3D mushrooms
     ├── chat.js         # Real-time community global chat drawer with moderation & anti-spam
-    ├── citadels.js     # 3D Dyson Sphere monuments, garrison defense & reflex siege combat
-    └── main.js         # Game loop, 500ms ticker, camera transitions & UI wiring
+    ├── citadels.js     # 3D Dyson Sphere monuments, garrison defense, forge upgrades & reflex siege combat
+    └── main.js         # Game loop, 500ms ticker, extractor upgrades, camera transitions & UI wiring
 ```
 
 ---
@@ -204,4 +215,4 @@ All gameplay tuning parameters are centralized in **`js/config.js`**:
 
 ## 📄 License & Disclaimer
 
-This is a personal, open-source fan implementation of real-world grid collection games. Built from scratch with pure web standards for educational and entertainment purposes. For Shits and Giggles.
+This is a personal, open-source fan implementation of real-world grid collection games. Built from scratch with pure web standards for educational and entertainment purposes.
