@@ -1373,25 +1373,23 @@
       const adContainer = el("treasury-ad-container");
       if (!adContainer) return;
 
-      const AD_CLIENT = "ca-pub-5972331036113330";
-      const AD_SLOT = "4287691766";
       const REFRESH_INTERVAL_MS = 60000; // Strictly 60-second compliant interval
       let lastAdRefreshTime = Date.now();
 
       function refreshAd() {
-        // Strict Policy Guard: NEVER refresh if screen is locked or in pocket!
-        if (document.hidden) return;
+        if (document.hidden) return; // Never refresh in background
 
         try {
-          adContainer.innerHTML = `
-            <ins class="adsbygoogle"
-                 style="display:inline-block;width:320px;height:50px"
-                 data-ad-client="${AD_CLIENT}"
-                 data-ad-slot="${AD_SLOT}"></ins>
-          `;
+          const ins = adContainer.querySelector("ins.adsbygoogle");
+          if (ins) {
+            // 1. Clear out Google's previous iframe
+            ins.innerHTML = "";
+            // 2. Remove status attribute so AdSense re-processes the slot cleanly (Prevents TagError)
+            ins.removeAttribute("data-adsbygoogle-status");
+          }
           (window.adsbygoogle = window.adsbygoogle || []).push({});
           lastAdRefreshTime = Date.now();
-          console.log("[AdSense] Refreshed bottom treasury banner (60s compliant).");
+          console.log("[AdSense] Refreshed bottom treasury banner successfully.");
         } catch (e) {
           console.warn("[AdSense] Refresh notice:", e);
         }
@@ -1419,6 +1417,18 @@
     }
 
     initTreasuryAdRefresher();
+
+    // --- PWA Standalone Status Bar & Battery Guard for Fullscreen Ads ---
+    const adObserver = new MutationObserver(() => {
+      const overlays = document.querySelectorAll('body > div[style*="2147483647"], body > div[id*="aswift"]');
+      overlays.forEach(el => {
+        if (el.style.top !== "54px") {
+          el.style.setProperty("top", "max(54px, env(safe-area-inset-top))", "important");
+          el.style.setProperty("height", "calc(100vh - 54px)", "important");
+        }
+      });
+    });
+    adObserver.observe(document.body, { childList: true, subtree: false });
 
     document.querySelectorAll("[data-close]").forEach(btn => {
       btn.addEventListener("click", () => closeModal(btn.dataset.close));
