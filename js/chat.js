@@ -10,6 +10,9 @@ const Chat = (() => {
   let isOpen = false;
   let lastSentTime = 0;
   const COOLDOWN_MS = 4000; // 4s anti-spam cooldown
+  let onlineCountEl = null;
+  let heartbeatTimer = null;
+  const PRESENCE_HEARTBEAT_MS = 90000; // Lightweight pulse every 90 seconds
   const MAX_MESSAGES = 25;
   const messages = [];
 
@@ -147,6 +150,36 @@ const Chat = (() => {
       console.warn("[Chat] Setup notice:", e);
     }
   }
+  
+  // --- REAL-TIME PRESENCE & ONLINE COUNT ENGINE ---
+  async function sendHeartbeat() {
+    if (document.hidden) return; // 0% network in pocket
+    const db = Store.getDb();
+    const state = Store.get();
+    if (!db || !state?.player?.id) return;
+
+    try {
+      await db.collection("presence").doc(state.player.id).set({
+        lastSeen: Date.now(),
+        name: state.player.name || "Traveler"
+      }, { merge: true });
+    } catch (e) {}
+  }
+
+  async function updateOnlineCount() {
+    const db = Store.getDb();
+    if (!db || !onlineCountEl) return;
+
+    try {
+      // Any player active in the last 2.5 minutes is considered Online
+      const threshold = Date.now() - 150000;
+      const snap = await db.collection("presence").where("lastSeen", ">", threshold).get();
+      const count = Math.max(1, snap.size);
+      onlineCountEl.textContent = count;
+    } catch (e) {
+      console.warn("[Chat] Online count notice:", e);
+    }
+  }
 
   function open() {
     if (!drawer) return;
@@ -154,6 +187,7 @@ const Chat = (() => {
     drawer.classList.remove("hidden");
     if (unreadBadge) unreadBadge.classList.add("hidden");
     renderMessages();
+    updateOnlineCount();
     setTimeout(() => inputEl?.focus(), 150);
   }
 
@@ -177,6 +211,18 @@ const Chat = (() => {
     sendBtn?.addEventListener("click", sendMessage);
     inputEl?.addEventListener("keydown", (e) => {
       if (e.key === "Enter") sendMessage();
+    });
+
+    // Cache online element & start heartbeat
+    onlineCountEl = document.getElementById("chat-online-count");
+    sendHeartbeat();
+    heartbeatTimer = setInterval(sendHeartbeat, PRESENCE_HEARTBEAT_MS);
+
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        sendHeartbeat();
+        if (isOpen) updateOnlineCount();
+      }
     });
 
     listen();
