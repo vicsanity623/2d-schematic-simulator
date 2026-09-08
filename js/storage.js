@@ -59,17 +59,21 @@ const Store = (() => {
       state = defaultState();
     }
 
-    // --- SPENDABLE CASH AUDIT & LIFETIME RENT RESTORATION ---
-    if (state && state.player && (state.player.name === "Vic" || (state.plots && Object.keys(state.plots).length >= 20))) {
-      // 1. Ensure Lifetime Rent stays locked at $1.01+
-      if ((Number(state.lifetimeRent) || 0) < 1.01) {
-        state.lifetimeRent = 1.017436000000000;
-      }
+    // --- ONE-TIME CASH AUDIT & LIFETIME RENT RESTORATION (SELF-SEALING) ---
+    if (state && state.player && !state.cashAuditV1Done) {
+      state.cashAuditV1Done = true; // Permanently marks as audited (never runs again!)
 
-      // 2. Audit spendable cash: If inflated to $0.40+ by the refresh bug after Level 2 Extractor, reset to $0.087
-      if ((Number(state.cash) || 0) > 0.30 && state.extractor && state.extractor.level >= 2) {
-        state.cash = 0.087474587225872; // Your authentic post-upgrade spendable cash
-        console.log("[Audit] Corrected Vic's spendable cash back to $0.087 after upgrade.");
+      if (state.player.name === "Vic" || (state.plots && Object.keys(state.plots).length >= 20)) {
+        // 1. Lock Lifetime Rent at $1.01+
+        if ((Number(state.lifetimeRent) || 0) < 1.01) {
+          state.lifetimeRent = 1.017436000000000;
+        }
+
+        // 2. Audit spendable cash: Reset the accidental dividend spam back to $0.087
+        if ((Number(state.cash) || 0) > 0.30 && state.extractor && state.extractor.level >= 2) {
+          state.cash = 0.087474587225872;
+          console.log("[Audit] Corrected Vic's spendable cash back to $0.087.");
+        }
       }
 
       try {
