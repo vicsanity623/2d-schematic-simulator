@@ -373,6 +373,14 @@ const Grid = (() => {
         const centroidLat = totalLat / cluster.length;
         const centroidLon = totalLon / cluster.length;
 
+        // 5KM HORIZON CULLING: Don't render signboards for plots in Ohio, Canada, or Indiana!
+        const refLat = (playerCoords && playerCoords.lat) ? playerCoords.lat : (map ? map.getCenter().lat : null);
+        const refLon = (playerCoords && playerCoords.lon) ? playerCoords.lon : (map ? map.getCenter().lng : null);
+        if (refLat && refLon) {
+          const dist = Geo.haversine(refLat, refLon, centroidLat, centroidLon);
+          if (dist > 5000) continue; // Skip distant signboards! Saves massive CPU & battery
+        }
+
         const isSelf = clusterOwnerId === state.player.id;
         const rep = cluster[0];
         const avatar = isSelf ? (state.player.avatar || "🙂") : (rep.avatar || "🙂");
@@ -454,6 +462,10 @@ const Grid = (() => {
         }
       }
     }
+  }
+
+  function setPlayerPosition(lat, lon) {
+    playerCoords = { lat, lon };
   }
 
   function setBuyMode(active, coords = null) {
@@ -540,5 +552,5 @@ const Grid = (() => {
     scheduleRender();
   }
 
-  return { init, render, promptBuyTile, executeBuy, getAllPlots, setBuyMode, setGlobalPlot };
+  return { init, render, promptBuyTile, executeBuy, getAllPlots, setBuyMode, setGlobalPlot, setPlayerPosition };
 })();
