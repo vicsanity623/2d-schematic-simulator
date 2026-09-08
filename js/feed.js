@@ -65,14 +65,20 @@ const Feed = (() => {
     return `${Math.floor(diffSec / 86400)}d ago`;
   }
 
+  let renderScheduled = false;
+
+  // High-Performance Batched DOM Renderer (Zero Reflow Stutter)
   function renderFeedList() {
-    if (!feedList) return;
-    feedList.innerHTML = "";
+    // Battery Saver: Don't spend CPU building DOM elements if phone is in pocket!
+    if (!feedList || document.hidden) return;
 
     if (events.length === 0) {
       feedList.innerHTML = `<div class="feed-empty-msg">No activity yet. Claim a plot to begin!</div>`;
       return;
     }
+
+    // Build off-screen with DocumentFragment (1 single browser paint)
+    const fragment = document.createDocumentFragment();
 
     events.forEach((ev) => {
       const row = document.createElement("div");
@@ -81,12 +87,25 @@ const Feed = (() => {
         <div class="feed-item-content">${ev.message}</div>
         <div class="feed-item-time">${formatTime(ev.timestamp)}</div>
       `;
-      feedList.appendChild(row);
+      fragment.appendChild(row);
+    });
+
+    feedList.innerHTML = "";
+    feedList.appendChild(fragment);
+  }
+
+  function scheduleRender() {
+    if (renderScheduled || document.hidden) return;
+    renderScheduled = true;
+    requestAnimationFrame(() => {
+      renderFeedList();
+      renderScheduled = false;
     });
   }
 
   function addEventLocally(ev) {
-    // Deduplication: prevent matching ID or exact same message within 8 seconds
+    if (!ev || !ev.message || !ev.message.trim()) return;
+
     const isDuplicate = events.some(e => 
       e.id === ev.id || 
       (e.message === ev.message && Math.abs(e.timestamp - ev.timestamp) < 8000)
@@ -94,8 +113,6 @@ const Feed = (() => {
     if (isDuplicate) return;
 
     events.push(ev);
-
-    // Strictly sort by timestamp descending (Newest events ALWAYS at the top!)
     events.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
     if (events.length > MAX_EVENTS) {
@@ -107,7 +124,8 @@ const Feed = (() => {
       updateBadge();
     }
 
-    renderFeedList();
+    // Batch renders together smoothly
+    scheduleRender();
   }
 
   function updateBadge() {
@@ -245,6 +263,13 @@ const Feed = (() => {
       message: `✨ Welcome to <strong>Elden Earth</strong>. Walk the realm & claim the ground beneath your feet!`,
       type: "system",
       timestamp: Date.now()
+    });
+
+    // Auto-update timestamps when user unlocks their phone
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        renderFeedList();
+      }
     });
 
     listen();
