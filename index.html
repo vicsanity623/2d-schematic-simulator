@@ -89,7 +89,7 @@
     <div class="hero-balance-card" id="hero-balance-card">
       <div class="hero-top-line">
         <div class="hero-brand-title">
-          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.6.5.31</span>
+          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.6.5.32</span>
         </div>
         <div id="boost-timer-badge" class="boost-timer-badge hidden">⚡ 30X BOOST <span id="boost-countdown">00:00:00</span></div>
       </div>
@@ -132,6 +132,17 @@
 
   <!-- Toast -->
   <div id="toast" class="toast hidden"></div>
+
+  <!-- Weekly Realm Treasury Pool HUD Button (Floats above +2 EB button) -->
+  <button id="weekly-pool-hud-btn" class="weekly-pool-btn" aria-label="Weekly Dividend Pool">
+    <div class="pool-btn-inner">
+      <span class="pool-icon">👑</span>
+      <div class="pool-btn-text">
+        <span class="pool-tag">1% POOL</span>
+        <span class="pool-sub" id="hud-pool-countdown">MON 00:00</span>
+      </div>
+    </div>
+  </button>
 
   <!-- Floating +2 EB Boost Button -->
   <button id="boost-btn" class="boost-btn hidden">
@@ -629,6 +640,74 @@
   </div>
 </div>
 
+<!-- ===================== WEEKLY REALM DIVIDEND POOL MODAL ===================== -->
+<div id="weekly-pool-modal" class="modal hidden">
+  <div class="modal-card weekly-pool-card">
+    <button class="close-btn" data-close="weekly-pool-modal">✕</button>
+    
+    <div class="pool-header">
+      <div class="pool-glow-crown">👑</div>
+      <h2>Weekly Realm Treasury</h2>
+      <p class="modal-sub">1% of all Global Rent distributed every Monday at 12:00 AM</p>
+    </div>
+
+    <!-- Live Global Rent & Pool Stats -->
+    <div class="pool-hero-stats">
+      <div class="pool-stat-col">
+        <span class="pool-stat-label">TOTAL GLOBAL RENT ACCRUED</span>
+        <strong id="modal-global-rent-val" class="pool-stat-cash">$0.000000</strong>
+      </div>
+      <div class="pool-stat-divider"></div>
+      <div class="pool-stat-col">
+        <span class="pool-stat-label">1% WEEKLY DIVIDEND POOL</span>
+        <strong id="modal-weekly-pool-val" class="pool-stat-pool">$0.000000</strong>
+      </div>
+    </div>
+
+    <!-- Live Countdown Bar -->
+    <div class="pool-countdown-card">
+      <span>⏳ Next Distribution In:</span>
+      <strong id="modal-pool-countdown-timer">00D : 00H : 00M : 00s</strong>
+    </div>
+
+    <!-- Distribution Tier Breakdown -->
+    <div class="pool-tiers-list">
+      <div class="pool-tier-item tier-top3">
+        <div class="tier-badge">🥇 1st – 🥉 3rd (50% Split)</div>
+        <div class="tier-desc">1st: <strong>25%</strong> | 2nd: <strong>15%</strong> | 3rd: <strong>10%</strong> of Weekly Pool</div>
+      </div>
+      <div class="pool-tier-item tier-top10">
+        <div class="tier-badge">🏅 4th – 10th Place (50% Split)</div>
+        <div class="tier-desc">The remaining 7 Top Landlords split the other 50% (~7.14% each)</div>
+      </div>
+    </div>
+
+    <p class="fine-print">Rankings are determined by Total Land Plots & Accrued Rent on the Global Leaderboard at Monday 12:00 AM UTC.</p>
+  </div>
+</div>
+
+<!-- ===================== MONDAY REWARD CELEBRATION MODAL ===================== -->
+<div id="weekly-reward-modal" class="modal hidden">
+  <div class="modal-card weekly-reward-card">
+    <button class="close-btn" data-close="weekly-reward-modal">✕</button>
+    <div class="reward-fireworks-icon">🎉</div>
+    <h2>Weekly Dividend Awarded!</h2>
+    <p class="modal-sub" id="reward-payout-week-label">For your reign in the Top 10 Global Landlords</p>
+
+    <div class="reward-payout-box">
+      <div class="reward-rank-badge" id="reward-user-rank">🥇 Rank #1 Global</div>
+      <div class="reward-amount-line">
+        <span class="reward-label">Your 1% Dividend Share:</span>
+        <strong id="reward-user-cash" class="reward-cash-val">+$0.050000</strong>
+      </div>
+    </div>
+
+    <button id="claim-weekly-reward-btn" class="btn btn-primary" style="margin-top: 14px; font-size: 16px;">
+      Claim Weekly Royal Dividend! ➔
+    </button>
+  </div>
+</div>
+
 <!-- ===================== 30-DAY DAILY LOGIN CALENDAR MODAL ===================== -->
 <div id="calendar-modal" class="modal hidden">
   <div class="modal-card calendar-modal-card">
@@ -804,6 +883,7 @@
 <script src="js/leaderboard.js"></script>
 <script src="js/foliage.js"></script>
 <script src="js/citadels.js"></script>
+<script src="js/pool.js"></script>
 <script src="js/chat.js"></script>
 <script src="js/main.js"></script>
 
