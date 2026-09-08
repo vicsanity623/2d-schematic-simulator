@@ -1280,6 +1280,13 @@
       openModal("menu-modal");
     });
 
+    // Wire Resume Session Button (Single Active Session Lock)
+    document.getElementById("resume-session-btn")?.addEventListener("click", () => {
+      if (typeof Store !== "undefined" && Store.resumeSession) {
+        Store.resumeSession();
+      }
+    });
+
     document.querySelectorAll("[data-close]").forEach(btn => {
       btn.addEventListener("click", () => closeModal(btn.dataset.close));
     });
