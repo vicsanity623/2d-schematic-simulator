@@ -54,12 +54,16 @@ const WeeklyPool = (() => {
   // Check if today is Monday & user is in Top 10 for claim
   async function checkMondayDistribution() {
     const now = new Date();
-    const isMonday = now.getUTCDay() === 1;
+    const isMonday = now.getUTCDay() === 1; // 1 = Monday in UTC
+    
+    // STRICT GUARD: ONLY triggers on Mondays!
+    if (!isMonday) return;
+
     const currentWeekId = getISOWeekId(now);
     const state = Store.get();
     if (!state || !state.player?.id) return;
 
-    // Only allow claiming once per week
+    // Strict 1-Claim Per Week Lock
     if (state.lastWeeklyPoolClaim === currentWeekId) return;
 
     const { weeklyPool, sortedTop10 } = await calculateGlobalPool();
