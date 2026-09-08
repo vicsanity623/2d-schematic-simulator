@@ -415,6 +415,7 @@
       dragRotate: true,
       touchZoomRotate: true,
       touchPitch: true,  // Enables native 2-finger vertical swipe to tilt camera angle!
+      fadeDuration: 0, // Eliminates expensive GPU alpha-blending on tile loads
       canvasContextAttributes: { antialias: false, powerPreference: "low-power" } // Routes graphics through mobile energy-efficiency cores
     });
 
