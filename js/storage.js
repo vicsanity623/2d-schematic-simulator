@@ -50,6 +50,9 @@ const Store = (() => {
       if (raw) {
         const parsed = JSON.parse(raw);
         state = Object.assign(defaultState(), parsed);
+        if (parsed.player) {
+          state.player = Object.assign(defaultState().player, parsed.player);
+        }
         if (parsed.extractor) {
           state.extractor = Object.assign(defaultState().extractor, parsed.extractor);
         }
@@ -59,6 +62,19 @@ const Store = (() => {
     } catch (e) {
       console.warn("Save data unreadable, starting fresh.", e);
       state = defaultState();
+    }
+
+    // --- AUTO-RECOVER NAME & AVATAR FROM OWNED PLOTS ---
+    if (state && state.player && (!state.player.name || state.player.name === "Traveler")) {
+      for (const id in (state.plots || {})) {
+        const p = state.plots[id];
+        if (p.ownerName && p.ownerName !== "Traveler") {
+          state.player.name = p.ownerName;
+          if (p.avatar && p.avatar !== "🙂") state.player.avatar = p.avatar;
+          console.log(`[Storage] Auto-recovered player identity: ${state.player.name}`);
+          break;
+        }
+      }
     }
 
     // --- ONE-TIME CASH AUDIT & LIFETIME RENT RESTORATION (SELF-SEALING) ---
@@ -146,9 +162,22 @@ const Store = (() => {
       const doc = await firestore.collection("saves").doc(playerId).get();
       if (doc.exists) {
         const cloudData = doc.data();
-        
-        // Cloud Data is authoritative: overrides stale desktop cache with fresh Day 4 data!
+        const currentName = state?.player?.name;
+        const currentAvatar = state?.player?.avatar;
+
         state = Object.assign(defaultState(), cloudData);
+        if (cloudData.player) {
+          state.player = Object.assign(defaultState().player, cloudData.player);
+        }
+
+        // Preserve custom name & photo if cloud was default Traveler
+        if (currentName && currentName !== "Traveler" && (!state.player.name || state.player.name === "Traveler")) {
+          state.player.name = currentName;
+        }
+        if (currentAvatar && currentAvatar !== "🙂" && (!state.player.avatar || state.player.avatar === "🙂")) {
+          state.player.avatar = currentAvatar;
+        }
+
         state.activeSessionId = localSessionId;
         isSessionPaused = false;
 
