@@ -220,9 +220,12 @@ const Citadels = (() => {
           }).catch(e => console.warn(e));
         }
 
-        if (typeof Feed !== "undefined") {
-          Feed.broadcast("land", {
-            rarity: `✨ ${c.creatorName}'s Hold officially ascended to a ${CONFIG.CITADEL_RARITIES[promotedTier].label}!`,
+        // Only broadcast once from the creator's own device
+        const state = Store.get();
+        if (typeof Feed !== "undefined" && c.creatorId === state?.player?.id) {
+          Feed.broadcast("citadel_evolve", {
+            creatorName: c.creatorName,
+            tierName: CONFIG.CITADEL_RARITIES[promotedTier].label,
             location: "the Realm 🌐"
           });
         }
