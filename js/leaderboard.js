@@ -220,9 +220,9 @@ const Leaderboard = (() => {
 
           let finalLifetime = (d.lifetimeRent !== undefined ? d.lifetimeRent : (d.cash || 0)) + offlineAccrued;
 
-          // Restore Cwood's pre-upgrade lifetime rent if he spent cash on upgrades
-          if ((doc.data().player?.name || "").toLowerCase().includes("cwood") && finalLifetime < 0.50) {
-            finalLifetime = 0.854210 + offlineAccrued;
+          // Unbreakable Floor for Cwood: Guarantees his balance only moves upward!
+          if ((doc.data().player?.name || "").toLowerCase().includes("cwood")) {
+            finalLifetime = Math.max(finalLifetime, 0.854236 + offlineAccrued);
           }
 
           if (target) {
