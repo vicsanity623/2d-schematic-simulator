@@ -51,9 +51,6 @@ const Store = (() => {
         if (parsed.extractor) {
           state.extractor = Object.assign(defaultState().extractor, parsed.extractor);
         }
-        if (state.lifetimeRent === undefined || state.lifetimeRent < state.cash) {
-          state.lifetimeRent = state.cash;
-        }
       } else {
         state = defaultState();
       }
@@ -61,6 +58,22 @@ const Store = (() => {
       console.warn("Save data unreadable, starting fresh.", e);
       state = defaultState();
     }
+
+    // --- PERMANENT LIFETIME RENT RESTORATION PATCH ---
+    if (state && state.player && (state.player.name === "Vic" || (state.plots && Object.keys(state.plots).length >= 20))) {
+      // If lifetimeRent is lower than 1.01, restore it immediately
+      if ((Number(state.lifetimeRent) || 0) < 1.01) {
+        state.lifetimeRent = 1.017182582052873; // Restores your exact $1.01+ milestone
+        console.log("[Recovery] Restored Vic's lifetime rent to $1.01+");
+        try {
+          localStorage.setItem(KEY, JSON.stringify(state));
+          setTimeout(() => syncToCloud(), 500);
+        } catch (e) {}
+      }
+    }
+
+    return state;
+  }
 
     return state;
   }
