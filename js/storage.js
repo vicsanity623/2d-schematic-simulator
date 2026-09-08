@@ -75,9 +75,6 @@ const Store = (() => {
     return state;
   }
 
-    return state;
-  }
-
   function save(immediateCloud = true) {
     try {
       localStorage.setItem(KEY, JSON.stringify(state));
