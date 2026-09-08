@@ -144,25 +144,30 @@ const Citadels = (() => {
     alert("🔮 Citadel planted directly at your location! Stronghold parcel activated!");
   }
 
-  // Create 10X Colossal 3D Dyson Sphere Monument Marker
+  // Create 10X Colossal 3D Dyson Sphere Monument Marker (Handles Growth & Evolution)
   function createDysonSphereMarker(citadel) {
     const wrap = document.createElement("div");
     wrap.className = "citadel-3d-monument";
     const now = Date.now();
-    const isUnderConstruction = now < citadel.growthFinish;
-    const rConfig = CONFIG.CITADEL_RARITIES[citadel.rarity] || CONFIG.CITADEL_RARITIES.common;
+
+    // Check if either initial build OR 10-minute evolution is active
+    const activeFinish = citadel.isEvolving ? citadel.evolutionFinish : citadel.growthFinish;
+    const isUnderConstruction = activeFinish && now < activeFinish;
+    const displayRarity = citadel.isEvolving ? (citadel.targetRarity || citadel.rarity) : citadel.rarity;
+    const rConfig = CONFIG.CITADEL_RARITIES[displayRarity] || CONFIG.CITADEL_RARITIES.common;
 
     if (isUnderConstruction) {
-      const remainingSec = Math.max(0, Math.floor((citadel.growthFinish - now) / 1000));
+      const remainingSec = Math.max(0, Math.floor((activeFinish - now) / 1000));
       const mins = Math.floor(remainingSec / 60);
       const secs = remainingSec % 60;
+      const labelPrefix = citadel.isEvolving ? "⚡ Evolving" : "⏳";
 
       wrap.innerHTML = `
         <div class="citadel-growth-pin" style="--r-color: ${rConfig.color}">
           <div class="growth-ground-pulse"></div>
           <div class="growth-pin-stem"></div>
-          <div class="growth-seed-core">🔮</div>
-          <div class="growth-timer-pill" data-finish="${citadel.growthFinish}" data-cid="${citadel.id}">⏳ ${mins}:${String(secs).padStart(2, "0")}</div>
+          <div class="growth-seed-core">${citadel.isEvolving ? "⚡" : "🔮"}</div>
+          <div class="growth-timer-pill" data-finish="${activeFinish}" data-cid="${citadel.id}">${labelPrefix} ${mins}:${String(secs).padStart(2, "0")}</div>
         </div>
       `;
     } else {
@@ -191,9 +196,38 @@ const Citadels = (() => {
     return wrap;
   }
 
-  // --- Render 3D Monuments & Ground Stronghold Parcels ---
   function render() {
     if (!mapInstance || !mapInstance.getStyle()) return;
+
+    // --- AUTO-PROMOTE COMPLETED EVOLUTIONS (Instant Fix for Cwood & offline players) ---
+    const now = Date.now();
+    for (const cid in globalCitadels) {
+      const c = globalCitadels[cid];
+      if (c.isEvolving && c.evolutionFinish && now >= c.evolutionFinish) {
+        const promotedTier = c.targetRarity || "rare";
+        c.rarity = promotedTier;
+        c.isEvolving = false;
+        delete c.evolutionFinish;
+        delete c.targetRarity;
+
+        const db = Store.getDb();
+        if (db) {
+          db.collection("citadels").doc(cid).update({
+            rarity: promotedTier,
+            isEvolving: false,
+            evolutionFinish: null,
+            targetRarity: null
+          }).catch(e => console.warn(e));
+        }
+
+        if (typeof Feed !== "undefined") {
+          Feed.broadcast("land", {
+            rarity: `✨ ${c.creatorName}'s Hold officially ascended to a ${CONFIG.CITADEL_RARITIES[promotedTier].label}!`,
+            location: "the Realm 🌐"
+          });
+        }
+      }
+    }
 
     activeMarkers.forEach(m => m.remove());
     activeMarkers = [];
