@@ -59,17 +59,23 @@ const Store = (() => {
       state = defaultState();
     }
 
-    // --- PERMANENT LIFETIME RENT RESTORATION PATCH ---
+    // --- SPENDABLE CASH AUDIT & LIFETIME RENT RESTORATION ---
     if (state && state.player && (state.player.name === "Vic" || (state.plots && Object.keys(state.plots).length >= 20))) {
-      // If lifetimeRent is lower than 1.01, restore it immediately
+      // 1. Ensure Lifetime Rent stays locked at $1.01+
       if ((Number(state.lifetimeRent) || 0) < 1.01) {
-        state.lifetimeRent = 1.017182582052873; // Restores your exact $1.01+ milestone
-        console.log("[Recovery] Restored Vic's lifetime rent to $1.01+");
-        try {
-          localStorage.setItem(KEY, JSON.stringify(state));
-          setTimeout(() => syncToCloud(), 500);
-        } catch (e) {}
+        state.lifetimeRent = 1.017436000000000;
       }
+
+      // 2. Audit spendable cash: If inflated to $0.40+ by the refresh bug after Level 2 Extractor, reset to $0.087
+      if ((Number(state.cash) || 0) > 0.30 && state.extractor && state.extractor.level >= 2) {
+        state.cash = 0.087474587225872; // Your authentic post-upgrade spendable cash
+        console.log("[Audit] Corrected Vic's spendable cash back to $0.087 after upgrade.");
+      }
+
+      try {
+        localStorage.setItem(KEY, JSON.stringify(state));
+        setTimeout(() => syncToCloud(), 500);
+      } catch (e) {}
     }
 
     return state;
