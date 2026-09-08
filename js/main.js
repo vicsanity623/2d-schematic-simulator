@@ -1368,18 +1368,57 @@
       }
     });
     
-    // --- PWA Standalone Status Bar & Battery Guard for Fullscreen Ads ---
-    const adObserver = new MutationObserver(() => {
-      // Find Google's full-screen overlay elements
-      const overlays = document.querySelectorAll('body > div[style*="2147483647"], body > div[id*="aswift"]');
-      overlays.forEach(el => {
-        if (el.style.top !== "54px") {
-          el.style.setProperty("top", "max(54px, env(safe-area-inset-top))", "important");
-          el.style.setProperty("height", "calc(100vh - 54px)", "important");
+    // --- Google AdSense Compliant 60-Second Treasury Ad Refresher ---
+    function initTreasuryAdRefresher() {
+      const adContainer = el("treasury-ad-container");
+      if (!adContainer) return;
+
+      const AD_CLIENT = "ca-pub-5972331036113330";
+      const AD_SLOT = "4287691766";
+      const REFRESH_INTERVAL_MS = 60000; // Strictly 60-second compliant interval
+      let lastAdRefreshTime = Date.now();
+
+      function refreshAd() {
+        // Strict Policy Guard: NEVER refresh if screen is locked or in pocket!
+        if (document.hidden) return;
+
+        try {
+          adContainer.innerHTML = `
+            <ins class="adsbygoogle"
+                 style="display:inline-block;width:320px;height:50px"
+                 data-ad-client="${AD_CLIENT}"
+                 data-ad-slot="${AD_SLOT}"></ins>
+          `;
+          (window.adsbygoogle = window.adsbygoogle || []).push({});
+          lastAdRefreshTime = Date.now();
+          console.log("[AdSense] Refreshed bottom treasury banner (60s compliant).");
+        } catch (e) {
+          console.warn("[AdSense] Refresh notice:", e);
+        }
+      }
+
+      // Initial push on game load
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (e) {}
+
+      // 60-Second Refresh Ticker
+      setInterval(() => {
+        const now = Date.now();
+        if (now - lastAdRefreshTime >= REFRESH_INTERVAL_MS) {
+          refreshAd();
+        }
+      }, REFRESH_INTERVAL_MS);
+
+      // Refresh when waking up if 60 seconds have elapsed
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden && (Date.now() - lastAdRefreshTime >= REFRESH_INTERVAL_MS)) {
+          refreshAd();
         }
       });
-    });
-    adObserver.observe(document.body, { childList: true, subtree: false });
+    }
+
+    initTreasuryAdRefresher();
 
     document.querySelectorAll("[data-close]").forEach(btn => {
       btn.addEventListener("click", () => closeModal(btn.dataset.close));
