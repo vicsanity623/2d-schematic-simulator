@@ -1419,6 +1419,19 @@
     }
 
     initTreasuryAdRefresher();
+    
+    // --- PWA Standalone Status Bar & Battery Guard for Fullscreen Ads ---
+    const adObserver = new MutationObserver(() => {
+      // Find Google's full-screen overlay elements
+      const overlays = document.querySelectorAll('body > div[style*="2147483647"], body > div[id*="aswift"]');
+      overlays.forEach(el => {
+        if (el.style.top !== "54px") {
+          el.style.setProperty("top", "max(54px, env(safe-area-inset-top))", "important");
+          el.style.setProperty("height", "calc(100vh - 54px)", "important");
+        }
+      });
+    });
+    adObserver.observe(document.body, { childList: true, subtree: false });
 
     document.querySelectorAll("[data-close]").forEach(btn => {
       btn.addEventListener("click", () => closeModal(btn.dataset.close));
