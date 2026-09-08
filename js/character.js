@@ -1,6 +1,6 @@
 // ============================================================
 // Elden Earth — 3D Character Model (Three.js WebGL Custom Layer)
-// Renders animated .GLB models at player GPS with Idle <-> Walk blending.
+// Zero-Allocation Garbage Collection & VRAM Leak Protection
 // ============================================================
 const Character3D = (() => {
   let mapInstance = null;
@@ -16,11 +16,18 @@ const Character3D = (() => {
   let isWalking = false;
   let modelHeading = 0;
 
+  // Pre-allocated static objects (Eliminates 300+ object allocations/sec!)
+  const projMatrix = new THREE.Matrix4();
+  const worldMatrix = new THREE.Matrix4();
+  const scaleVector = new THREE.Vector3();
+  const rotXMatrix = new THREE.Matrix4().makeRotationX(Math.PI / 2);
+  const rotYMatrix = new THREE.Matrix4();
+
   function init(map, initialLng, initialLat) {
     mapInstance = map;
     playerCoords = { lng: initialLng, lat: initialLat };
 
-    // Mapbox Custom WebGL Layer for Three.js
+    // Custom WebGL Layer for Three.js
     customLayer = {
       id: "3d-player-character",
       type: "custom",
@@ -29,7 +36,7 @@ const Character3D = (() => {
         camera = new THREE.Camera();
         scene = new THREE.Scene();
 
-        // Balanced Lighting for Dark Map
+        // Optimized Ambient & Directional Lighting
         const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
         scene.add(ambientLight);
 
@@ -45,16 +52,16 @@ const Character3D = (() => {
           canvas: map.getCanvas(),
           context: gl,
           antialias: true,
+          powerPreference: "high-performance",
         });
         renderer.autoClear = false;
 
-        // Load saved character model
         const state = Store.get();
         const selectedId = state?.player?.model3d || "soldier";
         loadModel(selectedId);
       },
       render: function (gl, matrix) {
-        if (!currentModel) return;
+        if (!currentModel || document.hidden) return;
 
         const modelCoord = mapboxgl.MercatorCoordinate.fromLngLat(
           [playerCoords.lng, playerCoords.lat],
@@ -62,17 +69,21 @@ const Character3D = (() => {
         );
 
         const scale = modelCoord.meterInMercatorCoordinateUnits() * (currentModel.userData.scale || 4.8);
+        scaleVector.set(scale, -scale, scale);
 
-        const m = new THREE.Matrix4().fromArray(matrix);
-        const l = new THREE.Matrix4()
+        // Zero-GC Matrix Calculations
+        projMatrix.fromArray(matrix);
+        rotYMatrix.makeRotationY(modelHeading);
+
+        worldMatrix
           .makeTranslation(modelCoord.x, modelCoord.y, modelCoord.z)
-          .scale(new THREE.Vector3(scale, -scale, scale))
-          .multiply(new THREE.Matrix4().makeRotationX(Math.PI / 2))
-          .multiply(new THREE.Matrix4().makeRotationY(modelHeading));
+          .scale(scaleVector)
+          .multiply(rotXMatrix)
+          .multiply(rotYMatrix);
 
-        camera.projectionMatrix = m.multiply(l);
+        camera.projectionMatrix.copy(projMatrix).multiply(worldMatrix);
 
-        // CLEAR DEPTH BUFFER: Ensures character renders on top of all 3D buildings!
+        // Clear Depth Buffer: Ensures character renders in front of 3D buildings!
         gl.clear(gl.DEPTH_BUFFER_BIT);
 
         renderer.resetState();
@@ -85,7 +96,7 @@ const Character3D = (() => {
     }
     mapInstance.addLayer(customLayer);
 
-    // High-Efficiency Frame-Throttled Animation Loop (Cuts GPU Heat by 75%)
+    // High-Efficiency Frame-Throttled Animation Loop (30 FPS Idle / 60 FPS Walking)
     let clock = new THREE.Clock();
     let animFrameId = null;
     let lastFrameTime = 0;
@@ -98,7 +109,6 @@ const Character3D = (() => {
 
       animFrameId = requestAnimationFrame(animate);
 
-      // Target 30 FPS when Idle (Cool phone), 60 FPS when Walking
       const targetFPS = isWalking ? 60 : 30;
       const minInterval = 1000 / targetFPS;
       const elapsed = timestamp - lastFrameTime;
@@ -124,6 +134,31 @@ const Character3D = (() => {
     });
   }
 
+  // Deep VRAM Memory Cleanup Helper (Prevents mobile GPU leaks)
+  function disposeModel(model) {
+    if (!model) return;
+    if (mixer) {
+      mixer.stopAllAction();
+      mixer.uncacheRoot(model);
+    }
+    model.traverse((child) => {
+      if (child.isMesh) {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) {
+          if (Array.isArray(child.material)) {
+            child.material.forEach((m) => {
+              if (m.map) m.map.dispose();
+              m.dispose();
+            });
+          } else {
+            if (child.material.map) child.material.map.dispose();
+            child.material.dispose();
+          }
+        }
+      }
+    });
+  }
+
   function loadModel(characterId) {
     const config = CONFIG.AVAILABLE_CHARACTERS.find((c) => c.id === characterId) || CONFIG.AVAILABLE_CHARACTERS[0];
     const loader = new THREE.GLTFLoader();
@@ -131,7 +166,10 @@ const Character3D = (() => {
     loader.load(
       config.file,
       (gltf) => {
-        if (currentModel) scene.remove(currentModel);
+        if (currentModel) {
+          scene.remove(currentModel);
+          disposeModel(currentModel);
+        }
 
         currentModel = gltf.scene;
         currentModel.userData.scale = config.scale;
@@ -145,8 +183,8 @@ const Character3D = (() => {
         });
 
         // Auto-detect Idle and Walk animations
-        const idleKey = Object.keys(animationsMap).find(k => k.includes("idle") || k.includes("survey") || k.includes("static")) || Object.keys(animationsMap)[0];
-        const walkKey = Object.keys(animationsMap).find(k => k.includes("walk") || k.includes("run") || k.includes("move")) || Object.keys(animationsMap)[1];
+        const idleKey = Object.keys(animationsMap).find((k) => k.includes("idle") || k.includes("survey") || k.includes("static")) || Object.keys(animationsMap)[0];
+        const walkKey = Object.keys(animationsMap).find((k) => k.includes("walk") || k.includes("run") || k.includes("move")) || Object.keys(animationsMap)[1];
 
         if (idleKey && animationsMap[idleKey]) {
           currentAction = animationsMap[idleKey];
@@ -154,7 +192,6 @@ const Character3D = (() => {
           currentAction.play();
         }
 
-        // Slow down walk animation so it's smooth and grounded
         if (walkKey && animationsMap[walkKey]) {
           animationsMap[walkKey].setEffectiveTimeScale(0.55);
         }
@@ -163,7 +200,7 @@ const Character3D = (() => {
         currentModel.userData.walkKey = walkKey;
 
         scene.add(currentModel);
-        console.log(`[Character3D] Loaded ${config.name} successfully.`);
+        console.log(`[Character3D] Loaded ${config.name} successfully (VRAM optimized).`);
       },
       undefined,
       (err) => console.warn("[Character3D] Load error:", err)
