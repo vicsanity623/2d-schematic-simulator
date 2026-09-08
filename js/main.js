@@ -424,6 +424,22 @@
       if (currentPos) map.setCenter([currentPos.lon, currentPos.lat]);
     });
 
+    // --- Instant Identity Recovery (Pulls Name & Photo from your 25 plots) ---
+    const state = Store.get();
+    if (state && state.player && (!state.player.name || state.player.name === "Traveler")) {
+      const allPlots = (typeof Grid !== "undefined" && Grid.getAllPlots) ? Grid.getAllPlots() : (state.plots || {});
+      for (const id in allPlots) {
+        const p = allPlots[id];
+        if (p.ownerId === state.player.id && p.ownerName && p.ownerName !== "Traveler") {
+          state.player.name = p.ownerName;
+          if (p.avatar && p.avatar !== "🙂") state.player.avatar = p.avatar;
+          console.log(`[Main] Restored player identity: ${state.player.name}`);
+          Store.save();
+          break;
+        }
+      }
+    }
+    
     function setupGameLayers() {
       if (!map || !map.getStyle()) return;
 
