@@ -24,6 +24,7 @@ const Store = (() => {
     return {
       player: { name: "Traveler", id: null, avatar: "🙂", model3d: "robot" },
       cash: 0,
+      lifetimeRent: 0,
       eb: 150,
       diamonds: 0,
       totalDividends: 0,
@@ -49,6 +50,9 @@ const Store = (() => {
         state = Object.assign(defaultState(), parsed);
         if (parsed.extractor) {
           state.extractor = Object.assign(defaultState().extractor, parsed.extractor);
+        }
+        if (state.lifetimeRent === undefined || state.lifetimeRent < state.cash) {
+          state.lifetimeRent = state.cash;
         }
       } else {
         state = defaultState();
@@ -186,13 +190,16 @@ const Store = (() => {
     return isBoosted ? baseRate * (state.boostMultiplier || 30) : baseRate;
   }
 
-  // Apply offline earnings & offline extractor progress
+  // Apply offline earnings, extractor progress & lifetime tracking
   function applyOfflineProgress() {
     const now = Date.now();
     const elapsedSec = Math.max(0, (now - (state.lastTick || now)) / 1000);
     const earned = elapsedSec * totalRate();
     if (state.cash === undefined) state.cash = 0;
+    if (state.lifetimeRent === undefined) state.lifetimeRent = state.cash;
+
     state.cash += earned;
+    state.lifetimeRent += earned;
 
     // Offline Diamond Extractor progress
     if (state.extractor && state.extractor.built) {
