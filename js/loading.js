@@ -211,6 +211,11 @@ const Bootloader = (() => {
             }
             if (plotData.ownerId === state.player.id) {
               state.plots[doc.id] = plotData;
+              // Recover name & photo avatar directly from your cloud plots
+              if (plotData.ownerName && plotData.ownerName !== "Traveler" && (!state.player.name || state.player.name === "Traveler")) {
+                state.player.name = plotData.ownerName;
+                if (plotData.avatar && plotData.avatar !== "🙂") state.player.avatar = plotData.avatar;
+              }
             }
           });
           Store.save();
