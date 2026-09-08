@@ -109,7 +109,7 @@ const Character3D = (() => {
 
       animFrameId = requestAnimationFrame(animate);
 
-      const targetFPS = isWalking ? 60 : 30;
+      const targetFPS = isWalking ? 60 : 15;
       const minInterval = 1000 / targetFPS;
       const elapsed = timestamp - lastFrameTime;
 
