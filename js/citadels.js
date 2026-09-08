@@ -573,11 +573,28 @@ const Citadels = (() => {
     const state = Store.get();
     const targetCit = globalCitadels[cid];
 
+    // Rule 1: Must have unlocked and planted your own Capsule first!
+    if (!state.capsule || !state.capsule.planted) {
+      alert("🛡️ You must reach $0.01 balance and plant your own Realm Capsule before you can launch Sieges against other players!");
+      return;
+    }
+
+    // Rule 2: Cannot attack any Citadel within 250 meters of your own Citadel
+    const myCitadel = Object.values(globalCitadels).find(c => c.creatorId === state.player?.id);
+    if (myCitadel && targetCit) {
+      const distToMyHold = Geo.haversine(myCitadel.lat, myCitadel.lon, targetCit.lat, targetCit.lon);
+      if (distToMyHold < 250) {
+        alert(`🛡️ Peace Treaty Active: You cannot siege holds within 250 meters of your own Citadel (currently ${Math.round(distToMyHold)}m away). Travel further to conquer foreign lands!`);
+        return;
+      }
+    }
+
     // Anti-Exploit Security Check: Block self-sieges completely!
     if (targetCit && targetCit.defender && targetCit.defender.id === state.player?.id) {
       alert("🛡️ You already hold this Citadel! You cannot siege yourself.");
       return;
     }
+    
     if ((Number(state.diamonds) || 0) < CONFIG.CITADEL_SIEGE_COST_DIAMONDS) {
       alert("You need at least 1 Diamond to initiate a Siege!");
       return;
