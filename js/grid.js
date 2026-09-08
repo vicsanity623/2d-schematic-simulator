@@ -164,8 +164,20 @@ const Grid = (() => {
     };
   }
 
+  let renderScheduled = false;
+
+  function scheduleRender() {
+    if (renderScheduled || document.hidden) return;
+    renderScheduled = true;
+    requestAnimationFrame(() => {
+      render();
+      renderScheduled = false;
+    });
+  }
+
   function render() {
-    if (!map || !map.getStyle()) return;
+    // Battery Saver: Don't spend GPU/CPU cycles if phone is in pocket or map not ready!
+    if (!map || !map.getStyle() || document.hidden) return;
 
     activeMarkers.forEach(m => m.remove());
     activeMarkers = [];
@@ -447,12 +459,12 @@ const Grid = (() => {
   function setBuyMode(active, coords = null) {
     isBuyMode = active;
     if (coords) playerCoords = coords;
-    render();
+    scheduleRender();
   }
 
   function setGlobalPlot(tid, data) {
     globalPlots[tid] = data;
-    render();
+    scheduleRender();
   }
 
   function listenToGlobalPlots() {
@@ -514,10 +526,18 @@ const Grid = (() => {
       }
     });
 
-    // Render only on true camera movements and when Firestore broadcasts updates
-    map.on("moveend zoomend", render);
+    // Debounced renders prevent lag during rapid zoom/orbit gestures
+    map.on("moveend zoomend", scheduleRender);
+
+    // Auto-refresh plots when phone is unlocked
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        scheduleRender();
+      }
+    });
+
     listenToGlobalPlots();
-    render();
+    scheduleRender();
   }
 
   return { init, render, promptBuyTile, executeBuy, getAllPlots, setBuyMode, setGlobalPlot };
