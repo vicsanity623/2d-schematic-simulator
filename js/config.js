@@ -51,7 +51,7 @@ const CONFIG = {
     { type: "eb",              amount: 2,  label: "2 EB",  color: "#4f9dd6", weight: 130 },
     { type: "diamond",         amount: 1,  label: "+1 ◆",  color: "#8fa3b8", weight: 110 },
     { type: "eb",              amount: 5,  label: "5 EB",  color: "#a86ee0", weight: 50  },
-    { type: "miss",            amount: 0,  label: "🚫",    color: "#3f2832", weight: 80  }, // 1 Remaining Miss Slice
+    { type: "eb",              amount: 7,  label: "7 EB",  color: "#ff4757", weight: 35  }, // 🍀 Lucky 7 EB Slice!
     { type: "eb",              amount: 25, label: "25 EB", color: "#e0a84f", weight: 15  },
     { type: "diamond_jackpot", amount: 24, label: "+24 ◆", color: "#2ee59d", weight: 8   }, // 💎 +24 Diamond Mega Jackpot!
     { type: "eb",              amount: 50, label: "50 EB", color: "#d4af61", weight: 5   },
