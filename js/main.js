@@ -410,11 +410,12 @@
       minPitch: 0,       // Allows flat 0° top-down view
       maxPitch: 70,      // Allows cinematic 70° low angle
       bearing: 0,
-      antialias: true,
+      antialias: false, // Saves 30% GPU load
       dragPan: false,    // Map stays locked to player (cannot scroll away)
       dragRotate: true,
       touchZoomRotate: true,
       touchPitch: true,  // Enables native 2-finger vertical swipe to tilt camera angle!
+      canvasContextAttributes: { antialias: false, powerPreference: "low-power" } // Routes graphics through mobile energy-efficiency cores
     });
 
     // Multi-touch Controller: 1-finger orbit & 2-finger pitch/zoom
