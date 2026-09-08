@@ -204,7 +204,6 @@ const Leaderboard = (() => {
             }
 
             target.lifetimeRent = finalLifetime;
-          }
           } else if (d.player) {
             playerArray.push({
               id: doc.id,
