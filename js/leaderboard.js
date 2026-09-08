@@ -9,19 +9,13 @@ const Leaderboard = (() => {
   let lastFetchTime = 0;
   const CACHE_TTL_MS = 60000;
   
-  // Helper to calculate any player's base plot income rate ($/sec)
-  function getPlayerIncomeRate(ownerId, allPlots) {
-    let rate = 0;
-    for (const tid in allPlots) {
-      const p = allPlots[tid];
-      if (p.ownerId === ownerId) {
-        const rarityKey = p.rarity?.key || p.rarity;
-        const configRarity = CONFIG.PLOT_RARITIES.find(r => r.key === rarityKey);
-        rate += (configRarity ? configRarity.rate : 0.0000000011);
-      }
-    }
-    return rate;
-  }
+  // Fast Rarity Rate Lookup Table (Zero find() search overhead)
+  const RARITY_RATE_MAP = {
+    common: 0.0000000011,
+    rare: 0.0000000160,
+    epic: 0.0000000220,
+    legendary: 0.0000000440
+  };
 
   async function fetchRankings(forceRefresh = false) {
     const now = Date.now();
@@ -37,8 +31,8 @@ const Leaderboard = (() => {
     const cityCounts = {};
     const stateCounts = {};
     const countryCounts = {};
+    const playerRateMap = {}; // Instant O(1) rate cache
 
-    // Ensure self cash is immediately present for tie-breakers
     if (state.player?.id) {
       playerStats[state.player.id] = {
         id: state.player.id,
@@ -46,15 +40,21 @@ const Leaderboard = (() => {
         avatar: state.player.avatar || "🙂",
         plotsCount: Object.keys(state.plots || {}).length,
         cash: Number(state.cash) || 0,
+        lifetimeRent: Number(state.lifetimeRent || state.cash) || 0,
         cities: {}, states: {}, countries: {}
       };
     }
 
-    const uniquePlots = {}; // oid -> Set of unique "tx_ty" coordinates
+    const uniquePlots = {};
 
+    // 1-Pass Optimization: Aggregates plots, cities, AND rates simultaneously!
     for (const tid in allPlots) {
       const p = allPlots[tid];
       const oid = p.ownerId || "unknown";
+
+      const rKey = p.rarity?.key || p.rarity || "common";
+      const pRate = RARITY_RATE_MAP[rKey] || 0.0000000011;
+      playerRateMap[oid] = (playerRateMap[oid] || 0) + pRate;
 
       if (!playerStats[oid]) {
         playerStats[oid] = {
@@ -63,6 +63,7 @@ const Leaderboard = (() => {
           avatar: p.avatar || "🙂",
           plotsCount: 0,
           cash: 0,
+          lifetimeRent: 0,
           cities: {},
           states: {},
           countries: {}
@@ -211,10 +212,10 @@ const Leaderboard = (() => {
           const d = doc.data();
           const target = playerArray.find(p => p.id === doc.id);
 
-          // Calculate exact offline elapsed time and accrued rent
+          // Instant O(1) rate lookup (replaces 20,000 loop iterations)
           const lastActive = d.lastTick || d.createdAt || now;
           const offlineSec = Math.max(0, (now - lastActive) / 1000);
-          const rate = getPlayerIncomeRate(doc.id, allPlots);
+          const rate = playerRateMap[doc.id] || 0.0000000011;
           const offlineAccrued = offlineSec * rate;
 
           let finalLifetime = (d.lifetimeRent !== undefined ? d.lifetimeRent : (d.cash || 0)) + offlineAccrued;
@@ -279,7 +280,11 @@ const Leaderboard = (() => {
 
   function render(data) {
     const listEl = document.getElementById("leaderboard-list");
-    if (!listEl || !data) return;
+    if (!listEl || !data || document.hidden) return;
+
+    // Battery Saver: Don't spend CPU building 50 DOM rows if modal is closed!
+    const modalEl = document.getElementById("leaderboard-modal");
+    if (modalEl && modalEl.classList.contains("hidden")) return;
 
     const fragment = document.createDocumentFragment();
     const state = Store.get();
