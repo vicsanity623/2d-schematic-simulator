@@ -84,6 +84,7 @@ const Store = (() => {
       } catch (e) {}
     }
 
+    updateBaseRateCache(); // Warm the O(1) cache immediately on boot
     return state;
   }
 
@@ -209,17 +210,42 @@ const Store = (() => {
     return state;
   }
 
-  // Total $/sec across every owned plot (multiplied if boost active)
-  function totalRate() {
-    let baseRate = 0;
+  // Fast Rarity Rate Lookup Table (Zero array find overhead)
+  const RATE_MAP = {
+    common: 0.0000000011,
+    rare: 0.0000000160,
+    epic: 0.0000000220,
+    legendary: 0.0000000440
+  };
+
+  let cachedBaseRate = 0;
+  let lastPlotsCount = -1;
+
+  // Recalculate base rate only when plot count changes (O(1) after initial calc)
+  function updateBaseRateCache() {
+    if (!state || !state.plots) {
+      cachedBaseRate = 0;
+      return;
+    }
+    const currentCount = Object.keys(state.plots).length;
+    if (currentCount === lastPlotsCount) return;
+
+    lastPlotsCount = currentCount;
+    let sum = 0;
     for (const id in state.plots) {
       const p = state.plots[id];
-      const rarityKey = p.rarity?.key || p.rarity;
-      const configRarity = CONFIG.PLOT_RARITIES.find(r => r.key === rarityKey);
-      baseRate += (configRarity ? configRarity.rate : (p.rate || 0));
+      const rKey = p.rarity?.key || p.rarity || "common";
+      sum += (RATE_MAP[rKey] || (p.rate || 0.0000000011));
     }
+    cachedBaseRate = sum;
+  }
+
+  // Instant O(1) Total Income Rate (Zero loops on 500ms ticker)
+  function totalRate() {
+    if (!state) return 0;
+    updateBaseRateCache();
     const isBoosted = state.boostExpiry && Date.now() < state.boostExpiry;
-    return isBoosted ? baseRate * (state.boostMultiplier || 30) : baseRate;
+    return isBoosted ? cachedBaseRate * (state.boostMultiplier || 30) : cachedBaseRate;
   }
 
   // Apply offline earnings, extractor progress & lifetime tracking
