@@ -3021,14 +3021,24 @@ html,body{
   background: transparent !important;
 }
 
-/* ---------- Push Fullscreen / Vignette Ads Below Phone Status Bar & Notch ---------- */
+/* ---------- Safe-Area Notch & Dynamic Island Guard for Fullscreen Vignette Ads ---------- */
 body > div[style*="2147483647"],
+body > ins[style*="2147483647"],
 .adsbygoogle-noablate,
 div[id*="google-ads-annotation"],
-div.google-anno-skip,
 div[aria-label="Advertisement"] {
-  padding-top: max(28px, env(safe-area-inset-top)) !important;
+  padding-top: max(52px, env(safe-area-inset-top)) !important;
   box-sizing: border-box !important;
+}
+
+/* Force Google's [X] Close Button below the Camera Notch & Status Bar Clock */
+div.google-anno-skip,
+div[aria-label="Close ad"],
+button[aria-label="Close ad"],
+[id*="dismiss-button"] {
+  top: max(54px, calc(env(safe-area-inset-top) + 12px)) !important;
+  right: 16px !important;
+  z-index: 2147483647 !important;
 }
 
 /* ---------- Territory Scope Bar ---------- */
