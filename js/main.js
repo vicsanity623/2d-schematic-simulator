@@ -264,12 +264,24 @@
   // ---------------- Sign-in & Sequenced Boot ----------------
   function onSignedIn(playerData) {
     const player = playerData || Store.get()?.player || { name: "Traveler" };
+    console.log("[Main] onSignedIn called with player:", player);
 
-    // Execute the professional load pipeline
-    Bootloader.run(player, (coords) => {
-      launchGame(coords);
-      beginWatch();
-    });
+    // Force immediate dismissal of signin screen on all browsers (Brave, Chrome, Safari)
+    const signin = document.getElementById("signin-screen");
+    if (signin) {
+      signin.classList.add("hidden");
+      signin.style.display = "none";
+    }
+
+    // Execute the professional 3D load pipeline
+    if (typeof Bootloader !== "undefined" && Bootloader.run) {
+      Bootloader.run(player, (coords) => {
+        launchGame(coords);
+        beginWatch();
+      });
+    } else {
+      launchGame();
+    }
   }
 
   // ---------------- Location ----------------
