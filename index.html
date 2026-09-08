@@ -89,7 +89,7 @@
     <div class="hero-balance-card" id="hero-balance-card">
       <div class="hero-top-line">
         <div class="hero-brand-title">
-          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.6.5.419</span>
+          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.6.5.420</span>
         </div>
         <div id="boost-timer-badge" class="boost-timer-badge hidden">⚡ 30X BOOST <span id="boost-countdown">00:00:00</span></div>
       </div>
@@ -567,12 +567,19 @@
   <div class="chat-drawer-overlay" id="chat-drawer-overlay"></div>
   <div class="chat-drawer-panel">
     
-    <!-- Chat Header -->
+    <!-- Chat Header with Live Online Counter -->
     <div class="chat-header">
       <div class="chat-header-title">
         <span class="chat-live-pulse"></span>
         <h3>Realm Global Chat</h3>
       </div>
+      
+      <!-- Live Online Count Badge -->
+      <div class="chat-online-wrap">
+        <span class="chat-online-label">ONLINE:</span>
+        <strong id="chat-online-count" class="chat-online-count">1</strong>
+      </div>
+
       <button id="close-chat-btn" class="chat-close-btn">✕</button>
     </div>
 
