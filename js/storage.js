@@ -4,6 +4,8 @@
 const Store = (() => {
   const KEY = "eldenEarth.save.v1";
   let db = null;
+  const localSessionId = "sess_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  let isSessionPaused = false;
 
   function getDb() {
     if (db) return db;
@@ -107,14 +109,15 @@ const Store = (() => {
     });
   }
 
-  // Cloud Save to Firestore (Full Document Overwrite so deleted diamonds actually delete)
+  // Cloud Save to Firestore (Guarded by Single Active Session Lock)
   function syncToCloud() {
+    if (isSessionPaused) return; // Never overwrite if another device is active!
     const firestore = getDb();
     if (!firestore || !state || !state.player || !state.player.id) return;
 
     try {
-      // Must NOT use { merge: true } for the whole state object,
-      // because Firestore merge will NOT remove deleted keys from liveDiamonds!
+      // Stamp active session ID on every cloud write
+      state.activeSessionId = localSessionId;
       firestore.collection("saves").doc(state.player.id).set(state)
         .catch(err => console.warn("[Cloud] Sync failed:", err));
     } catch (err) {
@@ -132,42 +135,23 @@ const Store = (() => {
     cloudSyncTimeout = setTimeout(syncToCloud, 1000);
   }
 
-  // Load from Cloud when logging into Google (Full Restore)
+  // Load from Cloud with Full Cloud Authority & Live Session Conflict Listener
   async function syncFromCloud(playerId) {
     const firestore = getDb();
     if (!firestore || !playerId) return null;
 
     try {
-      // 1. Fetch player save document
+      // 1. Fetch official cloud save document (Single Source of Truth)
       const doc = await firestore.collection("saves").doc(playerId).get();
       if (doc.exists) {
         const cloudData = doc.data();
-        const localDiamonds = (state && state.liveDiamonds) ? state.liveDiamonds : {};
-        const localExtractor = (state && state.extractor) ? state.extractor : null;
-        const currentCash = state ? (state.cash || 0) : 0;
-
+        
+        // Cloud Data is authoritative: overrides stale desktop cache with fresh Day 4 data!
         state = Object.assign(defaultState(), cloudData);
+        state.activeSessionId = localSessionId;
+        isSessionPaused = false;
 
-        // Keep the higher balance (so cloud never overwrites with wiped values)
-        if (currentCash > (state.cash || 0)) {
-          state.cash = currentCash;
-        }
-
-        // Only keep diamonds that exist in BOTH or let local deletion take precedence
-        if (Object.keys(localDiamonds).length < Object.keys(state.liveDiamonds || {}).length) {
-          state.liveDiamonds = localDiamonds;
-        }
-
-        // Never allow cloud sync to un-build an already built extractor
-        if (localExtractor && localExtractor.built) {
-          if (!state.extractor || !state.extractor.built) {
-            state.extractor = localExtractor;
-          } else {
-            // Keep the higher level / newer harvest
-            state.extractor.level = Math.max(state.extractor.level || 1, localExtractor.level || 1);
-            state.extractor.stored = Math.max(state.extractor.stored || 0, localExtractor.stored || 0);
-          }
-        }
+        localStorage.setItem(KEY, JSON.stringify(state));
       }
 
       // 2. Query and restore all plots owned by this player from world map
@@ -179,13 +163,41 @@ const Store = (() => {
         });
       }
 
-      localStorage.setItem(KEY, JSON.stringify(state));
+      // 3. Claim Active Session on Google Cloud
+      await firestore.collection("saves").doc(playerId).set({
+        activeSessionId: localSessionId
+      }, { merge: true });
+
+      // 4. Live Conflict Listener: Detects if another device logs into this account!
+      firestore.collection("saves").doc(playerId).onSnapshot((snap) => {
+        if (!snap.exists) return;
+        const d = snap.data();
+        if (d.activeSessionId && d.activeSessionId !== localSessionId) {
+          // Another device logged in! Pause this device immediately to protect cloud data!
+          isSessionPaused = true;
+          console.warn("[Auth] Active session taken over by another device!");
+          
+          const conflictModal = document.getElementById("session-conflict-modal");
+          if (conflictModal) conflictModal.classList.remove("hidden");
+        }
+      });
+
       console.log(`[Cloud] Restored account for ${playerId} with ${Object.keys(state.plots || {}).length} plots.`);
       return state;
     } catch (err) {
       console.warn("[Cloud] Load error:", err);
     }
     return null;
+  }
+
+  function resumeSession() {
+    isSessionPaused = false;
+    document.getElementById("session-conflict-modal")?.classList.add("hidden");
+    if (state?.player?.id) {
+      syncFromCloud(state.player.id).then(() => {
+        location.reload();
+      });
+    }
   }
 
   function get() { return state; }
@@ -238,5 +250,5 @@ const Store = (() => {
     return earned;
   }
 
-  return { load, save, get, reset, totalRate, applyOfflineProgress, syncFromCloud, getDb };
+  return { load, save, get, reset, totalRate, applyOfflineProgress, syncFromCloud, getDb, resumeSession };
 })();
