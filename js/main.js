@@ -26,54 +26,54 @@
   let cachedCashWhole = null;
   let cachedCashDecimal = null;
 
+  // High-Efficiency Cached State Tracker (Zero Redundant DOM Reflows)
+  let lastCashStr = "";
+  let lastEBVal = -1;
+  let lastDiaVal = -1;
+  let lastRateVal = "";
+
   function updateTopbar() {
+    if (document.hidden) return; // Battery Saver: Skip UI work when phone is in pocket!
     const state = Store.get();
     if (state.cash === undefined) state.cash = 0;
 
-    // High-performance DOM node caching for cash display (skips innerHTML parsing)
+    // 1. Ultra-Fast Cash Interpolator (Direct TextNode Injection)
     const cashContainer = el("stat-cash");
     if (cashContainer) {
       const val = Number(state.cash) || 0;
       const fixedStr = val.toFixed(15);
-      const parts = fixedStr.split(".");
-      const whole = parseInt(parts[0], 10);
-      const decimals = parts[1] || "000000000000000";
-
-      const wholeHTML = whole > 0 ? `<span class="cash-whole">${whole}</span>` : "";
-      const currentFullHTML = `<span class="cash-dollar">$</span>${wholeHTML}<span class="cash-point">.</span><span class="cash-decimal">${decimals}</span>`;
-
-      if (cashContainer.innerHTML !== currentFullHTML) {
-        cashContainer.innerHTML = currentFullHTML;
+      if (fixedStr !== lastCashStr) {
+        lastCashStr = fixedStr;
+        const parts = fixedStr.split(".");
+        const whole = parseInt(parts[0], 10);
+        const decimals = parts[1] || "000000000000000";
+        const wholeHTML = whole > 0 ? `<span class="cash-whole">${whole}</span>` : "";
+        cashContainer.innerHTML = `<span class="cash-dollar">$</span>${wholeHTML}<span class="cash-point">.</span><span class="cash-decimal">${decimals}</span>`;
       }
     }
 
-    // Elden Bucks game currency in sub-row
-    if (el("stat-eb")) el("stat-eb").textContent = Math.floor(Number(state.eb) || 0) + " EB";
-
+    // 2. Dirty-Checked Currency Updates (Only updates DOM if numbers actually changed)
     const currentEB = Math.floor(Number(state.eb) || 0);
-    const currentDiamonds = Number(state.diamonds) || 0;
-
-    el("stat-diamonds").innerHTML = `${currentDiamonds} <span class="hud-gem-icon"></span>`;
-
-    // Live player balances inside the Diamond Wheel modal
-    if (el("wheel-eb-display")) el("wheel-eb-display").textContent = currentEB + " EB";
-    if (el("wheel-diamond-display")) el("wheel-diamond-display").innerHTML = `${currentDiamonds} <span class="hud-gem-icon"></span>`;
-
-    // Update legacy wheel balance spans (backward compatibility)
-    if (el("wheel-diamonds")) el("wheel-diamonds").textContent = currentDiamonds;
-    if (el("wheel-eb")) el("wheel-eb").textContent = currentEB + " EB";
-
-    el("stat-rate").textContent = "$" + Store.totalRate().toFixed(11) + "/s";
-    el("player-name").textContent = state.player.name || "Traveler";
-
-    const avatarEl = el("player-avatar");
-    if (state.player.avatar && state.player.avatar.startsWith("img:")) {
-      avatarEl.innerHTML = `<img src="${state.player.avatar.slice(4)}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`;
-    } else {
-      avatarEl.textContent = state.player.avatar || "🙂";
+    if (currentEB !== lastEBVal) {
+      lastEBVal = currentEB;
+      if (el("stat-eb")) el("stat-eb").textContent = currentEB + " EB";
+      if (el("wheel-eb-display")) el("wheel-eb-display").textContent = currentEB + " EB";
     }
 
-    // --- Multiplier Glow & Timer ---
+    const currentDiamonds = Number(state.diamonds) || 0;
+    if (currentDiamonds !== lastDiaVal) {
+      lastDiaVal = currentDiamonds;
+      if (el("stat-diamonds")) el("stat-diamonds").innerHTML = `${currentDiamonds} <span class="hud-gem-icon"></span>`;
+      if (el("wheel-diamond-display")) el("wheel-diamond-display").innerHTML = `${currentDiamonds} <span class="hud-gem-icon"></span>`;
+    }
+
+    const currentRate = "$" + Store.totalRate().toFixed(11) + "/s";
+    if (currentRate !== lastRateVal) {
+      lastRateVal = currentRate;
+      if (el("stat-rate")) el("stat-rate").textContent = currentRate;
+    }
+
+    // 3. Multiplier Timer
     const now = Date.now();
     const isBoosted = state.boostExpiry && state.boostExpiry > now;
     const heroCard = el("hero-balance-card");
@@ -85,13 +85,13 @@
       heroCard?.classList.add("boosted");
       timerBadge?.classList.remove("hidden");
 
-      // Format HH:MM:SS
       const hrs = Math.floor(remainingMs / 3600000);
       const mins = Math.floor((remainingMs % 3600000) / 60000);
       const secs = Math.floor((remainingMs % 60000) / 1000);
-      el("boost-countdown").textContent = `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+      if (el("boost-countdown")) {
+        el("boost-countdown").textContent = `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+      }
 
-      // Hide button if remaining time is 5 hours or more (Max limit: 6 hours)
       if (multBtn) {
         multBtn.style.display = remainingMs >= 5 * 3600000 ? "none" : "flex";
       }
@@ -334,23 +334,28 @@
     }
   }
 
+  let lastCameraCenter = null;
+
   function handlePosition(coords) {
     currentPos = { lat: coords.latitude, lon: coords.longitude };
     if (!map) return;
     
     if (typeof Citadels !== "undefined") Citadels.setPlayerPosition(currentPos.lat, currentPos.lon);
     
-    // 1. Move 3D Character & Geographic Radius Layer
+    // 1. Move 3D Character & Radius Layer
     Character3D.setPlayerPosition(currentPos.lon, currentPos.lat);
     updatePlayerRadiusLayer();
     Diamonds.setPlayerPosition(currentPos.lat, currentPos.lon);
 
-    // 2. Smooth GPS Camera Follow: Keeps player locked in center while walking!
-    if (!isUserInteracting && !isOrbiting) {
+    // 2. Camera Follow Deadzone: Only glide camera if player actually moved > 0.8 meters
+    const dist = lastCameraCenter ? Geo.haversine(lastCameraCenter.lat, lastCameraCenter.lon, currentPos.lat, currentPos.lon) : 999;
+
+    if (dist > 0.8 && !isUserInteracting && !isOrbiting) {
+      lastCameraCenter = { lat: currentPos.lat, lon: currentPos.lon };
       map.easeTo({
         center: [currentPos.lon, currentPos.lat],
-        duration: 1200,   // Fluid 1.2-second glide
-        easing: (t) => t, // Linear easing prevents sudden camera jumps
+        duration: 1000,
+        easing: (t) => t,
         essential: true
       });
     }
@@ -946,6 +951,8 @@
     }
 
     function checkExtractorTick() {
+      if (document.hidden) return; // Battery Saver: 0% CPU while phone in pocket
+
       const state = Store.get();
       if (!state.extractor) state.extractor = { built: false, level: 1, lastHarvest: Date.now(), stored: 0 };
       if (!state.extractor.built) return;
