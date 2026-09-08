@@ -368,32 +368,34 @@ const Citadels = (() => {
 
     const isOwnerOrDefender = (def && def.id === myId) || (cit.creatorId === myId);
 
+    // 1. REIGNING DEFENDER VIEW: Show Recall and Upgrade. NEVER show Siege!
     if (def && def.id === myId) {
       const recallBtn = document.createElement("button");
       recallBtn.className = "btn btn-primary";
       recallBtn.innerHTML = `Recall Defender & Collect Loot (+${spoils.diamonds} ◆ & +${spoils.eb} EB)`;
       recallBtn.addEventListener("click", () => recallDefender(cid));
       actionsWrap.appendChild(recallBtn);
-    }
 
-    // --- Upgrade Forge Trigger (Available for Hold Owner or Defender) ---
-    if (isOwnerOrDefender && cit.rarity !== "legendary" && !cit.isEvolving) {
-      const upgradeBtn = document.createElement("button");
-      upgradeBtn.className = "btn btn-citadel-upgrade";
-      const nextInfo = CONFIG.CITADEL_UPGRADE_COSTS[cit.rarity];
-      upgradeBtn.innerHTML = `⚡ Upgrade Hold to ${nextInfo ? nextInfo.nextLabel : "Next Tier"}`;
-      upgradeBtn.addEventListener("click", () => openUpgradeModal(cid));
-      actionsWrap.appendChild(upgradeBtn);
-    }
-
-    if (!def || !def.id) {
+      if (cit.rarity !== "legendary" && !cit.isEvolving) {
+        const upgradeBtn = document.createElement("button");
+        upgradeBtn.className = "btn btn-citadel-upgrade";
+        const nextInfo = CONFIG.CITADEL_UPGRADE_COSTS[cit.rarity];
+        upgradeBtn.innerHTML = `⚡ Upgrade Hold to ${nextInfo ? nextInfo.nextLabel : "Next Tier"}`;
+        upgradeBtn.addEventListener("click", () => openUpgradeModal(cid));
+        actionsWrap.appendChild(upgradeBtn);
+      }
+    } 
+    // 2. UNCLAIMED HOLD VIEW: Allow Stationing
+    else if (!def || !def.id) {
       const stationBtn = document.createElement("button");
       stationBtn.className = "btn btn-primary";
       stationBtn.textContent = isNearby ? "Station My Avatar (Defend Hold)" : "Too Far to Station (Walk Closer)";
       stationBtn.disabled = !isNearby;
       stationBtn.addEventListener("click", () => stationDefender(cid));
       actionsWrap.appendChild(stationBtn);
-    } else {
+    } 
+    // 3. ENEMY DEFENDER VIEW ONLY: Allow Siege (Only when someone else is defending!)
+    else if (def.id !== myId) {
       const siegeBtn = document.createElement("button");
       siegeBtn.className = "btn btn-danger";
       siegeBtn.innerHTML = isNearby ? `⚔️ Initiate Siege (Cost: 1 <span class="hud-gem-icon"></span>)` : "Too Far to Attack (Walk Closer)";
@@ -535,6 +537,13 @@ const Citadels = (() => {
   // --- 4. Reflex Meter Siege Battle ---
   function startSiege(cid) {
     const state = Store.get();
+    const targetCit = globalCitadels[cid];
+
+    // Anti-Exploit Security Check: Block self-sieges completely!
+    if (targetCit && targetCit.defender && targetCit.defender.id === state.player?.id) {
+      alert("🛡️ You already hold this Citadel! You cannot siege yourself.");
+      return;
+    }
     if ((Number(state.diamonds) || 0) < CONFIG.CITADEL_SIEGE_COST_DIAMONDS) {
       alert("You need at least 1 Diamond to initiate a Siege!");
       return;
