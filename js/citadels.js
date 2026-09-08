@@ -263,7 +263,15 @@ const Citadels = (() => {
       const trueLat = center.lat;
       const trueLon = center.lon;
 
-      // 3. Build 10x10ft Ground Stronghold Parcel GeoJSON directly under the Hold
+      // 3. 5KM HORIZON CULLING: Don't render Citadels in Indiana, Ohio, or Puerto Rico!
+      if (playerCoords && playerCoords.lat) {
+        const distToPlayer = Geo.haversine(playerCoords.lat, playerCoords.lon, trueLat, trueLon);
+        if (distToPlayer > 5000) {
+          continue; // Skip! Keeps phone cool and stops distant state holds from rendering
+        }
+      }
+
+      // 4. Build 10x10ft Ground Stronghold Parcel GeoJSON directly under the Hold
       const bounds = Geo.tileBounds(tx, ty, tileSize);
       const coords = bounds.map(pt => [pt[1], pt[0]]);
       coords.push(coords[0]); // Close polygon ring

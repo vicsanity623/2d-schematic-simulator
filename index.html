@@ -89,7 +89,7 @@
     <div class="hero-balance-card" id="hero-balance-card">
       <div class="hero-top-line">
         <div class="hero-brand-title">
-          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.6.5.415</span>
+          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.6.5.426</span>
         </div>
         <div id="boost-timer-badge" class="boost-timer-badge hidden">⚡ 30X BOOST <span id="boost-countdown">00:00:00</span></div>
       </div>
@@ -223,17 +223,12 @@
     </button>
   </div>
 
-  <!-- Game Treasury Bottom Ad Banner (320x50 Mobile Strip) -->
+  <!-- Game Treasury Bottom Ad Banner (320x50 Mobile Strip with 60s Auto-Refresh) -->
   <div id="treasury-ad-container" class="treasury-ad-container">
     <ins class="adsbygoogle"
          style="display:inline-block;width:320px;height:50px"
          data-ad-client="ca-pub-5972331036113330"
          data-ad-slot="4287691766"></ins>
-    <script>
-      try {
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (e) {}
-    </script>
   </div>
 </div>
 
@@ -537,6 +532,14 @@
           <span>Own the most land in any city to claim the Mayor crown and earn a 2% dividend on all land bought by other players!</span>
         </div>
       </div>
+      
+      <div class="guide-card">
+        <div class="guide-card-icon">🙋‍♂️❓</div>
+        <div class="guide-card-text">
+          <strong>8. More to come...</strong>
+          <span>Share your feedback and you might see your suggestion added to the roadmap.</span>
+        </div>
+      </div>
 
     </div>
 
@@ -567,12 +570,19 @@
   <div class="chat-drawer-overlay" id="chat-drawer-overlay"></div>
   <div class="chat-drawer-panel">
     
-    <!-- Chat Header -->
+    <!-- Chat Header with Live Online Counter -->
     <div class="chat-header">
       <div class="chat-header-title">
         <span class="chat-live-pulse"></span>
         <h3>Realm Global Chat</h3>
       </div>
+      
+      <!-- Live Online Count Badge -->
+      <div class="chat-online-wrap">
+        <span class="chat-online-label">ONLINE:</span>
+        <strong id="chat-online-count" class="chat-online-count">1</strong>
+      </div>
+
       <button id="close-chat-btn" class="chat-close-btn">✕</button>
     </div>
 

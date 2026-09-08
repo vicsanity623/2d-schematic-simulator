@@ -112,13 +112,42 @@ const Store = (() => {
     return state;
   }
 
-  function save(immediateCloud = true) {
+  // High-Efficiency Disk Writer: Prevents writing to physical flash storage every second
+  let localDiskTimeout = null;
+
+  function flushToDisk() {
+    if (!state) return;
     try {
       localStorage.setItem(KEY, JSON.stringify(state));
-      syncToCloudDebounced(immediateCloud);
     } catch (e) {
-      console.warn("Could not save game.", e);
+      console.warn("Could not write to local storage.", e);
     }
+  }
+
+  function save(immediateCloud = true) {
+    // If critical action (buying land, spinning wheel), write to disk immediately
+    if (immediateCloud) {
+      clearTimeout(localDiskTimeout);
+      flushToDisk();
+      syncToCloudDebounced(true);
+    } else {
+      // For 1-second passive rent ticks: buffer disk writes to every 10 seconds!
+      if (!localDiskTimeout) {
+        localDiskTimeout = setTimeout(() => {
+          flushToDisk();
+          localDiskTimeout = null;
+        }, 10000);
+      }
+      syncToCloudDebounced(false);
+    }
+  }
+
+  // Always flush disk buffer immediately when closing tab or locking phone
+  if (typeof window !== "undefined") {
+    window.addEventListener("pagehide", flushToDisk);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) flushToDisk();
+    });
   }
 
   // Cloud sync debounce - prevents excessive Firestore writes

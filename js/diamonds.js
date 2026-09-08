@@ -132,13 +132,21 @@ const Diamonds = (() => {
 
     // Add or update markers
     const collected = new Set(state.collectedDiamondIds || []);
+    const bounds = map.getBounds(); // Get active screen viewport
+
     for (const did in live) {
-      // Never render a diamond that has already been collected
       if (collected.has(did)) {
         delete live[did];
         continue;
       }
       const d = live[did];
+
+      // Viewport Culling: Skip rendering if diamond is off-screen (Saves dozens of CSS loops!)
+      if (bounds && !bounds.contains([d.lon, d.lat])) {
+        if (markers[did]) { markers[did].remove(); delete markers[did]; }
+        continue;
+      }
+
       const dim = !withinCollectRange(d.lat, d.lon);
 
       if (markers[did]) {

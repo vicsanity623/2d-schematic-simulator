@@ -51,8 +51,8 @@ const Character3D = (() => {
         renderer = new THREE.WebGLRenderer({
           canvas: map.getCanvas(),
           context: gl,
-          antialias: true,
-          powerPreference: "high-performance",
+          antialias: false,
+          powerPreference: "low-power"
         });
         renderer.autoClear = false;
 
@@ -109,7 +109,7 @@ const Character3D = (() => {
 
       animFrameId = requestAnimationFrame(animate);
 
-      const targetFPS = isWalking ? 60 : 30;
+      const targetFPS = isWalking ? 60 : 15;
       const minInterval = 1000 / targetFPS;
       const elapsed = timestamp - lastFrameTime;
 
