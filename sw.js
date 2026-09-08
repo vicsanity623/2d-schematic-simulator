@@ -1,5 +1,5 @@
 // Bump this version string whenever you deploy an update!
-const CACHE_NAME = 'elden-earth-v2.0.31';
+const CACHE_NAME = 'elden-earth-v2.1.0';
 
 const ASSETS_TO_CACHE = [
     './',
@@ -24,7 +24,8 @@ const ASSETS_TO_CACHE = [
     './js/config.js',
     './js/character.js',
     './js/citadels.js',
-    './js/chat.js'
+    './js/chat.js',
+    './js/pool.js'
 ];
 
 // 1. Force Immediate Installation
