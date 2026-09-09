@@ -263,11 +263,17 @@ const Citadels = (() => {
       const trueLat = center.lat;
       const trueLon = center.lon;
 
-      // 3. 5KM HORIZON CULLING: Don't render Citadels in Indiana, Ohio, or Puerto Rico!
-      if (playerCoords && playerCoords.lat) {
+      // 3. METRO HORIZON CULLING (25km City Radius — Blocks distant states/countries)
+      const state = Store.get();
+      const myId = state?.player?.id;
+      const isMine = (cit.creatorId === myId) || (cit.defender?.id === myId);
+
+      // NEVER cull your own Citadel or one you are defending!
+      if (!isMine && playerCoords && playerCoords.lat) {
         const distToPlayer = Geo.haversine(playerCoords.lat, playerCoords.lon, trueLat, trueLon);
-        if (distToPlayer > 5000) {
-          continue; // Skip! Keeps phone cool and stops distant state holds from rendering
+        // Culls holds in distant states/countries (> 25km), but shows your entire metro area!
+        if (distToPlayer > 25000) {
+          continue;
         }
       }
 
