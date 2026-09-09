@@ -80,10 +80,10 @@ const CONFIG = {
   // --- Land plots (Exact Rates & Odds) ---
   PLOT_COST_EB: 100,
   PLOT_RARITIES: [
-    { key: "common",    label: "Common",    rate: 0.0000000011, weight: 50, color: "#8fa3b8" }, // 50%
-    { key: "rare",      label: "Rare",      rate: 0.0000000016,  weight: 30, color: "#4f9dd6" }, // 30%
-    { key: "epic",      label: "Epic",      rate: 0.0000000022,  weight: 15, color: "#a86ee0" }, // 15%
-    { key: "legendary", label: "Legendary", rate: 0.0000000044,  weight: 5,  color: "#e0a84f" }, // 5%
+    { key: "common",    label: "Common",    rate: 0.0000000016, weight: 50, color: "#8fa3b8" }, // 50%
+    { key: "rare",      label: "Rare",      rate: 0.0000000027,  weight: 30, color: "#4f9dd6" }, // 30%
+    { key: "epic",      label: "Epic",      rate: 0.0000000044,  weight: 15, color: "#a86ee0" }, // 15%
+    { key: "legendary", label: "Legendary", rate: 0.0000000088,  weight: 5,  color: "#e0a84f" }, // 5%
   ],
   
   // --- 3D Character Roster (Heroic Scale) ---
