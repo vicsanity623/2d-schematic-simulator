@@ -58,16 +58,13 @@ const Grid = (() => {
     }
 
     pendingTile = { tx, ty };
+    scheduleRender();
     const modal = document.getElementById("buy-modal");
     const plantBtn = document.getElementById("plant-capsule-confirm-btn");
-    const modalSub = modal ? modal.querySelector(".modal-sub") : null;
 
-    if (hasCapsule) {
-      if (modalSub) modalSub.textContent = `Tile [${tx}, ${ty}]: Claim with 100 EB or plant your free Citadel Hold here!`;
-      if (plantBtn) plantBtn.style.display = "inline-block";
-    } else {
-      if (modalSub) modalSub.textContent = "Expand your realm with a new 10x10 ft plot.";
-      if (plantBtn) plantBtn.style.display = "none";
+    // Seamless toggle: Shows or hides the plant button without touching innerHTML!
+    if (plantBtn) {
+      plantBtn.style.display = hasCapsule ? "inline-block" : "none";
     }
 
     if (modal) modal.classList.remove("hidden");
@@ -284,7 +281,11 @@ const Grid = (() => {
 
             emptyGridFeatures.push({
               type: "Feature",
-              properties: { tx, ty },
+              properties: {
+                tx,
+                ty,
+                selected: pendingTile && pendingTile.tx === tx && pendingTile.ty === ty,
+              },
               geometry: { type: "Polygon", coordinates: [coords] },
             });
           }
@@ -304,8 +305,8 @@ const Grid = (() => {
         type: "fill",
         source: "empty-grid-source",
         paint: {
-          "fill-color": "#4fd6c4",
-          "fill-opacity": 0.08,
+          "fill-color": ["case", ["get", "selected"], "#ffffff", "#4fd6c4"],
+          "fill-opacity": ["case", ["get", "selected"], 0.72, 0.08],
         },
       });
 
@@ -314,8 +315,8 @@ const Grid = (() => {
         type: "line",
         source: "empty-grid-source",
         paint: {
-          "line-color": "#4fd6c4",
-          "line-width": 1.5,
+          "line-color": ["case", ["get", "selected"], "#ffffff", "#4fd6c4"],
+          "line-width": ["case", ["get", "selected"], 3, 1.5],
         },
       });
     }
@@ -532,21 +533,16 @@ const Grid = (() => {
     });
 
     plantBtn?.addEventListener("click", () => {
-      if (!pendingTile) return;
-      const { tx, ty } = pendingTile;
-      const ts = CONFIG.TILE_SIZE_METERS || 6.096;
-      
-      // Calculate exact center of the chosen tile
-      const center = Geo.fromMercator(
-        tx * ts + ts / 2,
-        ty * ts + ts / 2
-      );
-
-      if (typeof Citadels !== "undefined") {
-        Citadels.plantCapsule(tx, ty, center.lat, center.lon);
+      if (pendingTile && typeof Citadels !== "undefined") {
+        const corners = Geo.tileBounds(pendingTile.tx, pendingTile.ty, CONFIG.TILE_SIZE_METERS);
+        const cLat = (corners[0][0] + corners[2][0]) / 2;
+        const cLon = (corners[0][1] + corners[2][1]) / 2;
+        const planted = Citadels.plantCapsule(pendingTile.tx, pendingTile.ty, cLat, cLon);
+        if (planted) {
+          pendingTile = null;
+          if (buyModal) buyModal.classList.add("hidden");
+        }
       }
-      pendingTile = null;
-      if (buyModal) buyModal.classList.add("hidden");
     });
 
     // Debounced renders prevent lag during rapid zoom/orbit gestures
