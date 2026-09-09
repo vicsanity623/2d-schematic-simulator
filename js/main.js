@@ -764,32 +764,38 @@
       }
     }
 
-    // --- 30-Day Daily Login Calendar System (Strict 1-Day per Day) ---
+    // --- 30-Day Daily Login Calendar System (Tamper-Proof 20-Hour Cooldown) ---
     function getCalendarState() {
       const state = Store.get();
       if (!state.calendar) {
         state.calendar = {
           claimedDays: 0,       // Exact count of days claimed (0 to 30)
-          lastClaimDate: null,  // "YYYY-MM-DD"
+          lastClaimTime: 0,     // Timestamp of last claim
+          lastClaimDate: null   // Legacy migration support
         };
       }
-      // Migrate old currentDay format if present
+      // Migrate legacy formats
       if (state.calendar.currentDay !== undefined && state.calendar.claimedDays === undefined) {
         state.calendar.claimedDays = Math.max(0, state.calendar.currentDay - 1);
         delete state.calendar.currentDay;
       }
+      // Migrate old date-string format to timestamp if present
+      if (state.calendar.lastClaimDate && !state.calendar.lastClaimTime) {
+        state.calendar.lastClaimTime = new Date(state.calendar.lastClaimDate).getTime() || Date.now();
+      }
       return state.calendar;
     }
 
-    function getTodayKey() {
-      const d = new Date();
-      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    function isRewardReady() {
+      const cal = getCalendarState();
+      if (!cal.lastClaimTime) return true;
+      const HOURS_20 = 20 * 3600 * 1000; // 20 hours minimum between claims
+      return (Date.now() - cal.lastClaimTime) >= HOURS_20;
     }
 
     function updateCalendarHUD() {
       const cal = getCalendarState();
-      const todayKey = getTodayKey();
-      const isClaimedToday = cal.lastClaimDate === todayKey;
+      const ready = isRewardReady();
 
       const now = new Date();
       const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
@@ -798,7 +804,7 @@
 
       const unreadDot = el("calendar-unread-dot");
       if (unreadDot) {
-        if (!isClaimedToday && (cal.claimedDays || 0) < 30) {
+        if (ready && (cal.claimedDays || 0) < 30) {
           unreadDot.classList.remove("hidden");
         } else {
           unreadDot.classList.add("hidden");
@@ -812,16 +818,15 @@
       list.innerHTML = "";
 
       const cal = getCalendarState();
-      const todayKey = getTodayKey();
-      const isClaimedToday = cal.lastClaimDate === todayKey;
+      const ready = isRewardReady();
       const claimedCount = cal.claimedDays || 0;
       const rewards = CONFIG.DAILY_CALENDAR_REWARDS || [];
 
       rewards.forEach((r) => {
         const dayNum = r.day;
         const isAlreadyClaimed = dayNum <= claimedCount;
-        const isReadyToClaim = (dayNum === claimedCount + 1) && !isClaimedToday;
-        const isLockedTomorrow = (dayNum === claimedCount + 1) && isClaimedToday;
+        const isReadyToClaim = (dayNum === claimedCount + 1) && ready;
+        const isLockedTomorrow = (dayNum === claimedCount + 1) && !ready;
         const isFutureLocked = dayNum > claimedCount + 1;
 
         const row = document.createElement("div");
@@ -833,7 +838,10 @@
         } else if (isReadyToClaim) {
           actionHtml = `<button class="cal-claim-btn" id="claim-day-${dayNum}">Claim +${r.eb} EB</button>`;
         } else if (isLockedTomorrow) {
-          actionHtml = `<span class="cal-status-locked" style="color:var(--teal);opacity:0.85;">🔒 Tomorrow</span>`;
+          const remainingMs = Math.max(0, (cal.lastClaimTime + (20 * 3600 * 1000)) - Date.now());
+          const remHrs = Math.floor(remainingMs / 3600000);
+          const remMins = Math.floor((remainingMs % 3600000) / 60000);
+          actionHtml = `<span class="cal-status-locked" style="color:var(--teal);opacity:0.85;">⏳ ${remHrs}h ${remMins}m</span>`;
         } else {
           actionHtml = `<span class="cal-status-locked">🔒 Day ${dayNum}</span>`;
         }
@@ -863,11 +871,10 @@
     function claimDailyReward(amount, clickX, clickY) {
       const state = Store.get();
       const cal = getCalendarState();
-      const todayKey = getTodayKey();
 
-      if (cal.lastClaimDate === todayKey) return; // Prevent multiple claims in the same day
+      if (!isRewardReady()) return; // Strict 20h cooldown guard
 
-      cal.lastClaimDate = todayKey;
+      cal.lastClaimTime = Date.now();
       cal.claimedDays = Math.min(30, (cal.claimedDays || 0) + 1);
 
       state.eb = (Number(state.eb) || 0) + amount;
@@ -884,7 +891,7 @@
         Feed.broadcast("daily", { day: cal.claimedDays });
       }
 
-      // Re-render modal to show "✓ Claimed" and "🔒 Tomorrow"
+      // Re-render modal to show "✓ Claimed" and countdown
       renderCalendarModal();
 
       setTimeout(() => {
