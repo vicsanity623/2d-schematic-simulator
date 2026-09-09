@@ -60,14 +60,17 @@ const Grid = (() => {
     pendingTile = { tx, ty };
     const modal = document.getElementById("buy-modal");
     const plantBtn = document.getElementById("plant-capsule-confirm-btn");
+    const modalSub = modal ? modal.querySelector(".modal-sub") : null;
 
-    // Seamless toggle: Shows or hides the plant button without touching innerHTML!
-    if (plantBtn) {
-      plantBtn.style.display = hasCapsule ? "inline-block" : "none";
+    if (hasCapsule) {
+      if (modalSub) modalSub.textContent = `Tile [${tx}, ${ty}]: Claim with 100 EB or plant your free Citadel Hold here!`;
+      if (plantBtn) plantBtn.style.display = "inline-block";
+    } else {
+      if (modalSub) modalSub.textContent = "Expand your realm with a new 10x10 ft plot.";
+      if (plantBtn) plantBtn.style.display = "none";
     }
 
     if (modal) modal.classList.remove("hidden");
-  }
 
   async function executeBuy() {
     if (!pendingTile) return;
@@ -528,14 +531,21 @@ const Grid = (() => {
     });
 
     plantBtn?.addEventListener("click", () => {
-      if (pendingTile && typeof Citadels !== "undefined") {
-        const corners = Geo.tileBounds(pendingTile.tx, pendingTile.ty, CONFIG.TILE_SIZE_METERS);
-        const cLat = (corners[0][0] + corners[2][0]) / 2;
-        const cLon = (corners[0][1] + corners[2][1]) / 2;
-        Citadels.plantCapsule(pendingTile.tx, pendingTile.ty, cLat, cLon);
-        pendingTile = null;
-        if (buyModal) buyModal.classList.add("hidden");
+      if (!pendingTile) return;
+      const { tx, ty } = pendingTile;
+      const ts = CONFIG.TILE_SIZE_METERS || 6.096;
+      
+      // Calculate exact center of the chosen tile
+      const center = Geo.fromMercator(
+        tx * ts + ts / 2,
+        ty * ts + ts / 2
+      );
+
+      if (typeof Citadels !== "undefined") {
+        Citadels.plantCapsule(tx, ty, center.lat, center.lon);
       }
+      pendingTile = null;
+      if (buyModal) buyModal.classList.add("hidden");
     });
 
     // Debounced renders prevent lag during rapid zoom/orbit gestures
