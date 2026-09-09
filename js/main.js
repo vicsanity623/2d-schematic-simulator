@@ -100,6 +100,27 @@
       timerBadge?.classList.add("hidden");
       if (multBtn) multBtn.style.display = "flex";
     }
+
+    // 4. Live Player Identity Chip (Name & Photo Avatar)
+    const playerNameEl = el("player-name");
+    const playerAvatarEl = el("player-avatar");
+    const pName = state.player?.name || "Traveler";
+    const pAvatar = state.player?.avatar || "🙂";
+
+    if (playerNameEl && playerNameEl.textContent !== pName) {
+      playerNameEl.textContent = pName;
+    }
+
+    if (playerAvatarEl) {
+      if (pAvatar.startsWith("img:")) {
+        const imgSrc = pAvatar.slice(4);
+        if (!playerAvatarEl.querySelector("img") || playerAvatarEl.querySelector("img").src !== imgSrc) {
+          playerAvatarEl.innerHTML = `<img src="${imgSrc}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;">`;
+        }
+      } else if (playerAvatarEl.textContent !== pAvatar) {
+        playerAvatarEl.textContent = pAvatar;
+      }
+    }
   }
 
   function updateLandModal() {
