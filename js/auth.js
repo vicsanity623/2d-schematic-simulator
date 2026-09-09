@@ -58,12 +58,13 @@ const Auth = (() => {
     const tryInit = () => {
       attempts++;
       if (!window.google || !google.accounts || !google.accounts.id) {
-        if (attempts < 25) {
+        // Allow up to 8 seconds for Google to load on mobile connections
+        if (attempts < 50) {
           setTimeout(tryInit, 150);
         } else {
-          console.warn("[Auth] Google GSI script blocked (Brave Shields or network).");
+          console.warn("[Auth] Google script blocked by browser privacy/incognito mode.");
           if (slot) {
-            slot.innerHTML = `<p class="fine-print" style="color:var(--teal);font-size:11.5px;margin-bottom:12px;">🛡️ Brave Shields active — Google sign-in blocked.<br>Continue as Guest below or disable Shields for Google login.</p>`;
+            slot.innerHTML = `<p class="fine-print" style="color:var(--text-dim);font-size:11.5px;margin-bottom:12px;">🔒 Google Sign-In unavailable in Private Mode.<br>Continue as Guest below or open in a normal tab.</p>`;
           }
         }
         return;
