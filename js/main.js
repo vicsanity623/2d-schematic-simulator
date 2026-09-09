@@ -37,16 +37,16 @@
     const state = Store.get();
     if (state.cash === undefined) state.cash = 0;
 
-    // 1. Ultra-Fast Cash Interpolator (Direct TextNode Injection)
+    // 1. Ultra-Fast Cash Interpolator (Active 11-Decimal Rolling Display)
     const cashContainer = el("stat-cash");
     if (cashContainer) {
       const val = Number(state.cash) || 0;
-      const fixedStr = val.toFixed(15);
+      const fixedStr = val.toFixed(11); // 11 Decimals: Guarantees 100% of digits visibly roll!
       if (fixedStr !== lastCashStr) {
         lastCashStr = fixedStr;
         const parts = fixedStr.split(".");
         const whole = parseInt(parts[0], 10);
-        const decimals = parts[1] || "000000000000000";
+        const decimals = parts[1] || "00000000000";
         const wholeHTML = whole > 0 ? `<span class="cash-whole">${whole}</span>` : "";
         cashContainer.innerHTML = `<span class="cash-dollar">$</span>${wholeHTML}<span class="cash-point">.</span><span class="cash-decimal">${decimals}</span>`;
       }
