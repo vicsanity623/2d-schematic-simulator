@@ -305,8 +305,8 @@ const Grid = (() => {
         type: "fill",
         source: "empty-grid-source",
         paint: {
-          "fill-color": ["case", ["get", "selected"], "#ffffff", "#4fd6c4"],
-          "fill-opacity": ["case", ["get", "selected"], 0.78, 0.22],
+          "fill-color": ["case", ["==", ["get", "selected"], true], "#ffffff", "#4fd6c4"],
+          "fill-opacity": ["case", ["==", ["get", "selected"], true], 0.65, 0.14],
         },
       });
 
@@ -315,8 +315,8 @@ const Grid = (() => {
         type: "line",
         source: "empty-grid-source",
         paint: {
-          "line-color": ["case", ["get", "selected"], "#ffffff", "#4fd6c4"],
-          "line-width": ["case", ["get", "selected"], 3, 2],
+          "line-color": ["case", ["==", ["get", "selected"], true], "#ffffff", "#4fd6c4"],
+          "line-width": ["case", ["==", ["get", "selected"], true], 2.5, 1.2],
         },
       });
     }
