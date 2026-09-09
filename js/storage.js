@@ -255,7 +255,12 @@ const Store = (() => {
     if (!state) return 0;
     updateBaseRateCache();
     const isBoosted = state.boostExpiry && Date.now() < state.boostExpiry;
-    return isBoosted ? cachedBaseRate * (state.boostMultiplier || 30) : cachedBaseRate;
+    if (!isBoosted) return cachedBaseRate;
+
+    // While 50X event is active, ALL active boosts calculate at 50X!
+    const is50X = (typeof CONFIG !== "undefined" && CONFIG.is50XActive) ? CONFIG.is50XActive() : false;
+    const mult = is50X ? 50 : (state.boostMultiplier || 30);
+    return cachedBaseRate * mult;
   }
 
   function applyOfflineProgress() {

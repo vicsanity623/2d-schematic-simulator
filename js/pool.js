@@ -134,9 +134,47 @@ const WeeklyPool = (() => {
       lastHudText = newHudText;
     }
 
-    // 2. ONLY update the second-by-second timer if the modal is currently OPEN!
-    if (modal && !modal.classList.contains("hidden") && cachedModalCountdown) {
-      cachedModalCountdown.textContent = `${String(days).padStart(2, "0")}D : ${String(hrs).padStart(2, "0")}H : ${String(mins).padStart(2, "0")}M : ${String(secs).padStart(2, "0")}s`;
+    // 2. ONLY update the second-by-second timers if the modal is currently OPEN!
+    if (modal && !modal.classList.contains("hidden")) {
+      if (cachedModalCountdown) {
+        cachedModalCountdown.textContent = `${String(days).padStart(2, "0")}D : ${String(hrs).padStart(2, "0")}H : ${String(mins).padStart(2, "0")}M : ${String(secs).padStart(2, "0")}s`;
+      }
+
+      // 3. Real-Time 50X Super Boost Countdown
+      const timer50xEl = document.getElementById("modal-50x-countdown-timer");
+      const label50xEl = document.getElementById("modal-50x-label");
+      const card50xEl = document.querySelector(".event-50x-countdown-card");
+
+      if (timer50xEl && label50xEl) {
+        const anchor = (typeof CONFIG !== "undefined" && CONFIG.EVENT_50X_ANCHOR_MS) || 1788912000000;
+        const duration = (typeof CONFIG !== "undefined" && CONFIG.EVENT_50X_DURATION_MS) || (24 * 3600 * 1000);
+        const cooldown = (typeof CONFIG !== "undefined" && CONFIG.EVENT_50X_COOLDOWN_MS) || (3 * 24 * 3600 * 1000);
+        const totalCycle = duration + cooldown;
+
+        let elapsed = (now - anchor) % totalCycle;
+        if (elapsed < 0) elapsed += totalCycle;
+
+        const is50XLive = elapsed < duration;
+        const remMs = is50XLive ? (duration - elapsed) : (totalCycle - elapsed);
+        const remSec = Math.max(0, Math.floor(remMs / 1000));
+
+        const d50 = Math.floor(remSec / 86400);
+        const h50 = Math.floor((remSec % 86400) / 3600);
+        const m50 = Math.floor((remSec % 3600) / 60);
+        const s50 = remSec % 60;
+
+        const timer50Str = `${String(d50).padStart(2, "0")}D : ${String(h50).padStart(2, "0")}H : ${String(m50).padStart(2, "0")}M : ${String(s50).padStart(2, "0")}s`;
+
+        if (is50XLive) {
+          label50xEl.textContent = "🔥 50X Event Active! Ends In:";
+          card50xEl?.classList.add("active-now");
+        } else {
+          label50xEl.textContent = "🔥 Next 50X Super Boost In:";
+          card50xEl?.classList.remove("active-now");
+        }
+
+        timer50xEl.textContent = timer50Str;
+      }
     }
   }
 

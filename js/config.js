@@ -42,6 +42,20 @@ const CONFIG = {
   EXTRACTOR_INTERVAL_MS: 10 * 60 * 1000, // 1 diamond every 10 minutes
   EXTRACTOR_MAX_STORED: 50,             // Stores up to 50 diamonds max
   EXTRACTOR_BUILD_COST_EB: 50,          // 50 EB to construct
+
+  // --- 50X Super Boost Event Engine ---
+  BOOST_DURATION_MS: 3600 * 1000,
+  BOOST_MAX_BANK_MS: 6 * 3600 * 1000,
+  EVENT_50X_ANCHOR_MS: 1788912000000,          // Anchored to start RIGHT NOW!
+  EVENT_50X_DURATION_MS: 24 * 3600 * 1000,     // 24 Hours of 50X Active
+  EVENT_50X_COOLDOWN_MS: 3 * 24 * 3600 * 1000, // 3 Days (72 Hours) 30X Cooldown
+
+  is50XActive: function() {
+    const totalCycle = this.EVENT_50X_DURATION_MS + this.EVENT_50X_COOLDOWN_MS;
+    let elapsed = (Date.now() - this.EVENT_50X_ANCHOR_MS) % totalCycle;
+    if (elapsed < 0) elapsed += totalCycle;
+    return elapsed < this.EVENT_50X_DURATION_MS;
+  },
   
   // --- Spin wheel --- (+12 & +24 Diamond Jackpots, 1 Miss Slice)
   WHEEL_SLICES: [

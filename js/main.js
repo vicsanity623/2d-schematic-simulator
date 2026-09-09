@@ -73,12 +73,16 @@
       if (el("stat-rate")) el("stat-rate").textContent = currentRate;
     }
 
-    // 3. Global 3-Day Multiplier Cycle & Shaking Tremble
+    // 3. Global 50X Event Engine (Active RIGHT NOW for 24 Hours -> 3-Day 30X Cooldown)
     const now = Date.now();
-    const CYCLE_72H = 3 * 24 * 3600 * 1000;  // 72-Hour Repeating Cycle
-    const EVENT_24H = 24 * 3600 * 1000;      // 24-Hour Active 50X Window
-    const is50XEvent = (now % CYCLE_72H) < EVENT_24H;
-    const currentGlobalMult = is50XEvent ? 50 : 30;
+    const EVENT_START_ANCHOR = 1788912000000;     // Starts right now worldwide!
+    const EVENT_24H = 24 * 3600 * 1000;           // 24-Hour Active Window
+    const COOLDOWN_72H = 3 * 24 * 3600 * 1000;    // 3 Days (72 Hours)
+    const TOTAL_CYCLE = EVENT_24H + COOLDOWN_72H; // 96-Hour Full Cycle
+
+    let cycleElapsed = (now - EVENT_START_ANCHOR) % TOTAL_CYCLE;
+    if (cycleElapsed < 0) cycleElapsed += TOTAL_CYCLE;
+    const is50XEvent = cycleElapsed < EVENT_24H;
 
     const isBoosted = state.boostExpiry && state.boostExpiry > now;
     const heroCard = el("hero-balance-card");
@@ -86,7 +90,7 @@
     const multBtn = el("multiplier-btn");
 
     // Update Floating Button Tag (50X vs 30X)
-    if (el("mult-label")) el("mult-label").textContent = currentGlobalMult + "X";
+    if (el("mult-label")) el("mult-label").textContent = is50XEvent ? "50X" : "30X";
     if (multBtn) {
       if (is50XEvent) multBtn.classList.add("event-50x");
       else multBtn.classList.remove("event-50x");
@@ -94,11 +98,13 @@
 
     if (isBoosted) {
       const remainingMs = state.boostExpiry - now;
-      const activeMult = state.boostMultiplier || 30;
+      // AUTOMATIC UPGRADE: If event is active, force active multiplier to 50X!
+      const activeMult = is50XEvent ? 50 : (state.boostMultiplier || 30);
+
       heroCard?.classList.add("boosted");
       timerBadge?.classList.remove("hidden");
 
-      // Check if current active boost is 50X -> Trigger Rapid Tremble & Shake!
+      // Shaking & Vibrate Effect when 50X is active!
       if (activeMult === 50) {
         heroCard?.classList.add("super-50x");
         timerBadge?.classList.add("super-50x");
@@ -1251,17 +1257,22 @@
     const multBtn = el("multiplier-btn");
     const activateBoostBtn = el("activate-boost-btn");
 
-    function getActiveEventMultiplier() {
+    function isGlobal50XActiveNow() {
       const now = Date.now();
-      const is50X = (now % (3 * 24 * 3600 * 1000)) < (24 * 3600 * 1000);
-      return is50X ? 50 : 30;
+      const ANCHOR = 1788912000000;
+      const EVENT_24H = 24 * 3600 * 1000;
+      const TOTAL_CYCLE = 24 * 3600 * 1000 + 3 * 24 * 3600 * 1000; // 24h event + 72h cooldown
+      let elapsed = (now - ANCHOR) % TOTAL_CYCLE;
+      if (elapsed < 0) elapsed += TOTAL_CYCLE;
+      return elapsed < EVENT_24H;
     }
 
     if (multBtn) {
       multBtn.addEventListener("click", () => {
-        const targetMult = getActiveEventMultiplier();
+        const is50X = isGlobal50XActiveNow();
+        const targetMult = is50X ? 50 : 30;
         el("mult-label").textContent = targetMult + "X";
-        el("booster-modal-title").textContent = targetMult === 50 ? "🔥 Activate 50X Super Boost" : "Activate 30X Boost";
+        el("booster-modal-title").textContent = is50X ? "🔥 Activate 50X Super Boost" : "Activate 30X Boost";
         el("modal-mult-rate").textContent = `${targetMult}X Income`;
         openModal("booster-modal");
       });
@@ -1273,7 +1284,8 @@
         const now = Date.now();
         const oneHour = 3600 * 1000;
         const sixHours = 6 * 3600 * 1000;
-        const activeMult = getActiveEventMultiplier();
+        const is50X = isGlobal50XActiveNow();
+        const activeMult = is50X ? 50 : 30;
 
         // Stack time up to 6 hours max
         const currentRemaining = Math.max(0, (state.boostExpiry || 0) - now);
@@ -1289,6 +1301,7 @@
         showToast(`${icon} ${activeMult}X Multiplier Activated! (+1 Hr)`);
       });
     }
+    
     // --- Floating +2 EB Boost Loop (20-Minute Cooldown & Bot Protection) ---
     const boostBtn = el("boost-btn");
     let boostHideTimer = null;
