@@ -58,6 +58,7 @@ const Grid = (() => {
     }
 
     pendingTile = { tx, ty };
+    scheduleRender();
     const modal = document.getElementById("buy-modal");
     const plantBtn = document.getElementById("plant-capsule-confirm-btn");
 
@@ -280,7 +281,11 @@ const Grid = (() => {
 
             emptyGridFeatures.push({
               type: "Feature",
-              properties: { tx, ty },
+              properties: {
+                tx,
+                ty,
+                selected: pendingTile && pendingTile.tx === tx && pendingTile.ty === ty,
+              },
               geometry: { type: "Polygon", coordinates: [coords] },
             });
           }
@@ -300,8 +305,8 @@ const Grid = (() => {
         type: "fill",
         source: "empty-grid-source",
         paint: {
-          "fill-color": "#4fd6c4",
-          "fill-opacity": 0.08,
+          "fill-color": ["case", ["==", ["get", "selected"], true], "#ffffff", "#4fd6c4"],
+          "fill-opacity": ["case", ["==", ["get", "selected"], true], 0.65, 0.14],
         },
       });
 
@@ -310,8 +315,8 @@ const Grid = (() => {
         type: "line",
         source: "empty-grid-source",
         paint: {
-          "line-color": "#4fd6c4",
-          "line-width": 1.5,
+          "line-color": ["case", ["==", ["get", "selected"], true], "#ffffff", "#4fd6c4"],
+          "line-width": ["case", ["==", ["get", "selected"], true], 2.5, 1.2],
         },
       });
     }
@@ -532,9 +537,11 @@ const Grid = (() => {
         const corners = Geo.tileBounds(pendingTile.tx, pendingTile.ty, CONFIG.TILE_SIZE_METERS);
         const cLat = (corners[0][0] + corners[2][0]) / 2;
         const cLon = (corners[0][1] + corners[2][1]) / 2;
-        Citadels.plantCapsule(pendingTile.tx, pendingTile.ty, cLat, cLon);
-        pendingTile = null;
-        if (buyModal) buyModal.classList.add("hidden");
+        const planted = Citadels.plantCapsule(pendingTile.tx, pendingTile.ty, cLat, cLon);
+        if (planted) {
+          pendingTile = null;
+          if (buyModal) buyModal.classList.add("hidden");
+        }
       }
     });
 

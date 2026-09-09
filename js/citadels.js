@@ -86,7 +86,7 @@ const Citadels = (() => {
     const state = Store.get();
     if (!state.capsule || !state.capsule.awarded || state.capsule.planted) {
       alert("You have already planted your realm capsule!");
-      return;
+      return false;
     }
 
     const cid = id();
@@ -142,6 +142,7 @@ const Citadels = (() => {
 
     render();
     alert("🔮 Citadel planted directly at your location! Stronghold parcel activated!");
+    return true;
   }
 
   // Create 10X Colossal 3D Dyson Sphere Monument Marker (Handles Growth & Evolution)
