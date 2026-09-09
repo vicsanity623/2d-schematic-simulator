@@ -211,10 +211,10 @@ All gameplay tuning parameters are centralized in **`js/config.js`**:
 
 | Rarity | Drop Chance | Rent per Second | Color |
 | :--- | :---: | :---: | :---: |
-| **Common** | **50%** | `$0.0000000011/s` | Slate Grey (`#8fa3b8`) |
-| **Rare** | **30%** | `$0.0000000160/s` | Cyan Blue (`#4f9dd6`) |
-| **Epic** | **15%** | `$0.0000000220/s` | Royal Purple (`#a86ee0`) |
-| **Legendary** | **5%** | `$0.0000000440/s` | Radiant Gold (`#e0a84f`) |
+| **Common** | **50%** | `$0.0000000016/s` | Slate Grey (`#8fa3b8`) |
+| **Rare** | **30%** | `$0.0000000027/s` | Cyan Blue (`#4f9dd6`) |
+| **Epic** | **15%** | `$0.0000000044/s` | Royal Purple (`#a86ee0`) |
+| **Legendary** | **5%** | `$0.0000000088/s` | Radiant Gold (`#e0a84f`) |
 
 ---
 

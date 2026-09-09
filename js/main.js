@@ -73,30 +73,56 @@
       if (el("stat-rate")) el("stat-rate").textContent = currentRate;
     }
 
-    // 3. Multiplier Timer
+    // 3. Global 3-Day Multiplier Cycle & Shaking Tremble
     const now = Date.now();
+    const CYCLE_72H = 3 * 24 * 3600 * 1000;  // 72-Hour Repeating Cycle
+    const EVENT_24H = 24 * 3600 * 1000;      // 24-Hour Active 50X Window
+    const is50XEvent = (now % CYCLE_72H) < EVENT_24H;
+    const currentGlobalMult = is50XEvent ? 50 : 30;
+
     const isBoosted = state.boostExpiry && state.boostExpiry > now;
     const heroCard = el("hero-balance-card");
     const timerBadge = el("boost-timer-badge");
     const multBtn = el("multiplier-btn");
 
+    // Update Floating Button Tag (50X vs 30X)
+    if (el("mult-label")) el("mult-label").textContent = currentGlobalMult + "X";
+    if (multBtn) {
+      if (is50XEvent) multBtn.classList.add("event-50x");
+      else multBtn.classList.remove("event-50x");
+    }
+
     if (isBoosted) {
       const remainingMs = state.boostExpiry - now;
+      const activeMult = state.boostMultiplier || 30;
       heroCard?.classList.add("boosted");
       timerBadge?.classList.remove("hidden");
+
+      // Check if current active boost is 50X -> Trigger Rapid Tremble & Shake!
+      if (activeMult === 50) {
+        heroCard?.classList.add("super-50x");
+        timerBadge?.classList.add("super-50x");
+      } else {
+        heroCard?.classList.remove("super-50x");
+        timerBadge?.classList.remove("super-50x");
+      }
 
       const hrs = Math.floor(remainingMs / 3600000);
       const mins = Math.floor((remainingMs % 3600000) / 60000);
       const secs = Math.floor((remainingMs % 60000) / 1000);
-      if (el("boost-countdown")) {
-        el("boost-countdown").textContent = `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+      const timerStr = `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+
+      if (timerBadge) {
+        const icon = activeMult === 50 ? "🔥" : "⚡";
+        timerBadge.innerHTML = `${icon} ${activeMult}X BOOST <span id="boost-countdown">${timerStr}</span>`;
       }
 
       if (multBtn) {
         multBtn.style.display = remainingMs >= 5 * 3600000 ? "none" : "flex";
       }
     } else {
-      heroCard?.classList.remove("boosted");
+      heroCard?.classList.remove("boosted", "super-50x");
+      timerBadge?.classList.remove("super-50x");
       timerBadge?.classList.add("hidden");
       if (multBtn) multBtn.style.display = "flex";
     }
@@ -1221,24 +1247,22 @@
 
     // Check extractor every 2 seconds
     setInterval(checkExtractorTick, 2000);
-    // --- Multiplier Button Wiring ---
+    // --- Global Multiplier 3-Day Cycle Wiring ---
     const multBtn = el("multiplier-btn");
     const activateBoostBtn = el("activate-boost-btn");
 
-    // 0.05% chance for 50X (1 in 2000), otherwise 30X
-    function getCurrentMultiplier() {
-      const isLucky50X = Math.random() < 0.0005;
-      return isLucky50X ? 50 : 30;
+    function getActiveEventMultiplier() {
+      const now = Date.now();
+      const is50X = (now % (3 * 24 * 3600 * 1000)) < (24 * 3600 * 1000);
+      return is50X ? 50 : 30;
     }
-
-    let activeRollMultiplier = 30;
 
     if (multBtn) {
       multBtn.addEventListener("click", () => {
-        activeRollMultiplier = getCurrentMultiplier();
-        el("mult-label").textContent = activeRollMultiplier + "X";
-        el("booster-modal-title").textContent = `Activate ${activeRollMultiplier}X Boost`;
-        el("modal-mult-rate").textContent = `${activeRollMultiplier}X Income`;
+        const targetMult = getActiveEventMultiplier();
+        el("mult-label").textContent = targetMult + "X";
+        el("booster-modal-title").textContent = targetMult === 50 ? "🔥 Activate 50X Super Boost" : "Activate 30X Boost";
+        el("modal-mult-rate").textContent = `${targetMult}X Income`;
         openModal("booster-modal");
       });
     }
@@ -1249,18 +1273,20 @@
         const now = Date.now();
         const oneHour = 3600 * 1000;
         const sixHours = 6 * 3600 * 1000;
+        const activeMult = getActiveEventMultiplier();
 
         // Stack time up to 6 hours max
         const currentRemaining = Math.max(0, (state.boostExpiry || 0) - now);
         const newRemaining = Math.min(sixHours, currentRemaining + oneHour);
 
         state.boostExpiry = now + newRemaining;
-        state.boostMultiplier = activeRollMultiplier;
+        state.boostMultiplier = activeMult;
         Store.save();
 
         closeModal("booster-modal");
         updateTopbar();
-        showToast(`⚡ ${activeRollMultiplier}X Multiplier Activated! (+1 Hr)`);
+        const icon = activeMult === 50 ? "🔥" : "⚡";
+        showToast(`${icon} ${activeMult}X Multiplier Activated! (+1 Hr)`);
       });
     }
     // --- Floating +2 EB Boost Loop (20-Minute Cooldown & Bot Protection) ---
