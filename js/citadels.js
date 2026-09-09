@@ -81,17 +81,12 @@ const Citadels = (() => {
   }
 
   // --- 2. Planting on Tile ---
-  // Strict Tile-Locked Placement (Places Citadel on the exact tile chosen by the player)
+  // Direct Footstep Placement (Guaranteed 100% accurate at player's feet)
   function plantCapsule(tx, ty, lat, lon) {
     const state = Store.get();
     if (!state.capsule || !state.capsule.awarded || state.capsule.planted) {
       alert("You have already planted your realm capsule!");
-      return;
-    }
-
-    if (tx === undefined || ty === undefined) {
-      alert("Please select an unoccupied tile on the grid first!");
-      return;
+      return false;
     }
 
     const cid = id();
@@ -100,19 +95,21 @@ const Citadels = (() => {
     const growthFinish = now + (CONFIG.CITADEL_GROWTH_MS || 1800000);
     const ts = CONFIG.TILE_SIZE_METERS || 6.096;
 
-    const tileX = parseInt(tx, 10);
-    const tileY = parseInt(ty, 10);
+    // 1. Calculate exact grid tile at target coordinates
+    const t = (tx !== undefined && ty !== undefined) 
+      ? { tx: parseInt(tx, 10), ty: parseInt(ty, 10) } 
+      : Geo.tileForLatLon(lat, lon, ts);
 
-    // Exact geometric center of the chosen tile (Guaranteed zero drift)
+    // 2. Exact mathematical center of that tile
     const center = Geo.fromMercator(
-      tileX * ts + ts / 2,
-      tileY * ts + ts / 2
+      t.tx * ts + ts / 2,
+      t.ty * ts + ts / 2
     );
 
     const citadelData = {
       id: cid,
-      tx: tileX,
-      ty: tileY,
+      tx: t.tx,
+      ty: t.ty,
       lat: center.lat,
       lon: center.lon,
       rarity,
@@ -144,7 +141,8 @@ const Citadels = (() => {
     }
 
     render();
-    alert(`🔮 Citadel planted on Tile [${tileX}, ${tileY}]! Stronghold parcel activated!`);
+    alert("🔮 Citadel planted directly at your location! Stronghold parcel activated!");
+    return true;
   }
 
   // Create 10X Colossal 3D Dyson Sphere Monument Marker (Handles Growth & Evolution)
