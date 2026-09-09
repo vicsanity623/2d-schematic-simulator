@@ -435,7 +435,6 @@ const Leaderboard = (() => {
   async function open() {
     if (!modal) modal = document.getElementById("leaderboard-modal");
     if (modal) modal.classList.remove("hidden");
-    if (cachedData) render(cachedData);
     const data = await fetchRankings();
     render(data);
   }
