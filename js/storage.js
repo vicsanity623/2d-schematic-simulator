@@ -178,12 +178,31 @@ const Store = (() => {
         localStorage.setItem(KEY, JSON.stringify(state));
       }
 
+      // 2. Query and restore all plots officially owned by this player from world map
       const plotSnap = await firestore.collection("plots").where("ownerId", "==", playerId).get();
+      
+      if (!state.plots) state.plots = {};
+      const officialPlotIds = new Set();
+
       if (!plotSnap.empty) {
-        if (!state.plots) state.plots = {};
         plotSnap.forEach((pDoc) => {
           state.plots[pDoc.id] = pDoc.data();
+          officialPlotIds.add(pDoc.id);
         });
+      }
+
+      // 3. TRUE-OWNERSHIP AUDITOR: Untangle merged accounts!
+      // If the local/cloud save claims a plot that isn't officially registered to this ownerId
+      // in the global plots collection, delete it from their personal save file!
+      let tangledPlotsRemoved = false;
+      for (const tid in state.plots) {
+        if (!officialPlotIds.has(tid)) {
+          delete state.plots[tid];
+          tangledPlotsRemoved = true;
+        }
+      }
+      if (tangledPlotsRemoved) {
+        console.log(`[Audit] Removed overlapping/tangled plots from ${playerId}'s save.`);
       }
 
       console.log(`[Cloud] Restored account for ${playerId} with ${Object.keys(state.plots || {}).length} plots.`);
