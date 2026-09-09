@@ -206,7 +206,7 @@
 
     // Initial Rent Display (Shows Lifetime Accrued Rent, NOT spendable balance)
     let rentVal = isOtherPlayer ? 0 : (state.lifetimeRent || state.cash || 0);
-    el("info-total-rent").textContent = "$" + Number(rentVal).toFixed(15);
+    el("info-total-rent").textContent = "$" + Number(rentVal).toFixed(11);
 
     // Fetch and display the other player's live cloud earnings (including offline accumulation)
     if (isOtherPlayer && targetPlayerData.ownerId) {
