@@ -100,6 +100,27 @@
       timerBadge?.classList.add("hidden");
       if (multBtn) multBtn.style.display = "flex";
     }
+
+    // 4. Live Player Identity Chip (Name & Photo Avatar)
+    const playerNameEl = el("player-name");
+    const playerAvatarEl = el("player-avatar");
+    const pName = state.player?.name || "Traveler";
+    const pAvatar = state.player?.avatar || "🙂";
+
+    if (playerNameEl && playerNameEl.textContent !== pName) {
+      playerNameEl.textContent = pName;
+    }
+
+    if (playerAvatarEl) {
+      if (pAvatar.startsWith("img:")) {
+        const imgSrc = pAvatar.slice(4);
+        if (!playerAvatarEl.querySelector("img") || playerAvatarEl.querySelector("img").src !== imgSrc) {
+          playerAvatarEl.innerHTML = `<img src="${imgSrc}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;">`;
+        }
+      } else if (playerAvatarEl.textContent !== pAvatar) {
+        playerAvatarEl.textContent = pAvatar;
+      }
+    }
   }
 
   function updateLandModal() {
@@ -610,7 +631,10 @@
     if (typeof Feed !== "undefined") Feed.init();
     if (typeof Leaderboard !== "undefined") Leaderboard.init();
     if (typeof Chat !== "undefined") Chat.init();
-    if (typeof Citadels !== "undefined") Citadels.init(map);
+    if (typeof Citadels !== "undefined") {
+      Citadels.init(map);
+      Citadels.setPlayerPosition(currentPos.lat, currentPos.lon); // Immediate GPS sync on boot!
+    }
     if (typeof WeeklyPool !== "undefined") WeeklyPool.init();
     startIncomeLoop();
     wireUI();
@@ -840,6 +864,10 @@
         const isLockedTomorrow = (dayNum === claimedCount + 1) && !ready;
         const isFutureLocked = dayNum > claimedCount + 1;
 
+        // Check if day has diamonds
+        const diamondText = r.diamonds ? ` & +${r.diamonds} ◆` : "";
+        const rewardLabel = `+${r.eb} EB${diamondText}`;
+
         const row = document.createElement("div");
         row.className = "cal-day-row" + (isReadyToClaim ? " active" : "") + (isAlreadyClaimed ? " claimed" : "") + (isLockedTomorrow || isFutureLocked ? " locked" : "");
 
@@ -847,7 +875,7 @@
         if (isAlreadyClaimed) {
           actionHtml = `<span class="cal-status-claimed">✓ Claimed</span>`;
         } else if (isReadyToClaim) {
-          actionHtml = `<button class="cal-claim-btn" id="claim-day-${dayNum}">Claim +${r.eb} EB</button>`;
+          actionHtml = `<button class="cal-claim-btn" id="claim-day-${dayNum}">Claim ${rewardLabel}</button>`;
         } else if (isLockedTomorrow) {
           const remainingMs = Math.max(0, (cal.lastClaimTime + (20 * 3600 * 1000)) - Date.now());
           const remHrs = Math.floor(remainingMs / 3600000);
@@ -860,7 +888,7 @@
         row.innerHTML = `
           <div class="cal-day-left">
             <span class="cal-day-badge">Day ${dayNum}</span>
-            <span class="cal-reward-amount">+${r.eb} EB</span>
+            <span class="cal-reward-amount">${rewardLabel}</span>
           </div>
           <div class="cal-day-right">
             ${actionHtml}
@@ -873,13 +901,13 @@
           const claimBtn = row.querySelector(".cal-claim-btn");
           claimBtn?.addEventListener("click", () => {
             const rect = claimBtn.getBoundingClientRect();
-            claimDailyReward(r.eb, rect.left + rect.width / 2, rect.top + rect.height / 2);
+            claimDailyReward(r.eb, r.diamonds || 0, rect.left + rect.width / 2, rect.top + rect.height / 2);
           });
         }
       });
     }
 
-    function claimDailyReward(amount, clickX, clickY) {
+    function claimDailyReward(ebAmount, diamondAmount, clickX, clickY) {
       const state = Store.get();
       const cal = getCalendarState();
 
@@ -888,14 +916,23 @@
       cal.lastClaimTime = Date.now();
       cal.claimedDays = Math.min(30, (cal.claimedDays || 0) + 1);
 
-      state.eb = (Number(state.eb) || 0) + amount;
-      Store.save(true); // `true` forces immediate sync to Google Cloud Firestore!
+      // Add EB and Diamonds to player account
+      state.eb = (Number(state.eb) || 0) + ebAmount;
+      if (diamondAmount > 0) {
+        state.diamonds = (Number(state.diamonds) || 0) + diamondAmount;
+      }
+      Store.save(true); // Forces immediate sync
       updateTopbar();
       updateCalendarHUD();
 
       // Trigger visual particles
-      launchFlyingEBStream(clickX, clickY, amount);
-      showToast(`🎉 Claimed +${amount} Elden Bucks Daily Reward!`);
+      launchFlyingEBStream(clickX, clickY, ebAmount);
+      if (diamondAmount > 0) {
+        setTimeout(() => launchFlyingGemStream(clickX, clickY, diamondAmount), 300);
+      }
+      
+      const diaToast = diamondAmount > 0 ? ` & +${diamondAmount} Diamonds` : "";
+      showToast(`🎉 Claimed +${ebAmount} EB${diaToast} Daily Reward!`);
 
       // Broadcast login streak
       if (typeof Feed !== "undefined") {

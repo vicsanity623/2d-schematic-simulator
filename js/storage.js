@@ -224,10 +224,10 @@ const Store = (() => {
 
   // Fast Rarity Rate Lookup Table (Zero array find overhead)
   const RATE_MAP = {
-    common: 0.0000000011,
-    rare: 0.0000000016,
-    epic: 0.0000000022,
-    legendary: 0.0000000044
+    common: 0.0000000016,
+    rare: 0.0000000027,
+    epic: 0.0000000044,
+    legendary: 0.0000000088
   };
 
   let cachedBaseRate = 0;
