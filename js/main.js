@@ -75,7 +75,7 @@
 
     // 3. Global 50X Event Engine (Active RIGHT NOW for 24 Hours -> 3-Day 30X Cooldown)
     const now = Date.now();
-    const EVENT_START_ANCHOR = 1725883200000;     // Starts right now worldwide!
+    const EVENT_START_ANCHOR = 1788912000000;     // Starts right now worldwide!
     const EVENT_24H = 24 * 3600 * 1000;           // 24-Hour Active Window
     const COOLDOWN_72H = 3 * 24 * 3600 * 1000;    // 3 Days (72 Hours)
     const TOTAL_CYCLE = EVENT_24H + COOLDOWN_72H; // 96-Hour Full Cycle
@@ -1259,7 +1259,7 @@
 
     function isGlobal50XActiveNow() {
       const now = Date.now();
-      const ANCHOR = 1725883200000;
+      const ANCHOR = 1788912000000;
       const EVENT_24H = 24 * 3600 * 1000;
       const TOTAL_CYCLE = 24 * 3600 * 1000 + 3 * 24 * 3600 * 1000; // 24h event + 72h cooldown
       let elapsed = (now - ANCHOR) % TOTAL_CYCLE;
