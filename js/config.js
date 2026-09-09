@@ -46,7 +46,7 @@ const CONFIG = {
   // --- 50X Super Boost Event Engine ---
   BOOST_DURATION_MS: 3600 * 1000,
   BOOST_MAX_BANK_MS: 6 * 3600 * 1000,
-  EVENT_50X_ANCHOR_MS: 1725883200000,          // Anchored to start RIGHT NOW!
+  EVENT_50X_ANCHOR_MS: 1788912000000,          // Anchored to start RIGHT NOW!
   EVENT_50X_DURATION_MS: 24 * 3600 * 1000,     // 24 Hours of 50X Active
   EVENT_50X_COOLDOWN_MS: 3 * 24 * 3600 * 1000, // 3 Days (72 Hours) 30X Cooldown
 
