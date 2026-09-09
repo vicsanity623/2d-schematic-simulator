@@ -634,7 +634,18 @@
 
   function startIncomeLoop() {
     const earned = Store.applyOfflineProgress();
-    if (earned > 0.000000000000001) {
+    const state = Store.get();
+    const pName = (state?.player?.name || "").toLowerCase();
+
+    // 🎁 Community MVP Gift for Cwood (500 EB One-Time Permanent Claim)
+    if (pName.includes("cwood") && !state.communityGiftClaimedV1) {
+      state.communityGiftClaimedV1 = true;
+      state.eb = (Number(state.eb) || 0) + 500;
+      Store.save(true); // Persist immediately to Google Cloud
+      setTimeout(() => {
+        showToast("🎁 Community MVP Gift! +500 EB credited for day-one feedback & testing!", 6000);
+      }, 2000);
+    } else if (earned > 0.000000000000001) {
       showToast(`Welcome back — earned $${earned.toFixed(8)} while away.`);
     }
 
