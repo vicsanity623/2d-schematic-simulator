@@ -146,7 +146,7 @@ const WeeklyPool = (() => {
       const card50xEl = document.querySelector(".event-50x-countdown-card");
 
       if (timer50xEl && label50xEl) {
-        const anchor = (typeof CONFIG !== "undefined" && CONFIG.EVENT_50X_ANCHOR_MS) || 1725883200000;
+        const anchor = (typeof CONFIG !== "undefined" && CONFIG.EVENT_50X_ANCHOR_MS) || 1788912000000;
         const duration = (typeof CONFIG !== "undefined" && CONFIG.EVENT_50X_DURATION_MS) || (24 * 3600 * 1000);
         const cooldown = (typeof CONFIG !== "undefined" && CONFIG.EVENT_50X_COOLDOWN_MS) || (3 * 24 * 3600 * 1000);
         const totalCycle = duration + cooldown;
