@@ -89,7 +89,7 @@
     <div class="hero-balance-card" id="hero-balance-card">
       <div class="hero-top-line">
         <div class="hero-brand-title">
-          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v1.7.26</span>
+          <span class="hero-brand-gem">◆</span> ELDEN EARTH <span class="hero-version-tag">v2.0.0</span>
         </div>
         <div id="boost-timer-badge" class="boost-timer-badge hidden">⚡ 30X BOOST <span id="boost-countdown">00:00:00</span></div>
       </div>
@@ -777,6 +777,11 @@
 <div id="citadel-modal" class="modal hidden">
   <div class="modal-card citadel-chamber-card">
     <button class="close-btn" data-close="citadel-modal">✕</button>
+    <div class="citadel-relocate-wrap" id="citadel-relocate-wrap" hidden>
+      <button id="citadel-relocate-btn" class="citadel-relocate-btn" type="button">
+        Relocate
+      </button>
+    </div>
     
     <div class="citadel-chamber-header">
       <span class="citadel-badge-pill" id="citadel-modal-rarity">EPIC CITADEL</span>
@@ -901,6 +906,7 @@
 
 <!-- Firebase SDKs (Global Compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore-compat.js"></script>
 
 <script src="js/config.js"></script>

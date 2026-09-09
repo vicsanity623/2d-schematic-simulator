@@ -421,6 +421,11 @@ const Citadels = (() => {
 
     const isOwnerOrDefender = (def && def.id === myId) || (cit.creatorId === myId);
 
+    const relocateWrap = document.getElementById("citadel-relocate-wrap");
+    if (relocateWrap) {
+      relocateWrap.hidden = cit.creatorId !== myId;
+    }
+
     // 1. REIGNING DEFENDER VIEW: Show Recall and Upgrade. NEVER show Siege!
     if (def && def.id === myId) {
       const recallBtn = document.createElement("button");
@@ -458,6 +463,43 @@ const Citadels = (() => {
     }
 
     if (modal) modal.classList.remove("hidden");
+  }
+
+  function relocateCitadel(cid) {
+    const cit = globalCitadels[cid];
+    const state = Store.get();
+    const myId = state?.player?.id;
+    if (!cit || !state || cit.creatorId !== myId) return;
+
+    if (!confirm("Relocate this Citadel? Any accrued rewards will be recalled, the tile will become unoccupied, and your capsule will return to your pocket.")) {
+      return;
+    }
+
+    const spoils = cit.defender?.id === myId ? calculateSpoils(cit) : { diamonds: 0, eb: 0 };
+    state.diamonds = (Number(state.diamonds) || 0) + spoils.diamonds;
+    state.eb = (Number(state.eb) || 0) + spoils.eb;
+    state.capsule = state.capsule || {};
+    state.capsule.awarded = true;
+    state.capsule.planted = false;
+    state.capsule.tileId = null;
+    state.capsule.rarity = state.capsule.rarity || cit.rarity || "common";
+    Store.save();
+
+    delete globalCitadels[cid];
+    const db = Store.getDb();
+    if (db) {
+      db.collection("citadels").doc(cid).delete().catch(e => console.warn("[Citadels] Relocation sync notice:", e));
+    }
+
+    selectedCitadelId = null;
+    document.getElementById("citadel-modal")?.classList.add("hidden");
+    const relocateWrap = document.getElementById("citadel-relocate-wrap");
+    if (relocateWrap) relocateWrap.hidden = true;
+    render();
+
+    if (typeof showToast === "function") {
+      showToast(`Citadel relocated. Capsule returned! +${spoils.diamonds} Diamonds & +${spoils.eb} EB`, 4000);
+    }
   }
 
   function stationDefender(cid) {
@@ -743,6 +785,10 @@ const Citadels = (() => {
 
   function init(map) {
     mapInstance = map;
+
+    document.getElementById("citadel-relocate-btn")?.addEventListener("click", () => {
+      if (selectedCitadelId) relocateCitadel(selectedCitadelId);
+    });
 
     document.getElementById("plant-capsule-btn")?.addEventListener("click", () => {
       document.getElementById("capsule-reward-modal")?.classList.add("hidden");

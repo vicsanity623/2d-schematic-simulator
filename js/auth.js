@@ -1,6 +1,6 @@
 // ============================================================
-// Elden Earth — Sign In
-// Google Identity Services (Strictly isolated cloud saves)
+// Elden Earth — Authentication Bridge
+// Passes Google Token & Anonymous Guests directly into Firebase Auth
 // ============================================================
 const Auth = (() => {
 
@@ -17,17 +17,44 @@ const Auth = (() => {
     const guestBtn = document.getElementById("guest-btn");
     const slot = document.getElementById("g_id_signin_slot");
 
-    // --- INSTANT AUTO-LOGIN ---
-    const savedState = Store.get();
-    if (savedState && savedState.player && savedState.player.id) {
-      console.log(`[Auth] Existing session recognized (${savedState.player.id}). Auto-logging in...`);
-      onSignedIn(savedState.player);
-      return;
+    // Ensure Firebase App is initialized via Store before calling auth()
+    if (typeof Store !== "undefined" && Store.getDb) {
+      Store.getDb();
     }
 
-    // --- GUEST LOGIN HANDLER ---
+    // Initialize Firebase Auth Listener
+    if (typeof firebase !== "undefined" && firebase.auth) {
+      try {
+        firebase.auth().onAuthStateChanged(async (user) => {
+          if (user) {
+            console.log(`[FirebaseAuth] Active session authenticated: ${user.uid} (${user.isAnonymous ? "Guest" : "Google"})`);
+            
+            const s = Store.get();
+            if (s && s.player) {
+              s.player.id = user.uid;
+
+              if (!user.isAnonymous) {
+                if (user.displayName && (!s.player.name || s.player.name === "Traveler")) {
+                  s.player.name = user.displayName;
+                }
+                if (user.photoURL && (!s.player.avatar || s.player.avatar === "🙂")) {
+                  s.player.avatar = "img:" + user.photoURL;
+                }
+              }
+
+              await Store.syncFromCloud(user.uid);
+              onSignedIn(s.player);
+            }
+          }
+        });
+      } catch (e) {
+        console.warn("[Auth] Firebase auth listener notice:", e);
+      }
+    }
+
+    // --- GUEST LOGIN HANDLER (Firebase Anonymous Auth) ---
     let guestTriggered = false;
-    function handleGuestLogin(e) {
+    async function handleGuestLogin(e) {
       if (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -35,13 +62,22 @@ const Auth = (() => {
       if (guestTriggered) return;
       guestTriggered = true;
 
-      const s = Store.get();
-      if (!s.player.id) {
-        s.player.id = "guest-" + Math.random().toString(36).slice(2, 10);
-        s.player.name = "Traveler";
+      try {
+        if (firebase.auth) {
+          const cred = await firebase.auth().signInAnonymously();
+          const s = Store.get();
+          s.player.id = cred.user.uid;
+          if (!s.player.name) s.player.name = "Traveler";
+          Store.save();
+          onSignedIn(s.player);
+        }
+      } catch (err) {
+        console.warn("[Auth] Anonymous login notice, falling back to local:", err);
+        const s = Store.get();
+        if (!s.player.id) s.player.id = "guest-" + Math.random().toString(36).slice(2, 10);
         Store.save();
+        onSignedIn(s.player);
       }
-      onSignedIn(s.player);
     }
 
     if (guestBtn) {
@@ -49,23 +85,17 @@ const Auth = (() => {
       guestBtn.addEventListener("touchend", handleGuestLogin);
     }
 
-    if (!CONFIG.GOOGLE_CLIENT_ID) {
-      if (slot) slot.innerHTML = `<p class="fine-print">Google sign-in isn't configured for this deployment — continue as a guest below.</p>`;
-      return;
-    }
+    // --- GOOGLE SIGN-IN HANDOFF TO FIREBASE AUTH ---
+    if (!CONFIG.GOOGLE_CLIENT_ID) return;
 
     let attempts = 0;
     const tryInit = () => {
       attempts++;
       if (!window.google || !google.accounts || !google.accounts.id) {
-        // Allow up to 8 seconds for Google to load on mobile connections
         if (attempts < 50) {
           setTimeout(tryInit, 150);
-        } else {
-          console.warn("[Auth] Google script blocked by browser privacy/incognito mode.");
-          if (slot) {
-            slot.innerHTML = `<p class="fine-print" style="color:var(--text-dim);font-size:11.5px;margin-bottom:12px;">🔒 Google Sign-In unavailable in Private Mode.<br>Continue as Guest below or open in a normal tab.</p>`;
-          }
+        } else if (slot) {
+          slot.innerHTML = `<p class="fine-print" style="color:var(--text-dim);font-size:11.5px;margin-bottom:12px;">🔒 Google Sign-In unavailable in Private Mode.<br>Continue as Guest below or open in a normal tab.</p>`;
         }
         return;
       }
@@ -73,29 +103,28 @@ const Auth = (() => {
       try {
         google.accounts.id.initialize({
           client_id: CONFIG.GOOGLE_CLIENT_ID,
-          callback: (resp) => {
-            const payload = decodeJwt(resp.credential);
-            if (!payload) return;
-            
-            const googleId = "google-" + payload.sub;
-            const playerName = payload.given_name || payload.name || "Traveler";
-            const playerAvatar = payload.picture ? "img:" + payload.picture : "🙂";
+          callback: async (resp) => {
+            if (!resp.credential) return;
 
-            // Fetch official cloud save strictly for this Google ID (Zero local merging)
-            Store.syncFromCloud(googleId).then(() => {
-              const s = Store.get();
-              s.player.id = googleId;
+            // 1. Convert Google GIS token into Firebase Auth Credential!
+            const credential = firebase.auth.GoogleAuthProvider.credential(resp.credential);
+
+            try {
+              // 2. Authenticate with Firebase! (request.auth is now REAL on the server!)
+              const userCredential = await firebase.auth().signInWithCredential(credential);
+              const fbUser = userCredential.user;
               
-              if (!s.player.name || s.player.name === "Traveler") {
-                s.player.name = playerName;
-              }
-              if (!s.player.avatar || s.player.avatar === "🙂") {
-                s.player.avatar = playerAvatar;
-              }
+              const s = Store.get();
+              s.player.id = fbUser.uid;
+              s.player.name = fbUser.displayName || s.player.name || "Traveler";
+              s.player.avatar = fbUser.photoURL ? "img:" + fbUser.photoURL : (s.player.avatar || "🙂");
 
-              Store.save(true); // Persist immediately to Google Cloud
+              await Store.syncFromCloud(fbUser.uid);
+              Store.save(true);
               onSignedIn(s.player);
-            });
+            } catch (authErr) {
+              console.error("[Auth] Firebase credential exchange failed:", authErr);
+            }
           },
         });
 
@@ -106,7 +135,7 @@ const Auth = (() => {
           width: 280,
         });
       } catch (err) {
-        console.error("[Auth] Google render error:", err);
+        console.error("[Auth] Google setup error:", err);
       }
     };
 
