@@ -37,16 +37,16 @@
     const state = Store.get();
     if (state.cash === undefined) state.cash = 0;
 
-    // 1. Ultra-Fast Cash Interpolator (Active 11-Decimal Rolling Display)
+    // 1. Ultra-Fast Cash Interpolator (Direct TextNode Injection)
     const cashContainer = el("stat-cash");
     if (cashContainer) {
       const val = Number(state.cash) || 0;
-      const fixedStr = val.toFixed(11); // 11 Decimals: Guarantees 100% of digits visibly roll!
+      const fixedStr = val.toFixed(15);
       if (fixedStr !== lastCashStr) {
         lastCashStr = fixedStr;
         const parts = fixedStr.split(".");
         const whole = parseInt(parts[0], 10);
-        const decimals = parts[1] || "00000000000";
+        const decimals = parts[1] || "000000000000000";
         const wholeHTML = whole > 0 ? `<span class="cash-whole">${whole}</span>` : "";
         cashContainer.innerHTML = `<span class="cash-dollar">$</span>${wholeHTML}<span class="cash-point">.</span><span class="cash-decimal">${decimals}</span>`;
       }
@@ -206,7 +206,7 @@
 
     // Initial Rent Display (Shows Lifetime Accrued Rent, NOT spendable balance)
     let rentVal = isOtherPlayer ? 0 : (state.lifetimeRent || state.cash || 0);
-    el("info-total-rent").textContent = "$" + Number(rentVal).toFixed(11);
+    el("info-total-rent").textContent = "$" + Number(rentVal).toFixed(15);
 
     // Fetch and display the other player's live cloud earnings (including offline accumulation)
     if (isOtherPlayer && targetPlayerData.ownerId) {
