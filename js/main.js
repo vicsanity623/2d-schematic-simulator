@@ -196,11 +196,12 @@
     if (editAvatarBtn) editAvatarBtn.style.display = isOtherPlayer ? "none" : "flex";
     if (editNameBtn) editNameBtn.style.display = isOtherPlayer ? "none" : "inline-flex";
 
-    // Hide "Sign in with Google" button for Google-signed-in players; only show for guests
+    // Hide "Sign in with Google" button for authenticated Google players; only show for guests
     const googleLinkSection = el("info-google-link-section");
     if (googleLinkSection) {
-      const isGooglePlayer = state.player && state.player.id && state.player.id.startsWith("google-");
-      googleLinkSection.style.display = isGooglePlayer ? "none" : "block";
+      const fbUser = (typeof firebase !== "undefined" && firebase.auth) ? firebase.auth().currentUser : null;
+      const isGuest = fbUser ? fbUser.isAnonymous : (!state.player?.id || state.player.id.startsWith("guest-"));
+      googleLinkSection.style.display = isGuest ? "block" : "none";
     }
 
     // Initial Rent Display (Shows Lifetime Accrued Rent, NOT spendable balance)
