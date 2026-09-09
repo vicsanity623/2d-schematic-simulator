@@ -3832,3 +3832,49 @@ button[aria-label="Close ad"],
   color: var(--teal);
   text-shadow: 0 0 8px rgba(79, 214, 196, 0.6);
 }
+
+/* ================= SUPERCHARGED 50X EVENT FX ================= */
+
+/* Rapid Intense Micro-Tremble / Shake Animation */
+@keyframes super50xShake {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(-1.5px, 1px) rotate(-0.6deg); }
+  40% { transform: translate(1px, -1.5px) rotate(0.6deg); }
+  60% { transform: translate(-1.5px, -1px) rotate(0.4deg); }
+  80% { transform: translate(1.5px, 1px) rotate(-0.4deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+/* Fiery Red/Gold 50X Top Badge with Rapid Tremble */
+.boost-timer-badge.super-50x {
+  background: linear-gradient(90deg, #ff4757, #ff6b81, #f0d38a) !important;
+  color: #0d1420 !important;
+  font-weight: 900 !important;
+  box-shadow: 0 0 16px #ff4757, 0 0 24px #f0d38a !important;
+  animation: badgePulse 0.9s infinite alternate ease-in-out, super50xShake 0.15s infinite linear !important;
+}
+
+/* Electric Crimson/Gold Glowing Hero Card */
+.hero-balance-card.super-50x {
+  border: 2px solid #ff4757 !important;
+  box-shadow: 0 0 26px rgba(255, 71, 87, 0.8), inset 0 0 18px rgba(240, 211, 138, 0.6) !important;
+  animation: super50xShake 0.22s infinite linear !important;
+}
+
+.hero-balance-card.super-50x .hero-balance-value {
+  color: #fff !important;
+  text-shadow: 0 0 18px #ff4757, 0 0 28px #f0d38a !important;
+}
+
+/* Floating HUD 50X Event Button Glowing Red/Gold */
+.multiplier-btn.event-50x {
+  border-color: #ff4757 !important;
+  box-shadow: 0 0 22px rgba(255, 71, 87, 0.9), 0 0 12px #f0d38a !important;
+  animation: boostPulse 1.2s infinite ease-in-out !important;
+}
+.multiplier-btn.event-50x .mult-tag {
+  color: #ff6b81 !important;
+}
+.multiplier-btn.event-50x .mult-sub {
+  color: #f0d38a !important;
+}
