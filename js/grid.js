@@ -71,6 +71,7 @@ const Grid = (() => {
     }
 
     if (modal) modal.classList.remove("hidden");
+  }
 
   async function executeBuy() {
     if (!pendingTile) return;
