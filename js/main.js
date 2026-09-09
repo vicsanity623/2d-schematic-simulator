@@ -889,7 +889,7 @@
       cal.claimedDays = Math.min(30, (cal.claimedDays || 0) + 1);
 
       state.eb = (Number(state.eb) || 0) + amount;
-      Store.save();
+      Store.save(true); // `true` forces immediate sync to Google Cloud Firestore!
       updateTopbar();
       updateCalendarHUD();
 
