@@ -251,17 +251,16 @@ const Store = (() => {
     cachedBaseRate = sum;
   }
 
-  // Instant O(1) Total Income Rate (Automatically Upgrades Active Boosts to 50X!)
   function totalRate() {
     if (!state) return 0;
     updateBaseRateCache();
     const isBoosted = state.boostExpiry && Date.now() < state.boostExpiry;
     if (!isBoosted) return cachedBaseRate;
 
-    // During 50X Event, ALL active boosts immediately earn at 50X speed!
-    const is50X = CONFIG.is50XActive ? CONFIG.is50XActive() : false;
-    const activeMultiplier = is50X ? 50 : (state.boostMultiplier || 30);
-    return cachedBaseRate * activeMultiplier;
+    // While 50X event is active, ALL active boosts calculate at 50X!
+    const is50X = (typeof CONFIG !== "undefined" && CONFIG.is50XActive) ? CONFIG.is50XActive() : false;
+    const mult = is50X ? 50 : (state.boostMultiplier || 30);
+    return cachedBaseRate * mult;
   }
 
   function applyOfflineProgress() {
