@@ -17,29 +17,39 @@ const Auth = (() => {
     const guestBtn = document.getElementById("guest-btn");
     const slot = document.getElementById("g_id_signin_slot");
 
+    // Ensure Firebase App is initialized via Store before calling auth()
+    if (typeof Store !== "undefined" && Store.getDb) {
+      Store.getDb();
+    }
+
     // Initialize Firebase Auth Listener
     if (typeof firebase !== "undefined" && firebase.auth) {
-      firebase.auth().onAuthStateChanged(async (user) => {
-        if (user) {
-          console.log(`[FirebaseAuth] Active session authenticated: ${user.uid} (${user.isAnonymous ? "Guest" : "Google"})`);
-          
-          // Use Firebase UID as the official primary account ID
-          const s = Store.get();
-          s.player.id = user.uid;
+      try {
+        firebase.auth().onAuthStateChanged(async (user) => {
+          if (user) {
+            console.log(`[FirebaseAuth] Active session authenticated: ${user.uid} (${user.isAnonymous ? "Guest" : "Google"})`);
+            
+            const s = Store.get();
+            if (s && s.player) {
+              s.player.id = user.uid;
 
-          if (!user.isAnonymous) {
-            if (user.displayName && (!s.player.name || s.player.name === "Traveler")) {
-              s.player.name = user.displayName;
-            }
-            if (user.photoURL && (!s.player.avatar || s.player.avatar === "🙂")) {
-              s.player.avatar = "img:" + user.photoURL;
+              if (!user.isAnonymous) {
+                if (user.displayName && (!s.player.name || s.player.name === "Traveler")) {
+                  s.player.name = user.displayName;
+                }
+                if (user.photoURL && (!s.player.avatar || s.player.avatar === "🙂")) {
+                  s.player.avatar = "img:" + user.photoURL;
+                }
+              }
+
+              await Store.syncFromCloud(user.uid);
+              onSignedIn(s.player);
             }
           }
-
-          await Store.syncFromCloud(user.uid);
-          onSignedIn(s.player);
-        }
-      });
+        });
+      } catch (e) {
+        console.warn("[Auth] Firebase auth listener notice:", e);
+      }
     }
 
     // --- GUEST LOGIN HANDLER (Firebase Anonymous Auth) ---
