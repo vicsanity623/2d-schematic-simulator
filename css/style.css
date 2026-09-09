@@ -3733,6 +3733,35 @@ button[aria-label="Close ad"],
   color: var(--teal);
 }
 
+/* ---------- 50X Super Boost Countdown Card in Treasury Modal ---------- */
+.pool-countdown-card.event-50x-countdown-card {
+  background: rgba(255, 71, 87, 0.12);
+  border: 1px solid #ff4757;
+  box-shadow: 0 0 12px rgba(255, 71, 87, 0.25);
+  margin-top: -6px;
+  margin-bottom: 14px;
+}
+
+.pool-countdown-card.event-50x-countdown-card strong {
+  color: #ff6b81;
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.3px;
+}
+
+/* Glowing Pulse when 50X Event is actively live */
+.pool-countdown-card.event-50x-countdown-card.active-now {
+  background: linear-gradient(90deg, rgba(255, 71, 87, 0.22), rgba(240, 211, 138, 0.22));
+  border-color: #f0d38a;
+  box-shadow: 0 0 16px rgba(240, 211, 138, 0.4), inset 0 0 10px rgba(255, 71, 87, 0.3);
+  animation: badgePulse 1.2s infinite alternate ease-in-out;
+}
+
+.pool-countdown-card.event-50x-countdown-card.active-now strong {
+  color: #f0d38a;
+  text-shadow: 0 0 8px rgba(240, 211, 138, 0.8);
+}
+
 /* Monday Celebration Claim Modal */
 .weekly-reward-card {
   max-width: 380px;
