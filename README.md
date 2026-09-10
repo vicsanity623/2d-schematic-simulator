@@ -122,7 +122,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 * [ ] **22. 📈 Prestige Milestones & Player Leveling Track:**
   * Title ranks (*Novice, Baron, Count, Duke, Monarch*) that unlock golden avatar borders and exclusive profile emblems.
 * [ ] **23. 🚶 Real-World Step Counter / Pedometer Sync:**
-  * Awards passive EB for physical steps taken throughout the day (e.g. 1,000 steps = +5 EB).
+  * Awards passive EB for physical steps taken throughout the day (e.g. 1,000 steps = +5 EB). Like Poke-Go Buddy Candy earn rates.
 
 ---
 
