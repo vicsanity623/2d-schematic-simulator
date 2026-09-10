@@ -105,11 +105,11 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 * [x] **14. ⚡ Citadel Evolution & Upgrade Forge:** *(Completed)*
 * [x] **15. 🏛️ 1% Weekly Realm Dividend Pool:** *(Completed)*
 * [ ] **16. 🤝 Player-to-Player Parcel Marketplace:**
-  * Put owned plots up for sale on the open market for EB or trade tiles with friends.
+  * Open market for trading tiles with friends, **Lucky RNG** re-roll rarity stats like Legendary+++, for example pokemon go trades.
 * [ ] **17. 🛡️ Realm Guilds & Joint Kingdoms:**
   * Form alliances to connect plots into massive shared kingdoms with a communal Diamond Vault.
-* [ ] **18. 🎟️ Referral / Friend Invite Code System:**
-  * Share your code; when a friend claims their 5th plot, both of you get **+50 EB free**.
+* [ ] **18. 🎟️ Referral / Friend System:**
+  * Share your code; when a friend claims their 5th plot, both of you get **+50 EB free**. Implement a PokeGo-Lucky Friend type mechanics, ie becoming friends with unknown players & building stats in some way. **Boost Passive Rates** or Unlock **Prestige Plot Upgrades** together.
 
 ---
 
