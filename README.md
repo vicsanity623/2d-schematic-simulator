@@ -138,7 +138,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 💰 27. Ad-Funded Treasury & Player Reward Economy
+### 💰 27. Ad-Funded Treasury & Player Reward Economy
 
 > **Core Economic Model:** The game is entirely free-to-play. Players never purchase land, currency, passive rent, boosts, inventory items, or other game assets with real-world money. The game is funded primarily through unobtrusive banner advertising and other approved advertising revenue. Gameplay generates an immutable in-game digital balance with no inherent real-world monetary value. Eligible players may eventually exchange a limited portion of their qualifying in-game balance for a promotional/reward payout subject to the game's weekly limits, eligibility rules, available treasury and applicable requirements.
 
@@ -198,7 +198,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 🪙 28. Immutable Digital Player Balance
+### 🪙 28. Immutable Digital Player Balance
 
 * [ ] **28.1 🔒 Immutable In-Game Balance**
 
@@ -246,7 +246,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 💵 29. Controlled Withdrawal / Reward Mechanism
+### 💵 29. Controlled Withdrawal / Reward Mechanism
 
 > **The player's in-game balance remains a digital game balance. The withdrawal mechanism is a separate, controlled reward process.**
 
@@ -295,7 +295,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 📊 30. Treasury & Economy Protection
+### 📊 30. Treasury & Economy Protection
 
 * [ ] **30.1 📈 Currency Generation Monitoring**
 
@@ -347,7 +347,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 👤 31. Player Reward Limits & Anti-Farming Controls
+### 👤 31. Player Reward Limits & Anti-Farming Controls
 
 * [ ] **31.1 🧑 Per-Player Limits**
 
@@ -381,7 +381,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 🛡️ 32. Maximum Practical Anti-Cheat Architecture
+### 🛡️ 32. Maximum Practical Anti-Cheat Architecture
 
 > **Security assumption: The client is potentially compromised.**
 
@@ -439,7 +439,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 🔐 33. Account & API Security
+### 🔐 33. Account & API Security
 
 * [ ] **33.1 🔑 Secure Authentication**
 
@@ -488,7 +488,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 🧪 34. Heavy Pre-Alpha Stress Testing
+### 🧪 34. Heavy Pre-Alpha Stress Testing
 
 * [ ] **34.1 💥 Load Testing**
 
@@ -547,7 +547,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 🔍 35. Security Testing & Red Team
+### 🔍 35. Security Testing & Red Team
 
 * [ ] **35.1 🧪 Automated Security Pipeline**
 
@@ -591,7 +591,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 📡 36. Production Observability
+### 📡 36. Production Observability
 
 * [ ] **36.1 📊 Centralized Metrics**
 
@@ -639,7 +639,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 🧪 37. Controlled Beta Rollout
+### 🧪 37. Controlled Beta Rollout
 
 * [ ] **37.1 🥚 Closed Beta**
 
@@ -680,7 +680,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 🤖 38. Native Android App — Google Play First
+### 🤖 38. Native Android App — Google Play First
 
 * [ ] **38.1 📱 Android Production Build**
 
@@ -726,7 +726,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 🍎 39. Apple / iOS Expansion
+### 🍎 39. Apple / iOS Expansion
 
 * [ ] **39.1 🍎 iOS Optimization**
 
@@ -766,7 +766,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# ☁️ 40. Full Backend Production Optimization
+### ☁️ 40. Full Backend Production Optimization
 
 * [ ] **40.1 🧩 Service Architecture**
 
@@ -817,7 +817,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 🔄 41. CI/CD, QA & Release Engineering
+### 🔄 41. CI/CD, QA & Release Engineering
 
 * [ ] **41.1 🧪 Automated Testing**
 
@@ -877,7 +877,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 🧹 42. Full End-to-End Optimization & Production Launch Gate
+### 🧹 42. Full End-to-End Optimization & Production Launch Gate
 
 ## ⚡ 42.1 Gameplay Optimization
 
@@ -956,7 +956,7 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
-# 🚀 43. Final Launch Philosophy
+### 🚀 43. Final Launch Philosophy
 
 ### The game should scale in this order:
 
