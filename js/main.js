@@ -1428,6 +1428,20 @@
     }
     el("hero-balance-card").addEventListener("click", openPlayerInfo);
     document.querySelector(".player-chip")?.addEventListener("click", openPlayerInfo);
+    // Wire up Guest "Sign in with Google" button in Player Info Modal
+    document.getElementById("google-link-btn")?.addEventListener("click", () => {
+      closeModal("player-info-modal");
+      const signinScreen = document.getElementById("signin-screen");
+      if (signinScreen) {
+        // Force the sign-in screen to the absolute front
+        signinScreen.classList.remove("hidden");
+        signinScreen.style.display = "flex";
+        signinScreen.style.position = "fixed";
+        signinScreen.style.zIndex = "9999999";
+        signinScreen.style.opacity = "1";
+        console.log("[Auth] Re-opening Sign-In Screen for Guest Upgrade");
+      }
+    });
 
     el("earn-btn").addEventListener("click", () => {
       // Safety unlock in case modal was closed mid-spin
