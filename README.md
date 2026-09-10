@@ -138,6 +138,903 @@ Built with **pure static HTML5 / CSS3 / Vanilla JS** — zero build step, no bac
 
 ---
 
+# 💰 27. Ad-Funded Treasury & Player Reward Economy
+
+> **Core Economic Model:** The game is entirely free-to-play. Players never purchase land, currency, passive rent, boosts, inventory items, or other game assets with real-world money. The game is funded primarily through unobtrusive banner advertising and other approved advertising revenue. Gameplay generates an immutable in-game digital balance with no inherent real-world monetary value. Eligible players may eventually exchange a limited portion of their qualifying in-game balance for a promotional/reward payout subject to the game's weekly limits, eligibility rules, available treasury and applicable requirements.
+
+* [ ] **27.1 🆓 100% Free-to-Play Foundation**
+
+  * No mandatory purchase is required to play.
+  * No player is required to deposit money into the game.
+  * No player purchases are required to earn passive rent.
+  * No player purchases are required to acquire land.
+  * No player purchases are required to participate in the core economy.
+  * Gameplay progression remains fundamentally free.
+
+* [ ] **27.2 📢 Advertising-Funded Treasury**
+
+  * Use small, persistent/non-interruptive banner advertising as the primary player-facing monetization mechanism.
+  * Avoid forced full-screen advertisements that interrupt gameplay on a timed basis.
+  * Avoid making players watch advertisements to perform ordinary gameplay actions.
+  * Advertising revenue contributes to the operating treasury supporting:
+
+    * Infrastructure
+    * Development
+    * Customer support
+    * Security
+    * Game operations
+    * Expansion
+    * Player rewards
+  * Track advertising revenue separately from the player economy ledger.
+
+* [ ] **27.3 🚀 Growing Treasury Model**
+
+  * As the player base grows, advertising impressions and revenue can grow with it.
+  * Treasury capacity should therefore be modeled as a function of:
+
+    * Active players
+    * Sessions
+    * Ad impressions
+    * Fill rate
+    * Effective advertising revenue
+    * Infrastructure costs
+    * Operating expenses
+    * Reward obligations
+  * Never assume advertising revenue is guaranteed.
+  * Build conservative treasury models using worst-case advertising conditions.
+
+* [ ] **27.4 🏦 Protected Game Treasury**
+
+  * Maintain a dedicated internal treasury accounting system.
+  * Separate:
+
+    * Operating funds
+    * Advertising revenue
+    * Reserved player reward obligations
+    * Available reward budget
+    * Pending payouts
+    * Completed payouts
+  * The game client must never have authority over treasury values.
+
+---
+
+# 🪙 28. Immutable Digital Player Balance
+
+* [ ] **28.1 🔒 Immutable In-Game Balance**
+
+  * Player passive rent and other qualifying rewards are represented through an authoritative server-side ledger.
+  * The client displays the balance but never determines the authoritative balance.
+  * Client-side manipulation must never be capable of creating currency.
+
+* [ ] **28.2 0️⃣ No Intrinsic Asset Value**
+
+  * In-game land, buildings, cosmetics, inventory items, boosts and digital rent balances have no inherent real-world monetary value.
+  * Game assets cannot be sold directly by players.
+  * Game assets cannot be purchased from the game using real-world currency.
+  * Game assets are not player deposits.
+  * Game assets are not intended to function as an investment product.
+
+* [ ] **28.3 📜 Immutable Transaction History**
+
+  * Record every material economy event as an append-only transaction.
+  * Examples:
+
+    * Passive rent generated
+    * Rent claimed
+    * Bonus awarded
+    * Bonus removed
+    * Game adjustment
+    * Qualifying balance conversion
+    * Withdrawal/reward request
+  * Never silently overwrite historical financial/economic records.
+
+* [ ] **28.4 🧮 Server-Side Accounting**
+
+  * Final balances are calculated and validated server-side.
+  * Every transaction receives:
+
+    * Unique transaction ID
+    * Player ID
+    * Timestamp
+    * Transaction type
+    * Amount
+    * Source
+    * Destination
+    * Reason
+    * Processing status
+  * Duplicate requests must never create duplicate rewards.
+
+---
+
+# 💵 29. Controlled Withdrawal / Reward Mechanism
+
+> **The player's in-game balance remains a digital game balance. The withdrawal mechanism is a separate, controlled reward process.**
+
+* [ ] **29.1 🎁 Limited Reward Eligibility**
+
+  * Players may become eligible to request a limited reward based on qualifying in-game balance.
+  * Eligibility does not mean the entire game balance becomes withdrawable.
+  * The player must have sufficient qualifying in-game balance to support the requested conversion.
+
+* [ ] **29.2 🔄 Balance-to-Reward Conversion**
+
+  * A player voluntarily forfeits/deducts the required amount of qualifying in-game balance.
+  * The system records the deduction permanently.
+  * The corresponding reward request is created.
+  * The player cannot spend the same balance twice.
+  * Conversion must be atomic:
+
+    * Either the balance deduction and reward reservation both succeed,
+    * or neither occurs.
+
+* [ ] **29.3 📅 Weekly Player Reward Limit**
+
+  * Establish a maximum reward amount available to an individual player during a rolling 7-day period.
+  * The weekly limit is independent from the player's total in-game balance.
+  * A player may possess a large digital balance while still being restricted to the configured weekly reward ceiling.
+  * Unused weekly capacity does not necessarily need to accumulate indefinitely.
+
+* [ ] **29.4 🏦 Treasury-Constrained Rewards**
+
+  * The theoretical weekly player limit is not a promise of unlimited payouts.
+  * Actual reward processing remains subject to:
+
+    * Treasury availability
+    * Fraud/risk controls
+    * Eligibility
+    * System integrity
+    * Payment-provider availability
+    * Applicable geographic/operational restrictions
+  * Treasury protection always takes priority over unrestricted reward issuance.
+
+* [ ] **29.5 🛑 Reward Circuit Breaker**
+
+  * Administrators can temporarily pause new reward requests without shutting down the game.
+  * Existing game functionality can continue while the reward system is investigated.
+  * Emergency suspension can be triggered automatically by predefined risk thresholds.
+
+---
+
+# 📊 30. Treasury & Economy Protection
+
+* [ ] **30.1 📈 Currency Generation Monitoring**
+
+  * Monitor total digital balance creation.
+  * Monitor balance generation per:
+
+    * Player
+    * Day
+    * Week
+    * City
+    * Land type
+    * Game mechanic
+  * Detect sudden deviations from expected economy behavior.
+
+* [ ] **30.2 📉 Reward Liability Monitoring**
+
+  * Track theoretical outstanding reward exposure.
+  * Track actual pending reward obligations.
+  * Track completed reward payments.
+  * Track available treasury capacity.
+  * Continuously compare economy growth against advertising/operating revenue.
+
+* [ ] **30.3 ⚖️ Economy Stability Controls**
+
+  * All major reward multipliers should be server-configurable.
+  * Avoid permanently hard-coding economy multipliers into the client.
+  * Support controlled adjustments through versioned economy configuration.
+
+* [ ] **30.4 🧯 Treasury Emergency Thresholds**
+
+  * Automatically reduce or pause reward processing if:
+
+    * Treasury reserves fall below configured levels.
+    * Reward requests spike unexpectedly.
+    * Advertising revenue drops substantially.
+    * Currency generation becomes abnormal.
+    * Fraud increases.
+    * A game exploit is detected.
+
+* [ ] **30.5 🌎 Global Reward Limits**
+
+  * Establish configurable global:
+
+    * Daily reward ceilings
+    * Weekly reward ceilings
+    * Hourly processing limits
+    * Maximum concurrent payout exposure
+  * These limits protect the game from unexpected demand spikes.
+
+---
+
+# 👤 31. Player Reward Limits & Anti-Farming Controls
+
+* [ ] **31.1 🧑 Per-Player Limits**
+
+  * Configure weekly reward limits per account.
+  * New accounts may have stricter limits.
+  * Mature, trusted accounts may qualify for higher limits where appropriate.
+
+* [ ] **31.2 ⏳ Minimum Account Age**
+
+  * Consider minimum account-age requirements before reward eligibility.
+  * Prevent newly created accounts from immediately extracting treasury resources.
+
+* [ ] **31.3 🎮 Genuine Gameplay Requirement**
+
+  * Rewards should derive from legitimate gameplay activity.
+  * Detect abnormal automated farming.
+  * Detect impossible gameplay rates.
+  * Detect suspicious reward accumulation.
+
+* [ ] **31.4 🧬 Account Farming Detection**
+
+  * Detect coordinated account farms.
+  * Analyze behavioral relationships rather than relying on a single signal.
+  * Avoid automatically penalizing legitimate households or shared environments solely because they share infrastructure.
+
+* [ ] **31.5 🚦 Progressive Risk Controls**
+
+  * Normal players experience minimal friction.
+  * Suspicious behavior triggers increasing safeguards.
+  * High-risk reward requests may be delayed for additional review.
+
+---
+
+# 🛡️ 32. Maximum Practical Anti-Cheat Architecture
+
+> **Security assumption: The client is potentially compromised.**
+
+* [ ] **32.1 🔒 Server-Authoritative Gameplay**
+
+  * The client requests actions.
+  * The server validates the request.
+  * The server executes the game rules.
+  * The server calculates rewards.
+  * The server commits the resulting state.
+
+* [ ] **32.2 🚫 Never Trust Client Economics**
+
+  * Never trust client-reported:
+
+    * Balance
+    * Rent
+    * Land ownership
+    * Inventory
+    * Cooldowns
+    * Timestamps
+    * Reward amounts
+    * Completion status
+
+* [ ] **32.3 🔁 Replay Protection**
+
+  * Every economically meaningful request receives an idempotency key.
+  * Replaying the same request must not generate additional rewards.
+  * Duplicate network requests must be safe.
+
+* [ ] **32.4 🧱 Impossible-State Detection**
+
+  * Detect states that legitimate clients cannot produce.
+  * Detect impossible movement.
+  * Detect impossible reward generation.
+  * Detect impossible transaction sequences.
+  * Quarantine suspicious activity for investigation.
+
+* [ ] **32.5 🤖 Bot Detection**
+
+  * Detect:
+
+    * Automated interaction
+    * Unrealistic session patterns
+    * Perfectly repetitive actions
+    * Abnormal timing
+    * Abnormal reward velocity
+    * Large-scale coordinated accounts
+
+* [ ] **32.6 📱 Mobile Integrity Signals**
+
+  * Where available and appropriate, use platform integrity/attestation signals.
+  * Treat integrity signals as risk inputs rather than the sole basis for punishment.
+  * Maintain server-side authority regardless of client integrity.
+
+---
+
+# 🔐 33. Account & API Security
+
+* [ ] **33.1 🔑 Secure Authentication**
+
+  * Secure session management.
+  * Refresh-token rotation.
+  * Session revocation.
+  * Suspicious-login detection.
+  * Account recovery protection.
+
+* [ ] **33.2 🚦 API Rate Limiting**
+
+  * Rate-limit sensitive endpoints.
+  * Apply account/IP/device-aware controls where appropriate.
+  * Especially protect:
+
+    * Login
+    * Reward generation
+    * Land claims
+    * Inventory operations
+    * Referral systems
+    * Reward requests
+
+* [ ] **33.3 🧱 WAF & Edge Protection**
+
+  * Web application firewall.
+  * DDoS mitigation.
+  * Bot mitigation.
+  * Request-size limits.
+  * Connection limits.
+  * Abuse throttling.
+
+* [ ] **33.4 🔑 Secrets Management**
+
+  * Never ship server secrets inside mobile applications.
+  * Never store sensitive provider credentials in source control.
+  * Separate development/staging/production credentials.
+  * Rotate secrets regularly.
+
+* [ ] **33.5 🧑‍💻 Administrative Security**
+
+  * MFA for administrators.
+  * Least-privilege permissions.
+  * Separate operational roles.
+  * Audit every privileged action.
+  * Require additional authorization for treasury-affecting actions.
+
+---
+
+# 🧪 34. Heavy Pre-Alpha Stress Testing
+
+* [ ] **34.1 💥 Load Testing**
+
+  * Test progressively:
+
+    * Hundreds of players
+    * Thousands
+    * Tens of thousands
+    * Projected launch concurrency
+    * Projected viral-spike concurrency
+
+* [ ] **34.2 📈 Traffic Spike Testing**
+
+  * Simulate:
+
+    * Viral social-media traffic
+    * Mass logins
+    * Mass land claiming
+    * Large reward events
+    * Simultaneous reward requests
+    * Advertising traffic spikes
+
+* [ ] **34.3 ☠️ Failure Testing**
+
+  * Intentionally test:
+
+    * Database failures
+    * API failures
+    * Queue failures
+    * Cache failures
+    * Network interruptions
+    * Payment-provider outages
+    * Delayed webhooks
+    * Duplicate webhooks
+    * Out-of-order events
+
+* [ ] **34.4 🧬 Concurrency Testing**
+
+  * Test thousands of simultaneous requests against:
+
+    * Land claims
+    * Rent generation
+    * Inventory
+    * Reward deductions
+    * Reward requests
+  * Verify that race conditions cannot duplicate assets or rewards.
+
+* [ ] **34.5 💾 Disaster Recovery**
+
+  * Automated backups.
+  * Point-in-time recovery.
+  * Tested restoration.
+  * Documented recovery procedures.
+  * Define RPO/RTO targets.
+  * Conduct regular recovery drills.
+
+---
+
+# 🔍 35. Security Testing & Red Team
+
+* [ ] **35.1 🧪 Automated Security Pipeline**
+
+  * Static analysis.
+  * Dependency scanning.
+  * Secret scanning.
+  * Container scanning.
+  * API security testing.
+  * Infrastructure security testing.
+
+* [ ] **35.2 🕵️ External Penetration Testing**
+
+  * Test authentication.
+  * Test authorization.
+  * Test APIs.
+  * Test economy manipulation.
+  * Test reward systems.
+  * Test administrative interfaces.
+
+* [ ] **35.3 🧠 Economy Red Team**
+
+  * Attempt to:
+
+    * Generate impossible rent.
+    * Duplicate rewards.
+    * Duplicate inventory.
+    * Claim land multiple times.
+    * Bypass cooldowns.
+    * Replay requests.
+    * Manipulate timestamps.
+    * Forge API requests.
+    * Abuse referrals.
+    * Circumvent weekly limits.
+    * Create artificial reward liabilities.
+
+* [ ] **35.4 🐛 Vulnerability Reporting**
+
+  * Establish a security reporting process.
+  * Prioritize critical economy/security vulnerabilities.
+  * Maintain emergency patch procedures.
+
+---
+
+# 📡 36. Production Observability
+
+* [ ] **36.1 📊 Centralized Metrics**
+
+  * Monitor:
+
+    * Concurrent players
+    * Sessions
+    * API latency
+    * Error rates
+    * Database performance
+    * Queue depth
+    * Cache performance
+    * Ad impressions
+    * Ad revenue
+    * Digital currency generation
+    * Reward requests
+    * Reward completion
+    * Fraud events
+
+* [ ] **36.2 🚨 Automated Alerting**
+
+  * Alert on:
+
+    * Sudden player growth
+    * Currency-generation spikes
+    * Reward spikes
+    * Treasury threshold breaches
+    * Fraud spikes
+    * Authentication anomalies
+    * API failures
+    * Database anomalies
+    * Advertising-revenue anomalies
+
+* [ ] **36.3 🖥️ Live Operations Dashboard**
+
+  * Real-time overview of:
+
+    * Player population
+    * Economy health
+    * Treasury
+    * Reward obligations
+    * Advertising performance
+    * Infrastructure health
+    * Fraud/risk activity
+
+---
+
+# 🧪 37. Controlled Beta Rollout
+
+* [ ] **37.1 🥚 Closed Beta**
+
+  * Invite-only population.
+  * Heavy telemetry.
+  * Conservative economy.
+  * Limited or disabled reward conversion initially.
+  * Aggressive exploit testing.
+
+* [ ] **37.2 🎁 Limited Reward Beta**
+
+  * Enable reward functionality for a small percentage of eligible players.
+  * Conservative weekly limits.
+  * Monitor every part of the conversion pipeline.
+
+* [ ] **37.3 📈 Progressive Expansion**
+
+  * Increase player population gradually.
+  * Increase reward availability only after:
+
+    * Economy stability
+    * Backend stability
+    * Fraud stability
+    * Treasury stability
+    * Advertising revenue stability
+
+* [ ] **37.4 🛑 Emergency Rollback**
+
+  * Remotely disable:
+
+    * Reward conversion
+    * Specific reward sources
+    * Land claiming
+    * Referrals
+    * Boost mechanics
+    * Other problematic systems
+  * Preserve ordinary gameplay whenever safely possible.
+
+---
+
+# 🤖 38. Native Android App — Google Play First
+
+* [ ] **38.1 📱 Android Production Build**
+
+  * Optimize:
+
+    * Startup
+    * Memory
+    * CPU
+    * Battery
+    * Network traffic
+    * Rendering
+    * Asset loading
+
+* [ ] **38.2 🏪 Google Play Preparation**
+
+  * Production signing.
+  * Release configuration.
+  * Store listing.
+  * Privacy disclosures.
+  * Data-safety requirements.
+  * Age/content classification.
+  * Account-management requirements.
+  * Crash reporting.
+  * Closed/open testing tracks.
+
+* [ ] **38.3 🔄 Remote Configuration**
+
+  * Use server-side feature flags where appropriate.
+  * Enable economy tuning without unnecessary app releases.
+  * Allow emergency disabling of vulnerable mechanics.
+
+* [ ] **38.4 🧪 Device Matrix**
+
+  * Test:
+
+    * Low-end Android
+    * Mid-range Android
+    * High-end Android
+    * Different screen sizes
+    * Different OS versions
+    * Low-memory devices
+    * Poor-network environments
+
+---
+
+# 🍎 39. Apple / iOS Expansion
+
+* [ ] **39.1 🍎 iOS Optimization**
+
+  * Optimize:
+
+    * Memory
+    * CPU
+    * Battery
+    * Rendering
+    * Startup
+    * Network behavior
+
+* [ ] **39.2 🧪 TestFlight**
+
+  * Conduct controlled iOS beta testing.
+  * Compare Android/iOS gameplay behavior.
+  * Validate account synchronization and economy consistency.
+
+* [ ] **39.3 🏪 App Store Readiness**
+
+  * Production signing.
+  * Privacy disclosures.
+  * Required account controls.
+  * Store metadata.
+  * Review-policy validation.
+  * Production crash monitoring.
+
+* [ ] **39.4 🚀 iOS Launch After Proven Scale**
+
+  * Prioritize iOS expansion once:
+
+    * Backend scaling is proven.
+    * Economy is stable.
+    * Anti-cheat is operational.
+    * Reward processing is reliable.
+    * Support infrastructure is ready.
+
+---
+
+# ☁️ 40. Full Backend Production Optimization
+
+* [ ] **40.1 🧩 Service Architecture**
+
+  * Separate high-load systems where appropriate:
+
+    * Authentication
+    * Player profiles
+    * Game state
+    * Land
+    * Economy
+    * Inventory
+    * Reward processing
+    * Fraud detection
+    * Analytics
+    * Notifications
+
+* [ ] **40.2 🗄️ Database Optimization**
+
+  * Proper indexes.
+  * Query profiling.
+  * Connection pooling.
+  * Transaction optimization.
+  * Appropriate partitioning as scale requires.
+  * Strong consistency around economy-critical operations.
+
+* [ ] **40.3 ⚡ Caching**
+
+  * Cache non-authoritative information aggressively.
+  * Never allow stale cache data to authorize economy transactions.
+  * Establish cache invalidation rules.
+
+* [ ] **40.4 📨 Durable Queues**
+
+  * Use queues for asynchronous:
+
+    * Analytics
+    * Notifications
+    * Risk analysis
+    * Reward processing
+    * Reconciliation
+  * All important jobs must be idempotent.
+
+* [ ] **40.5 🌐 Geographic Scaling**
+
+  * Prepare infrastructure for regional expansion.
+  * Keep latency-sensitive gameplay close to players where economically justified.
+  * Keep the authoritative economy centralized/strongly consistent where required.
+
+---
+
+# 🔄 41. CI/CD, QA & Release Engineering
+
+* [ ] **41.1 🧪 Automated Testing**
+
+  * Every production change passes:
+
+    * Unit tests
+    * Integration tests
+    * API tests
+    * Economy tests
+    * Security checks
+    * Database migration checks
+    * Build validation
+
+* [ ] **41.2 🧫 Production-Like Staging**
+
+  * Separate staging infrastructure.
+  * Separate databases.
+  * Synthetic player accounts.
+  * Synthetic advertising data.
+  * Synthetic economy.
+  * Synthetic treasury.
+  * Never test against production reward funds.
+
+* [ ] **41.3 🐤 Canary Deployments**
+
+  * Release backend changes to a small traffic percentage.
+  * Monitor:
+
+    * Errors
+    * Latency
+    * Economy generation
+    * Reward requests
+    * Fraud
+  * Automatically stop rollout when thresholds are exceeded.
+
+* [ ] **41.4 ↩️ Safe Rollback**
+
+  * Every deployment requires a tested rollback strategy.
+  * Database migrations must support safe forward recovery.
+  * Critical economy changes require additional release review.
+
+* [ ] **41.5 🧪 Full Regression Suite**
+
+  * Automated tests for:
+
+    * Land
+    * Passive rent
+    * Inventory
+    * Bonuses
+    * Referrals
+    * Advertising integration
+    * Reward eligibility
+    * Weekly limits
+    * Account restrictions
+    * Anti-cheat
+    * Recovery scenarios
+
+---
+
+# 🧹 42. Full End-to-End Optimization & Production Launch Gate
+
+## ⚡ 42.1 Gameplay Optimization
+
+* [ ] Rendering optimized.
+* [ ] Asset loading optimized.
+* [ ] Memory usage profiled.
+* [ ] Network synchronization optimized.
+* [ ] Long-session stability tested.
+* [ ] Battery usage tested.
+* [ ] Low-end devices tested.
+
+## 🌐 42.2 Network Optimization
+
+* [ ] Payloads minimized.
+* [ ] Requests batched where appropriate.
+* [ ] Real-time traffic optimized.
+* [ ] Connection recovery implemented.
+* [ ] Offline/intermittent-network behavior tested.
+
+## 🧮 42.3 Economy Optimization
+
+* [ ] Currency generation modeled.
+* [ ] Currency sinks modeled.
+* [ ] Passive-rent growth modeled.
+* [ ] Advertising revenue modeled.
+* [ ] Reward obligations modeled.
+* [ ] Treasury stress-tested.
+* [ ] Weekly player limits validated.
+* [ ] Exploit scenarios simulated.
+
+## 🛡️ 42.4 Security Gate
+
+* [ ] No critical security vulnerabilities.
+* [ ] Penetration testing completed.
+* [ ] Anti-cheat operational.
+* [ ] API authorization verified.
+* [ ] Admin security verified.
+* [ ] Account abuse controls operational.
+* [ ] Emergency controls tested.
+
+## 🏦 42.5 Treasury Gate
+
+* [ ] Treasury accounting operational.
+* [ ] Reward obligations tracked.
+* [ ] Per-player weekly limits operational.
+* [ ] Global limits operational.
+* [ ] Reward circuit breaker operational.
+* [ ] Reconciliation operational.
+* [ ] Emergency reward shutdown tested.
+
+## 📢 42.6 Advertising Gate
+
+* [ ] Banner advertising stable.
+* [ ] Ad loading failures handled gracefully.
+* [ ] Advertising does not block core gameplay.
+* [ ] Revenue telemetry operational.
+* [ ] Treasury projections account for advertising volatility.
+* [ ] Game remains playable when advertisements fail to load.
+
+## 📱 42.7 Android Gate
+
+* [ ] Google Play production build ready.
+* [ ] Crash rate acceptable.
+* [ ] Performance targets met.
+* [ ] Device compatibility validated.
+* [ ] Privacy/data disclosures complete.
+* [ ] Account controls operational.
+
+## 🍎 42.8 iOS Gate
+
+* [ ] iOS production build stable.
+* [ ] TestFlight validation completed.
+* [ ] Performance validated.
+* [ ] Privacy requirements validated.
+* [ ] App Store release process prepared.
+
+---
+
+# 🚀 43. Final Launch Philosophy
+
+### The game should scale in this order:
+
+**FREE GAME**
+↓
+**PLAYER GROWTH**
+↓
+**LONG-TERM GAMEPLAY**
+↓
+**PASSIVE RENT GENERATION**
+↓
+**BANNER AD IMPRESSIONS**
+↓
+**AD REVENUE**
+↓
+**GAME TREASURY**
+↓
+**CONTROLLED PLAYER REWARD CAPACITY**
+↓
+**MORE PLAYER GROWTH**
+↓
+**MORE AD REVENUE**
+↓
+**MORE DEVELOPMENT**
+↓
+**MORE CONTENT**
+↓
+**LARGER PLAYER BASE**
+
+The fundamental objective is **not to extract money from players.**
+
+The objective is to build a sustainable free game where:
+
+**Players provide attention → advertisers provide revenue → the game treasury funds operations and player rewards → successful growth creates more advertising revenue → the game becomes capable of supporting a larger ecosystem.**
+
+---
+
+# 🔐 Non-Negotiable Economic Security Rule
+
+**The player's game balance must never be treated as a bank account.**
+
+It is an **immutable digital game-state balance** generated through gameplay.
+
+The reward mechanism is separate.
+
+Conceptually:
+
+**Gameplay**
+→ generates digital game balance
+
+**Digital game balance**
+→ has no intrinsic real-world value
+
+**Player becomes eligible**
+→ according to game rules
+
+**Player voluntarily forfeits qualifying game balance**
+→ conversion request is created
+
+**Weekly player limit**
+→ caps reward exposure
+
+**Risk engine**
+→ validates request
+
+**Treasury**
+→ verifies available reward capacity
+
+**Reward processor**
+→ processes eligible reward
+
+**Ledger**in mm
+→ permanently records the result
+
+This separation is extremely important because it prevents the game's internal economy from becoming conceptually equivalent to a player-held cash wallet.
+
+---
+
 ## 📁 Repository Structure
 
 ```text
