@@ -208,9 +208,13 @@ const WeeklyPool = (() => {
     if (modal) modal.classList.remove("hidden");
 
     updateCountdownTicker();
-    const { totalGlobalRent, weeklyPool } = await calculateGlobalPool();
+    const { totalGlobalRent, weeklyPool, globalRateSec } = await calculateGlobalPool();
+    
     document.getElementById("modal-global-rent-val").textContent = `$${totalGlobalRent.toFixed(6)}`;
     document.getElementById("modal-weekly-pool-val").textContent = `$${weeklyPool.toFixed(6)}`;
+    
+    const rateEl = document.getElementById("modal-global-rate-val");
+    if (rateEl) rateEl.textContent = `+$${globalRateSec.toFixed(10)} / sec`;
   }
 
   function init() {
