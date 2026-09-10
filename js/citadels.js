@@ -80,12 +80,16 @@ const Citadels = (() => {
     if (modal) modal.classList.remove("hidden");
   }
 
-  // --- 2. Planting on Tile ---
-  // Direct Footstep Placement (Guaranteed 100% accurate at player's feet)
+  //// --- 2. Planting on Tile (Strict 75m Territory Buffer Check) ---
   function plantCapsule(tx, ty, lat, lon) {
     const state = Store.get();
     if (!state.capsule || !state.capsule.awarded || state.capsule.planted) {
       alert("You have already planted your realm capsule!");
+      return false;
+    }
+
+    if (tx === undefined || ty === undefined) {
+      alert("Please select an unoccupied tile on the grid first!");
       return false;
     }
 
@@ -95,21 +99,30 @@ const Citadels = (() => {
     const growthFinish = now + (CONFIG.CITADEL_GROWTH_MS || 1800000);
     const ts = CONFIG.TILE_SIZE_METERS || 6.096;
 
-    // 1. Calculate exact grid tile at target coordinates
-    const t = (tx !== undefined && ty !== undefined) 
-      ? { tx: parseInt(tx, 10), ty: parseInt(ty, 10) } 
-      : Geo.tileForLatLon(lat, lon, ts);
+    const tileX = parseInt(tx, 10);
+    const tileY = parseInt(ty, 10);
 
-    // 2. Exact mathematical center of that tile
+    // 1. Exact mathematical center of the selected tile
     const center = Geo.fromMercator(
-      t.tx * ts + ts / 2,
-      t.ty * ts + ts / 2
+      tileX * ts + ts / 2,
+      tileY * ts + ts / 2
     );
+
+    // 2. --- 75M TERRITORY BUFFER CHECK (Prevents 3D Marker Overlap Collisions) ---
+    const minSpacing = (typeof CONFIG !== "undefined" && CONFIG.CITADEL_MIN_SPACING_METERS) || 75;
+    for (const id in globalCitadels) {
+      const existing = globalCitadels[id];
+      const dist = Geo.haversine(center.lat, center.lon, existing.lat, existing.lon);
+      if (dist < minSpacing) {
+        alert(`🛡️ Stronghold Interference!\n\nCannot place a Citadel within ${minSpacing} meters of another Citadel.\n\n"${existing.creatorName}'s Hold" is too close (only ${Math.round(dist)}m away).\n\nPlease pick an unoccupied tile further down the street!`);
+        return false; // Blocks placement, keeps capsule safely in pocket!
+      }
+    }
 
     const citadelData = {
       id: cid,
-      tx: t.tx,
-      ty: t.ty,
+      tx: tileX,
+      ty: tileY,
       lat: center.lat,
       lon: center.lon,
       rarity,
@@ -129,7 +142,7 @@ const Citadels = (() => {
     state.capsule.planted = true;
     state.capsule.tileId = cid;
     globalCitadels[cid] = citadelData;
-    Store.save();
+    Store.save(true);
 
     const db = Store.getDb();
     if (db) {
@@ -141,7 +154,7 @@ const Citadels = (() => {
     }
 
     render();
-    alert("🔮 Citadel planted directly at your location! Stronghold parcel activated!");
+    alert(`🔮 Citadel planted on Tile [${tileX}, ${tileY}]! Stronghold parcel activated!`);
     return true;
   }
 
