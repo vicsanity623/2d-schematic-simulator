@@ -1433,8 +1433,13 @@
       closeModal("player-info-modal");
       const signinScreen = document.getElementById("signin-screen");
       if (signinScreen) {
+        // Force the sign-in screen to the absolute front
         signinScreen.classList.remove("hidden");
-        signinScreen.style.display = "flex"; // Brings the secure Google portal back up!
+        signinScreen.style.display = "flex";
+        signinScreen.style.position = "fixed";
+        signinScreen.style.zIndex = "9999999";
+        signinScreen.style.opacity = "1";
+        console.log("[Auth] Re-opening Sign-In Screen for Guest Upgrade");
       }
     });
 
