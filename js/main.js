@@ -1428,6 +1428,15 @@
     }
     el("hero-balance-card").addEventListener("click", openPlayerInfo);
     document.querySelector(".player-chip")?.addEventListener("click", openPlayerInfo);
+    // Wire up Guest "Sign in with Google" button in Player Info Modal
+    document.getElementById("google-link-btn")?.addEventListener("click", () => {
+      closeModal("player-info-modal");
+      const signinScreen = document.getElementById("signin-screen");
+      if (signinScreen) {
+        signinScreen.classList.remove("hidden");
+        signinScreen.style.display = "flex"; // Brings the secure Google portal back up!
+      }
+    });
 
     el("earn-btn").addEventListener("click", () => {
       // Safety unlock in case modal was closed mid-spin
